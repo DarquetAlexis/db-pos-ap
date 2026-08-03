@@ -7,31 +7,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        /* ESTILO DE FONDO OFICIAL */
         body {
-            background-image: url('image_16.png'); /* Tu patrón de frappes morado */
-            background-repeat: repeat;             /* Se repite en mosaico */
-            background-size: 300px;               /* Tamaño del patrón (ajusta a tu gusto) */
-            background-attachment: fixed;         /* Fondo fijo al hacer scroll */
-            background-color: #3b1443;            /* Color morado de respaldo */
+            /* CAMBIA 'fondo.png' por el nombre exacto con el que guardaste tu imagen en GitHub */
+            background-image: url('fondo.png');
+            background-repeat: repeat;
+            background-size: 250px;
+            background-attachment: fixed;
+            background-color: #3b1443;
         }
-        /* Ajuste de opacidad para que el texto resalte sobre el patrón */
         .bg-dark-overlay {
-            background-color: rgba(41, 13, 47, 0.85); /* Fondo semitransparente muy oscuro */
-            backdrop-filter: blur(5px);                 /* Efecto de desenfoque suave */
+            background-color: rgba(41, 13, 47, 0.88);
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- LOGOTIPO OFICIAL (con fondo oscuro para resaltar) -->
+    <!-- LOGOTIPO OFICIAL -->
     <div class="mb-6 text-center animate__animated animate__fadeInDown bg-dark-overlay p-5 rounded-3xl shadow-xl border border-pink-400/20">
         <img src="logo.png" alt="Dulce Bocado Logo" class="w-28 h-28 mx-auto object-contain rounded-full border-2 border-pink-400 shadow-lg mb-2">
         <h1 class="text-3xl font-black text-pink-300 tracking-wider">DULCE BOCADO</h1>
         <p class="text-xs text-purple-300 uppercase tracking-widest mt-1">SISTEMA POS OFICIAL - DB</p>
     </div>
 
-    <!-- TARJETA DE ACCESO (con fondo oscuro para resaltar) -->
+    <!-- TARJETA DE ACCESO -->
     <div class="bg-dark-overlay border border-purple-900/80 p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center animate__animated animate__fadeInUp">
         <h2 class="text-sm font-bold text-purple-200 mb-5">¿Quién ingresa al sistema?</h2>
         
@@ -51,7 +50,7 @@
         </div>
     </div>
 
-    <!-- PERSONAJES OFICIALES DECORATIVOS (con fondo oscuro para resaltar) -->
+    <!-- PERSONAJES OFICIALES DECORATIVOS -->
     <div class="flex justify-center space-x-4 mt-8 opacity-100 bg-dark-overlay p-3 rounded-full shadow-inner">
         <img src="fran.png" alt="Fran" class="w-12 h-12 object-contain animate__animated animate__bounceIn">
         <img src="talia.png" alt="Talia" class="w-12 h-12 object-contain animate__animated animate__bounceIn" style="animation-delay: 0.2s;">
