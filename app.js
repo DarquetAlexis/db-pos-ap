@@ -1,33 +1,51 @@
 const DB_STORAGE_KEY = "db_dulce_bocado_data";
 
 const initialMenu = {
-  frappes: [
-    { id: 1, name: "Moka", tipo: "basico", mediano: 50, grande: 60, personaje: "Fran" },
-    { id: 2, name: "Capuchino", tipo: "basico", mediano: 50, grande: 60, personaje: "Fran" },
-    { id: 3, name: "Fresa", tipo: "basico", mediano: 50, grande: 60, personaje: "Fran" },
-    { id: 4, name: "Ferrero Rocher", tipo: "premium", mediano: 70, grande: 75, personaje: "Fran" },
-    { id: 5, name: "Kinder Délice", tipo: "premium", mediano: 70, grande: 75, personaje: "Fran" },
-    { id: 6, name: "Gansito", tipo: "premium", mediano: 70, grande: 75, personaje: "Fran" },
-    { id: 7, name: "Bubu Lubu", tipo: "premium", mediano: 70, grande: 75, personaje: "Fran" },
-    { id: 8, name: "M&M's", tipo: "especial", mediano: 65, grande: 70, personaje: "Fran" },
-    { id: 9, name: "Oreo", tipo: "especial", mediano: 65, grande: 70, personaje: "Fran" },
-    { id: 10, name: "Taro", tipo: "especial", mediano: 65, grande: 70, personaje: "Fran" },
-    { id: 11, name: "Carlos V", tipo: "especial", mediano: 65, grande: 70, personaje: "Fran" }
-  ],
+  frappes: {
+    basico: [
+      { name: "Moka", mediano: 50, grande: 60 },
+      { name: "Capuchino", mediano: 50, grande: 60 },
+      { name: "Fresa", mediano: 50, grande: 60 }
+    ],
+    premium: [
+      { name: "Ferrero Rocher", mediano: 70, grande: 75 },
+      { name: "Kinder Délice", mediano: 70, grande: 75 },
+      { name: "Gansito", mediano: 70, grande: 75 },
+      { name: "Bubu Lubu", mediano: 70, grande: 75 }
+    ],
+    especial: [
+      { name: "M&M's", mediano: 65, grande: 70 },
+      { name: "Oreo", mediano: 65, grande: 70 },
+      { name: "Taro", mediano: 65, grande: 70 },
+      { name: "Carlos V", mediano: 65, grande: 70 }
+    ]
+  },
   crepas: {
-    basePrecio: 50,
-    incluidosBase: 0,
-    precioConDos: 70,
-    extraPorIngrediente: 10
+    dulces: [
+      { name: "Crepa Ferrero (Nutella, Nuez, Almendra, Ferrero)", precio: 90 },
+      { name: "Crepa Gansito (Nutella, Philadelphia, Fresa, Gansito)", precio: 90 },
+      { name: "Crepa Kinder Délice (Nutella, Philadelphia, Kinder)", precio: 95 },
+      { name: "Crepa Oreo (Nutella, Lechera, Oreo)", precio: 85 }
+    ],
+    saladas: [
+      { name: "Crepa Peperoni (Manchego, Salsa Italiana, Peperoni)", precio: 80 },
+      { name: "Crepa Hawaiana (Manchego, Jamón, Piña)", precio: 80 }
+    ],
+    ingredientesDisponibles: [
+      "Nutella", "Cajeta", "Queso Philadelphia", "Mermelada de Fresa", 
+      "Lechera", "Salsa Italiana", "Mermelada de Zarzamora", "Fresa", 
+      "Plátano", "Piña", "Durazno", "Nuez", "Almendra", "Jamón", 
+      "Manchego", "Peperoni", "Crema Batida"
+    ]
   },
   chamoyadas: [
-    { id: 1, name: "PicaFresa", precio: 50, personaje: "Moy" },
-    { id: 2, name: "Mango", precio: 50, personaje: "Moy" }
+    { name: "PicaFresa (16 oz)", precio: 50 },
+    { name: "Mango (16 oz)", precio: 50 }
   ],
   sodas: [
-    { id: 1, name: "Blue (Manzana)", precio: 50, personaje: "Talia" },
-    { id: 2, name: "Green (Manzana)", precio: 50, personaje: "Talia" },
-    { id: 3, name: "Cereza", precio: 50, personaje: "Talia" }
+    { name: "Blue - Manzana (16 oz)", precio: 50 },
+    { name: "Green - Manzana (16 oz)", precio: 50 },
+    { name: "Cereza (16 oz)", precio: 50 }
   ]
 };
 
@@ -42,13 +60,6 @@ function initDatabase() {
 
 function getMenu() {
   return JSON.parse(localStorage.getItem(DB_STORAGE_KEY));
-}
-
-function calcularPrecioCrepa(cantidadIngredientes) {
-  if (cantidadIngredientes <= 0) return 50;
-  if (cantidadIngredientes === 2) return 70;
-  if (cantidadIngredientes === 1) return 60;
-  return 50 + (cantidadIngredientes * 10);
 }
 
 initDatabase();
