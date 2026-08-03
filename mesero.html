@@ -3,61 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DB - Toma de Pedidos</title>
+    <title>DB - Toma de Pedidos / Dulce Bocado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>.bg-morado-uva { background-color: #3b1443; }</style>
 </head>
 <body class="bg-morado-uva text-white min-h-screen flex flex-col">
 
-    <header class="bg-[#290d2f] p-4 flex justify-between items-center border-b border-purple-900">
-        <h1 class="text-xl font-black text-pink-300">DB POS - PEDIDOS</h1>
-        <a href="index.html" class="text-xs bg-purple-800 hover:bg-purple-700 px-3 py-1.5 rounded-lg">Salir</a>
+    <header class="bg-[#290d2f] p-4 flex justify-between items-center border-b border-purple-900 shadow-md">
+        <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Dulce Bocado" class="w-10 h-10 object-contain rounded-full border border-pink-400">
+            <h1 class="text-xl font-black text-pink-300">DULCE BOCADO - POS</h1>
+        </div>
+        <a href="index.html" class="text-xs bg-purple-800 hover:bg-purple-700 px-3 py-1.5 rounded-lg transition">Salir</a>
     </header>
 
-    <main class="flex-1 p-4 max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+    <main class="flex-1 p-4 max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         
+        <!-- SECCIÓN DE CATEGORÍAS Y PRODUCTOS -->
         <div class="space-y-4">
-            <h2 class="text-lg font-bold text-purple-200">Categorías</h2>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="cargarProductos('frappes')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
-                    <div class="text-2xl mb-1">🥤</div>
-                    <div class="font-bold">Frappes (Fran)</div>
-                </button>
-                <button onclick="cargarProductos('crepas')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
-                    <div class="text-2xl mb-1">🥞</div>
-                    <div class="font-bold">Crepas (Dulce)</div>
-                </button>
-                <button onclick="cargarProductos('chamoyadas')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
-                    <div class="text-2xl mb-1">🍓</div>
-                    <div class="font-bold">Chamoyadas (Moy)</div>
-                </button>
-                <button onclick="cargarProductos('sodas')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
-                    <div class="text-2xl mb-1">🧊</div>
-                    <div class="font-bold">Sodas (Talia)</div>
-                </button>
+            <h2 class="text-lg font-bold text-purple-200">Menú Oficial</h2>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <button onclick="cargarCategoria('frappes_basicos')" class="bg-purple-900/80 border border-purple-500/40 p-3 rounded-xl text-center hover:bg-purple-800 transition font-bold">🥤 Frappes Básicos</button>
+                <button onclick="cargarCategoria('frappes_premium')" class="bg-purple-900/80 border border-purple-500/40 p-3 rounded-xl text-center hover:bg-purple-800 transition font-bold">🥤 Frappes Premium</button>
+                <button onclick="cargarCategoria('frappes_especiales')" class="bg-purple-900/80 border border-purple-500/40 p-3 rounded-xl text-center hover:bg-purple-800 transition font-bold">🥤 Frappes Especiales</button>
+                <button onclick="cargarCategoria('crepas_dulces')" class="bg-purple-900/80 border border-purple-500/40 p-3 rounded-xl text-center hover:bg-purple-800 transition font-bold">🥞 Crepas Dulces</button>
+                <button onclick="cargarCategoria('crepas_saladas')" class="bg-purple-900/80 border border-purple-500/40 p-3 rounded-xl text-center hover:bg-purple-800 transition font-bold">🧀 Crepas Saladas</button>
+                <button onclick="cargarCategoria('bebidas')" class="bg-purple-900/80 border border-purple-500/40 p-3 rounded-xl text-center hover:bg-purple-800 transition font-bold">🍓 Chamoyadas & Sodas</button>
             </div>
 
-            <div id="lista-productos" class="bg-[#290d2f] p-4 rounded-xl border border-purple-900 min-h-[200px]">
-                <p class="text-purple-400 text-center text-sm">Selecciona una categoría arriba.</p>
+            <div id="lista-productos" class="bg-[#290d2f] p-4 rounded-xl border border-purple-900 min-h-[220px] max-h-[350px] overflow-y-auto">
+                <p class="text-purple-400 text-center text-sm mt-10">Selecciona una categoría arriba para ver los productos.</p>
             </div>
         </div>
 
-        <div class="bg-[#290d2f] p-4 rounded-xl border border-purple-900 flex flex-col justify-between">
+        <!-- SECCIÓN DEL CARRITO Y ORDEN -->
+        <div class="bg-[#290d2f] p-4 rounded-xl border border-purple-900 flex flex-col justify-between shadow-xl">
             <div>
                 <h2 class="text-lg font-bold text-pink-300 mb-3">Orden Actual</h2>
                 <div id="carrito-items" class="space-y-2 max-h-[250px] overflow-y-auto text-sm">
-                    <p class="text-gray-400 text-center">No hay productos añadidos.</p>
+                    <p class="text-gray-400 text-center py-10">No hay productos añadidos.</p>
                 </div>
             </div>
 
             <div class="mt-4 pt-4 border-t border-purple-900">
                 <div class="flex justify-between text-xl font-black mb-4">
                     <span>Total:</span>
-                    <span id="carrito-total">$0.00</span>
+                    <span id="carrito-total" class="text-pink-300">$0.00</span>
                 </div>
-                <button onclick="enviarOrden()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transition">
-                    🚀 Enviar a Cocina / Imprimir
+                <button onclick="enviarOrden()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95">
+                    🚀 Enviar a Cocina
                 </button>
             </div>
         </div>
@@ -67,48 +62,44 @@
     <script src="app.js"></script>
     <script>
         let carrito = [];
+        let menuData = getMenu();
 
-        function cargarProductos(categoria) {
-            let menu = getMenu();
+        function cargarCategoria(cat) {
             let contenedor = document.getElementById('lista-productos');
             contenedor.innerHTML = "";
 
-            if (categoria === 'crepas') {
-                contenedor.innerHTML = `
-                    <h3 class="font-bold text-pink-300 mb-2">Crepa Personalizada</h3>
-                    <p class="text-xs text-purple-200 mb-2">Básica ($50) o $70 con 2 ingredientes ($10 extra por cada adicional).</p>
-                    <button onclick="agregarCrepaCustom()" class="w-full bg-purple-700 hover:bg-purple-600 p-2 rounded-lg font-bold text-sm">Armar Crepa a mi Antojo</button>
-                `;
-                return;
-            }
+            let items = [];
+            if(cat === 'frappes_basicos') items = menuData.frappes.basico;
+            if(cat === 'frappes_premium') items = menuData.frappes.premium;
+            if(cat === 'frappes_especiales') items = menuData.frappes.especial;
+            if(cat === 'crepas_dulces') items = menuData.crepas.dulces;
+            if(cat === 'crepas_saladas') items = menuData.crepas.saladas;
+            if(cat === 'bebidas') items = [...menuData.chamoyadas, ...menuData.sodas];
 
-            let items = menu[categoria] || [];
             items.forEach(item => {
+                let precioStr = item.precio ? `$${item.precio}` : `Med: $${item.mediano} / Grd: $${item.grande}`;
+                let botonAccion = item.precio 
+                    ? `<button onclick="agregar('${item.name}', ${item.precio})" class="bg-pink-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-pink-500">+</button>`
+                    : `<div class="space-x-1">
+                         <button onclick="agregar('${item.name} (Mediano)', ${item.mediano})" class="bg-purple-700 px-2 py-1 rounded text-xs font-bold hover:bg-purple-600">Med $${item.mediano}</button>
+                         <button onclick="agregar('${item.name} (Grande)', ${item.grande})" class="bg-pink-600 px-2 py-1 rounded text-xs font-bold hover:bg-pink-500">Grd $${item.grande}</button>
+                       </div>`;
+
                 contenedor.innerHTML += `
-                    <div class="flex justify-between items-center bg-purple-950 p-2.5 rounded-lg mb-2">
+                    <div class="flex justify-between items-center bg-purple-950 p-3 rounded-lg mb-2 border border-purple-900/50">
                         <div>
                             <p class="font-bold text-sm">${item.name}</p>
-                            <p class="text-xs text-purple-300">$${item.mediano || item.precio} MXN</p>
+                            <p class="text-xs text-purple-300">${precioStr}</p>
                         </div>
-                        <button onclick="agregarAlCarrito('${item.name}', ${item.mediano || item.precio})" class="bg-pink-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-pink-500">+</button>
+                        ${botonAccion}
                     </div>
                 `;
             });
         }
 
-        function agregarAlCarrito(nombre, precio) {
+        function agregar(nombre, precio) {
             carrito.push({ nombre, precio });
             actualizarCarrito();
-        }
-
-        function agregarCrepaCustom() {
-            let ingredientesCount = prompt("¿Cuántos ingredientes extras deseas agregar? (0 para básica, 2 para precio especial de $70):", "2");
-            if (ingredientesCount !== null) {
-                let count = parseInt(ingredientesCount) || 0;
-                let precioFinal = calcularPrecioCrepa(count);
-                carrito.push({ nombre: `Crepa Personalizada (${count} ingredientes)`, precio: precioFinal });
-                actualizarCarrito();
-            }
         }
 
         function actualizarCarrito() {
@@ -118,7 +109,7 @@
             let total = 0;
 
             if (carrito.length === 0) {
-                contenedor.innerHTML = `<p class="text-gray-400 text-center">No hay productos añadidos.</p>`;
+                contenedor.innerHTML = `<p class="text-gray-400 text-center py-10">No hay productos añadidos.</p>`;
                 totalSpan.innerText = "$0.00";
                 return;
             }
@@ -126,11 +117,11 @@
             carrito.forEach((prod, index) => {
                 total += prod.precio;
                 contenedor.innerHTML += `
-                    <div class="flex justify-between items-center bg-purple-950/50 p-2 rounded">
-                        <span>${prod.name}</span>
+                    <div class="flex justify-between items-center bg-purple-950/50 p-2 rounded border border-purple-900">
+                        <span class="text-xs">${prod.nombre}</span>
                         <div class="flex items-center space-x-2">
-                            <span class="font-bold">$${prod.precio}</span>
-                            <button onclick="removerItem(${index})" class="text-red-400 text-xs font-bold">✕</button>
+                            <span class="font-bold text-xs">$${prod.precio}</span>
+                            <button onclick="removerItem(${index})" class="text-red-400 text-xs font-bold px-1">✕</button>
                         </div>
                     </div>
                 `;
