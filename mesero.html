@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB - Toma de Pedidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>.bg-morado-uva { background-color: #3b1443; }</style>
+</head>
+<body class="bg-morado-uva text-white min-h-screen flex flex-col">
+
+    <header class="bg-[#290d2f] p-4 flex justify-between items-center border-b border-purple-900">
+        <h1 class="text-xl font-black text-pink-300">DB POS - PEDIDOS</h1>
+        <a href="index.html" class="text-xs bg-purple-800 hover:bg-purple-700 px-3 py-1.5 rounded-lg">Salir</a>
+    </header>
+
+    <main class="flex-1 p-4 max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="space-y-4">
+            <h2 class="text-lg font-bold text-purple-200">Categorías</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="cargarProductos('frappes')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
+                    <div class="text-2xl mb-1">🥤</div>
+                    <div class="font-bold">Frappes (Fran)</div>
+                </button>
+                <button onclick="cargarProductos('crepas')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
+                    <div class="text-2xl mb-1">🥞</div>
+                    <div class="font-bold">Crepas (Dulce)</div>
+                </button>
+                <button onclick="cargarProductos('chamoyadas')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
+                    <div class="text-2xl mb-1">🍓</div>
+                    <div class="font-bold">Chamoyadas (Moy)</div>
+                </button>
+                <button onclick="cargarProductos('sodas')" class="bg-purple-900/80 border border-purple-500/40 p-4 rounded-xl text-center hover:bg-purple-800 transition">
+                    <div class="text-2xl mb-1">🧊</div>
+                    <div class="font-bold">Sodas (Talia)</div>
+                </button>
+            </div>
+
+            <div id="lista-productos" class="bg-[#290d2f] p-4 rounded-xl border border-purple-900 min-h-[200px]">
+                <p class="text-purple-400 text-center text-sm">Selecciona una categoría arriba.</p>
+            </div>
+        </div>
+
+        <div class="bg-[#290d2f] p-4 rounded-xl border border-purple-900 flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-pink-300 mb-3">Orden Actual</h2>
+                <div id="carrito-items" class="space-y-2 max-h-[250px] overflow-y-auto text-sm">
+                    <p class="text-gray-400 text-center">No hay productos añadidos.</p>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-purple-900">
+                <div class="flex justify-between text-xl font-black mb-4">
+                    <span>Total:</span>
+                    <span id="carrito-total">$0.00</span>
+                </div>
+                <button onclick="enviarOrden()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transition">
+                    🚀 Enviar a Cocina / Imprimir
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        let carrito = [];
+
+        function cargarProductos(categoria) {
+            let menu = getMenu();
+            let contenedor = document.getElementById('lista-productos');
+            contenedor.innerHTML = "";
+
+            if (categoria === 'crepas') {
+                contenedor.innerHTML = `
+                    <h3 class="font-bold text-pink-300 mb-2">Crepa Personalizada</h3>
+                    <p class="text-xs text-purple-200 mb-2">Básica ($50) o $70 con 2 ingredientes ($10 extra por cada adicional).</p>
+                    <button onclick="agregarCrepaCustom()" class="w-full bg-purple-700 hover:bg-purple-600 p-2 rounded-lg font-bold text-sm">Armar Crepa a mi Antojo</button>
+                `;
+                return;
+            }
+
+            let items = menu[categoria] || [];
+            items.forEach(item => {
+                contenedor.innerHTML += `
+                    <div class="flex justify-between items-center bg-purple-950 p-2.5 rounded-lg mb-2">
+                        <div>
+                            <p class="font-bold text-sm">${item.name}</p>
+                            <p class="text-xs text-purple-300">$${item.mediano || item.precio} MXN</p>
+                        </div>
+                        <button onclick="agregarAlCarrito('${item.name}', ${item.mediano || item.precio})" class="bg-pink-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-pink-500">+</button>
+                    </div>
+                `;
+            });
+        }
+
+        function agregarAlCarrito(nombre, precio) {
+            carrito.push({ nombre, precio });
+            actualizarCarrito();
+        }
+
+        function agregarCrepaCustom() {
+            let ingredientesCount = prompt("¿Cuántos ingredientes extras deseas agregar? (0 para básica, 2 para precio especial de $70):", "2");
+            if (ingredientesCount !== null) {
+                let count = parseInt(ingredientesCount) || 0;
+                let precioFinal = calcularPrecioCrepa(count);
+                carrito.push({ nombre: `Crepa Personalizada (${count} ingredientes)`, precio: precioFinal });
+                actualizarCarrito();
+            }
+        }
+
+        function actualizarCarrito() {
+            let contenedor = document.getElementById('carrito-items');
+            let totalSpan = document.getElementById('carrito-total');
+            contenedor.innerHTML = "";
+            let total = 0;
+
+            if (carrito.length === 0) {
+                contenedor.innerHTML = `<p class="text-gray-400 text-center">No hay productos añadidos.</p>`;
+                totalSpan.innerText = "$0.00";
+                return;
+            }
+
+            carrito.forEach((prod, index) => {
+                total += prod.precio;
+                contenedor.innerHTML += `
+                    <div class="flex justify-between items-center bg-purple-950/50 p-2 rounded">
+                        <span>${prod.name}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold">$${prod.precio}</span>
+                            <button onclick="removerItem(${index})" class="text-red-400 text-xs font-bold">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+            totalSpan.innerText = `$${total}.00`;
+        }
+
+        function removerItem(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        }
+
+        function enviarOrden() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+            let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
+            let nuevaOrden = {
+                id: Date.now().toString().slice(-4),
+                items: carrito,
+                total: carrito.reduce((sum, item) => sum + item.precio, 0),
+                estado: "pendiente",
+                tiempo: new Date().toLocaleTimeString()
+            };
+            orders.push(nuevaOrden);
+            localStorage.setItem("db_orders", JSON.stringify(orders));
+            alert(`¡Orden #${nuevaOrden.id} enviada a cocina con éxito!`);
+            carrito = [];
+            actualizarCarrito();
+        }
+    </script>
+</body>
+</html>

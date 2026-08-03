@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB - Dulce Bocado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+      .bg-morado-uva { background-color: #3b1443; }
+      .bg-morado-card { background-color: #521d5d; }
+    </style>
+</head>
+<body class="bg-morado-uva text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="text-center animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-black tracking-wider text-pink-300 mb-2">DULCE BOCADO</h1>
+        <p class="text-purple-200 text-sm mb-6">SISTEMA POS OFICIAL - DB</p>
+    </div>
+
+    <div class="w-full max-w-md bg-morado-card border border-purple-500/30 rounded-2xl p-6 shadow-2xl animate__animated animate__zoomIn">
+        <h2 class="text-xl font-bold text-center mb-6 text-purple-100">¿Quién ingresa al sistema?</h2>
+        
+        <div class="space-y-4">
+            <button onclick="seleccionarRol('cliente')" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 px-4 rounded-xl transition transform active:scale-95 flex items-center justify-center space-x-3 shadow-lg">
+               <span>🥤 Soy Cliente (Hacer Pedido)</span>
+            </button>
+
+            <button onclick="seleccionarRol('mesero')" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-xl transition transform active:scale-95 flex items-center justify-center space-x-3 shadow-lg">
+               <span>✍️ Soy Mesero / Colaborador</span>
+            </button>
+
+            <button onclick="seleccionarRol('cocinero')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl transition transform active:scale-95 flex items-center justify-center space-x-3 shadow-lg">
+               <span>🍳 Soy Cocinero (Comandas)</span>
+            </button>
+
+            <button onclick="verificarDueño()" class="w-full bg-gray-800 hover:bg-gray-700 text-purple-300 font-semibold py-2 px-4 rounded-xl text-sm transition border border-purple-900">
+               🔒 Acceso Exclusivo Dueño
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function seleccionarRol(rol) {
+            if(rol === 'cliente' || rol === 'mesero') {
+                window.location.href = 'mesero.html';
+            } else if(rol === 'cocinero') {
+                window.location.href = 'cocina.html';
+            }
+        }
+
+        function verificarDueño() {
+            let pass = prompt("Ingresa la contraseña de Administrador:");
+            if(pass === "DB2026*") {
+                window.location.href = 'admin.html';
+            } else if(pass !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
+    </script>
+</body>
+</html>

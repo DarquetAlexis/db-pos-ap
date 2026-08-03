@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB - Comandas Cocina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>.bg-morado-uva { background-color: #240b2a; }</style>
+</head>
+<body class="bg-morado-uva text-white min-h-screen p-4">
+    <header class="flex justify-between items-center mb-6 border-b border-purple-900 pb-3">
+        <h1 class="text-2xl font-black text-pink-400">🍳 COCINA / PREPARACIÓN - DB</h1>
+        <a href="index.html" class="bg-purple-800 px-3 py-1 rounded-lg text-xs">Regresar</a>
+    </header>
+
+    <div id="contenedor-comandas" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    </div>
+
+    <script>
+        function cargarComandas() {
+            let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
+            let contenedor = document.getElementById("contenedor-comandas");
+            contenedor.innerHTML = "";
+
+            let pendientes = orders.filter(o => o.estado === "pendiente");
+
+            if (pendientes.length === 0) {
+                contenedor.innerHTML = `<p class="text-purple-400 col-span-3 text-center py-10">No hay pedidos pendientes en este momento.</p>`;
+                return;
+            }
+
+            pendientes.forEach(order => {
+                let itemsHtml = order.items.map(i => `<li class="text-sm">• ${i.name}</li>`).join("");
+                contenedor.innerHTML += `
+                    <div class="bg-purple-950 border border-purple-600/40 rounded-xl p-4 shadow-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-black text-pink-300 text-lg">Orden #${order.id}</span>
+                                <span class="text-xs text-gray-400">${order.tiempo}</span>
+                            </div>
+                            <ul class="space-y-1 mb-4 text-purple-100">${itemsHtml}</ul>
+                        </div>
+                        <button onclick="completarOrden('${order.id}')" class="w-full bg-green-600 hover:bg-green-500 font-bold py-2 rounded-lg text-sm transition">
+                            Marcar como Listo ✔
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function completarOrden(id) {
+            let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
+            orders = orders.map(o => {
+                if(o.id === id) o.estado = "completado";
+                return o;
+            });
+            localStorage.setItem("db_orders", JSON.stringify(orders));
+            cargarComandas();
+        }
+
+        setInterval(cargarComandas, 2000);
+        cargarComandas();
+    </script>
+</body>
+</html>

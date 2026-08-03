@@ -1,0 +1,15 @@
+{
+  "name": "DB - Dulce Bocado",
+  "short_name": "DB",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#4A154B",
+  "theme_color": "#512DA8",
+  "icons": [
+    {
+      "src": "Icono Dulce Bocado.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
