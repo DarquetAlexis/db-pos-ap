@@ -1,15 +1,291 @@
 {
-  "name": "DB - Dulce Bocado",
-  "short_name": "DB",
-  "start_url": "/index.html",
-  "display": "standalone",
-  "background_color": "#4A154B",
-  "theme_color": "#512DA8",
-  "icons": [
-    {
-      "src": "Icono Dulce Bocado.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg"
-    }
-  ]
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DULCE BOCADO - POS Móvil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        .bg-morado-uva { background-color: #3b1443; }
+        .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.95); backdrop-filter: blur(6px); }
+        .marco-rosa { border: 3px solid #ec4899; border-radius: 1.5rem; box-shadow: 0 5px 15px rgba(236, 72, 153, 0.2); }
+        .marco-cyan { border: 3px solid #06b6d4; border-radius: 1.5rem; box-shadow: 0 5px 15px rgba(6, 182, 212, 0.2); }
+        .marco-amarillo { border: 3px solid #eab308; border-radius: 1.5rem; box-shadow: 0 5px 15px rgba(234, 179, 8, 0.2); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #9333ea; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-morado-uva text-white min-h-screen flex flex-col pb-28">
+
+    <!-- ENCABEZADO MÓVIL -->
+    <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-pink-500/30">
+        <div class="flex items-center space-x-2">
+            <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
+            <div>
+                <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
+                <p class="text-[9px] text-purple-300">POS Móvil</p>
+            </div>
+        </div>
+        <div class="flex space-x-2">
+            <a href="admin.html" class="bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold">⚙️ Admin</a>
+            <a href="index.html" class="bg-purple-900 text-purple-200 px-2.5 py-1.5 rounded-lg text-xs font-bold">🏠</a>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="p-3 space-y-4 max-w-md mx-auto w-full">
+        
+        <!-- FRAPPES (Con logo de Fran) -->
+        <section class="bg-dark-overlay p-3 marco-rosa space-y-3">
+            <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
+                <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                <div>
+                    <h2 class="text-xs font-black text-pink-300 uppercase">Carta de Frappes</h2>
+                    <p class="text-[9px] text-purple-300">Básicos, Premium y Especiales</p>
+                </div>
+            </div>
+
+            <!-- Básico -->
+            <div class="space-y-1.5">
+                <span class="text-[10px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center">Básico (J:$120 | G:$60 | M:$50)</span>
+                <div id="box-frappes-basicos" class="space-y-1.5"></div>
+            </div>
+            <!-- Premium -->
+            <div class="space-y-1.5 pt-1">
+                <span class="text-[10px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center">Premium (J:$150 | G:$75 | M:$70)</span>
+                <div id="box-frappes-premium" class="space-y-1.5"></div>
+            </div>
+            <!-- Especial -->
+            <div class="space-y-1.5 pt-1">
+                <span class="text-[10px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center">Especial (J:$140 | G:$70 | M:$65)</span>
+                <div id="box-frappes-especiales" class="space-y-1.5"></div>
+            </div>
+        </section>
+
+        <!-- CREPAS ESPECIALES (Con Dulce.PNG) -->
+        <section class="bg-dark-overlay p-3 marco-cyan space-y-2">
+            <div class="flex items-center space-x-2 pb-2 border-b border-cyan-500/30">
+                <img src="Dulce.PNG" alt="Dulce" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                <div>
+                    <h2 class="text-xs font-black text-cyan-300 uppercase">Crepas Especiales</h2>
+                    <p class="text-[9px] text-purple-300">Dulces y Saladas</p>
+                </div>
+            </div>
+            <div id="box-crepas-especiales" class="space-y-1.5"></div>
+        </section>
+
+        <!-- ÁRMALA A TU ANTOJO -->
+        <section class="bg-dark-overlay p-3 marco-amarillo space-y-2">
+            <div class="text-center pb-1 border-b border-amber-500/30">
+                <h2 class="text-xs font-black text-amber-300 uppercase">¡Ármala a tu Antojo!</h2>
+                <p class="text-[9px] text-gray-300">Base $50 + $10 c/u</p>
+            </div>
+            <div id="box-ingredientes" class="grid grid-cols-2 gap-1.5 text-[11px] bg-purple-950/50 p-2.5 rounded-xl border border-amber-500/20"></div>
+            <div class="flex justify-between items-center bg-purple-950 p-2 rounded-xl border border-amber-500/40 text-xs">
+                <span id="txt-precio-base" class="font-bold text-amber-300">Base: $50</span>
+                <button onclick="agregarCrepaCustom()" class="bg-amber-600 hover:bg-amber-500 font-bold px-3 py-1.5 rounded-lg text-xs">🥞 Añadir</button>
+            </div>
+        </section>
+
+        <!-- CHAMOYADAS Y SODAS -->
+        <div class="grid grid-cols-2 gap-2">
+            <section class="bg-dark-overlay p-3 marco-amarillo space-y-2">
+                <div class="flex items-center space-x-1.5 pb-1 border-b border-amber-500/30">
+                    <img src="moy.png" alt="Moy" class="w-7 h-7 object-contain">
+                    <h2 class="text-[11px] font-black text-amber-300">Chamoyadas</h2>
+                </div>
+                <div id="box-chamoyadas" class="space-y-1.5"></div>
+            </section>
+            <section class="bg-dark-overlay p-3 marco-cyan space-y-2">
+                <div class="flex items-center space-x-1.5 pb-1 border-b border-cyan-500/30">
+                    <img src="talia.png" alt="Talia" class="w-7 h-7 object-contain">
+                    <h2 class="text-[11px] font-black text-cyan-300">Sodas Italianas</h2>
+                </div>
+                <div id="box-sodas" class="space-y-1.5"></div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- CARRITO FLOTANTE COMPACTO MÓVIL (Bottom Sheet) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-pink-500/40 p-3 shadow-2xl z-50 rounded-t-2xl">
+        <div class="max-w-md mx-auto flex flex-col space-y-2">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="nombre-cliente" placeholder="Cliente..." class="bg-purple-950 border border-purple-800 rounded px-2 py-1 text-xs text-white w-28 focus:outline-none focus:border-pink-500">
+                    <span id="badge-contador" class="text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full font-bold">0 items</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-purple-300">Total:</span>
+                    <span id="total-carrito" class="text-sm font-black text-pink-300 ml-1">$0.00</span>
+                </div>
+                <button onclick="enviarOrden()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-4 py-1.5 rounded-xl text-xs shadow">Enviar 🚀</button>
+            </div>
+            <!-- Minilista deslizable si hay elementos -->
+            <div id="minilist-carrito" class="max-h-24 overflow-y-auto space-y-1 text-[11px] border-t border-purple-900/50 pt-1 hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // Cargar datos dinámicos o valores predeterminados
+        function getConfig() {
+            let defaults = {
+                frappesBasicos: [{name:"Moka",med:50,gde:60,jumbo:120},{name:"Capuchino",med:50,gde:60,jumbo:120},{name:"Fresa",med:50,gde:60,jumbo:120}],
+                frappesPremium: [{name:"Ferrero Rocher",med:70,gde:75,jumbo:150},{name:"Kinder Délice",med:70,gde:75,jumbo:150},{name:"Gansito",med:70,gde:75,jumbo:150},{name:"Bubu Lubu",med:70,gde:75,jumbo:150}],
+                frappesEspeciales: [{name:"M&M's",med:65,gde:70,jumbo:140},{name:"Oreo",med:65,gde:70,jumbo:140},{name:"Taro",med:65,gde:70,jumbo:140},{name:"Carlos V",med:65,gde:70,jumbo:140}],
+                crepasEspeciales: [{name:"Crepa Ferrero",desc:"Nutella, Nuez, Almendra, Ferrero",precio:90},{name:"Crepa Gansito",desc:"Nutella, Philadelphia, Fresa, Gansito",precio:90},{name:"Crepa Kinder Délice",desc:"Nutella, Philadelphia, Kinder Délice",precio:95},{name:"Crepa Oreo",desc:"Nutella, Lechera, Oreo",precio:85},{name:"Crepa Peperoni",desc:"Manchego, Salsa Italiana, Peperoni",precio:80},{name:"Crepa Hawaiana",desc:"Manchego, Jamón, Piña",precio:80}],
+                ingredientes: ["Nutella","Cajeta","Queso Philadelphia","Mermelada Fresa","Lechera","Salsa Italiana","Mermelada Zarzamora","Fresa","Plátano","Piña","Durazno","Nuez","Almendra","Jamón","Manchego","Peperoni","Crema Batida"],
+                chamoyadas: [{name:"PicaFresa",precio:60},{name:"Mango",precio:60}],
+                sodas: [{name:"Blue - Manzana",precio:50},{name:"Green - Manzana",precio:50},{name:"Cereza",precio:50}]
+            };
+            let saved = localStorage.getItem("db_config_dulce");
+            return saved ? JSON.parse(saved) : defaults;
+        }
+
+        let carrito = [];
+
+        function initPOS() {
+            let config = getConfig();
+
+            // Render Frappes Básicos
+            let b1 = document.getElementById('box-frappes-basicos'); b1.innerHTML = '';
+            config.frappesBasicos.forEach(i => b1.innerHTML += renderFrappeRow(i));
+
+            // Render Frappes Premium
+            let b2 = document.getElementById('box-frappes-premium'); b2.innerHTML = '';
+            config.frappesPremium.forEach(i => b2.innerHTML += renderFrappeRow(i));
+
+            // Render Frappes Especiales
+            let b3 = document.getElementById('box-frappes-especiales'); b3.innerHTML = '';
+            config.frappesEspeciales.forEach(i => b3.innerHTML += renderFrappeRow(i));
+
+            // Render Crepas Especiales
+            let b4 = document.getElementById('box-crepas-especiales'); b4.innerHTML = '';
+            config.crepasEspeciales.forEach(i => {
+                b4.innerHTML += `
+                    <div class="bg-purple-950/70 p-2 rounded-xl border border-cyan-500/20 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-white">${i.name}</span>
+                            <p class="text-[9px] text-gray-300">${i.desc}</p>
+                            <span class="text-cyan-300 font-bold">$${i.precio}</span>
+                        </div>
+                        <button onclick="addItem('${i.name}', ${i.precio})" class="bg-cyan-600 font-bold px-2.5 py-1 rounded-lg text-xs">+</button>
+                    </div>`;
+            });
+
+            // Render Ingredientes Crepa
+            let b5 = document.getElementById('box-ingredientes'); b5.innerHTML = '';
+            config.ingredientes.forEach(ing => {
+                b5.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing.trim()}" class="ing-chk accent-amber-400 w-3.5 h-3.5" onchange="calcCustom()"> <span class="truncate">${ing}</span></label>`;
+            });
+
+            // Render Chamoyadas
+            let b6 = document.getElementById('box-chamoyadas'); b6.innerHTML = '';
+            config.chamoyadas.forEach(i => {
+                b6.innerHTML += `<div class="bg-purple-950/70 p-1.5 rounded-lg border border-amber-500/20 flex justify-between items-center text-[11px]"><span>${i.name}</span><div class="flex items-center space-x-1"><span class="text-amber-300 font-bold">$${i.precio}</span><button onclick="addItem('${i.name} (Chamoyada)', ${i.precio})" class="bg-amber-600 px-1.5 py-0.5 rounded font-bold">+</button></div></div>`;
+            });
+
+            // Render Sodas
+            let b7 = document.getElementById('box-sodas'); b7.innerHTML = '';
+            config.sodas.forEach(i => {
+                b7.innerHTML += `<div class="bg-purple-950/70 p-1.5 rounded-lg border border-cyan-500/20 flex justify-between items-center text-[11px]"><span>${i.name}</span><div class="flex items-center space-x-1"><span class="text-cyan-300 font-bold">$${i.precio}</span><button onclick="addItem('${i.name} (Soda)', ${i.precio})" class="bg-cyan-600 px-1.5 py-0.5 rounded font-bold">+</button></div></div>`;
+            });
+        }
+
+        function renderFrappeRow(i) {
+            return `
+                <div class="bg-purple-950/80 p-2 rounded-xl border border-pink-500/20 flex justify-between items-center text-xs">
+                    <span class="font-bold text-white w-24 truncate">${i.name}</span>
+                    <div class="flex space-x-1">
+                        <button onclick="addItem('${i.name} (Med)', ${i.med})" class="bg-pink-600 text-[10px] px-1.5 py-0.5 rounded font-bold">M:$${i.med}</button>
+                        <button onclick="addItem('${i.name} (Gde)', ${i.gde})" class="bg-purple-700 text-[10px] px-1.5 py-0.5 rounded font-bold">G:$${i.gde}</button>
+                        <button onclick="addItem('${i.name} (Jumbo)', ${i.jumbo})" class="bg-amber-600 text-[10px] px-1.5 py-0.5 rounded font-bold">J:$${i.jumbo}</button>
+                    </div>
+                </div>`;
+        }
+
+        function calcCustom() {
+            let chks = document.querySelectorAll('.ing-chk:checked');
+            let t = 50 + (chks.length * 10);
+            document.getElementById('txt-precio-base').innerText = `Total: $${t}`;
+            return t;
+        }
+
+        function agregarCrepaCustom() {
+            let chks = document.querySelectorAll('.ing-chk:checked');
+            let extras = Array.from(chks).map(c => c.value);
+            let precio = 50 + (extras.length * 10);
+            let desc = extras.length > 0 ? `Base + ${extras.join(', ')}` : `Sencilla`;
+            carrito.push({ name: `Crepa (${desc})`, precio: precio });
+            chks.forEach(c => c.checked = false);
+            calcCustom();
+            updateCart();
+        }
+
+        function addItem(name, price) {
+            carrito.push({ name: name, precio: price });
+            updateCart();
+        }
+
+        function removeItem(idx) {
+            carrito.splice(idx, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            let badge = document.getElementById('badge-contador');
+            let totalLbl = document.getElementById('total-carrito');
+            let miniList = document.getElementById('minilist-carrito');
+            
+            let total = carrito.reduce((acc, i) => acc + i.precio, 0);
+            badge.innerText = `${carrito.length} items`;
+            totalLbl.innerText = `$${total.toFixed(2)}`;
+
+            if (carrito.length === 0) {
+                miniList.classList.add('hidden');
+                miniList.innerHTML = '';
+                return;
+            }
+
+            miniList.classList.remove('hidden');
+            miniList.innerHTML = '';
+            carrito.forEach((item, idx) => {
+                miniList.innerHTML += `
+                    <div class="flex justify-between items-center bg-purple-950 px-2 py-0.5 rounded">
+                        <span class="truncate w-44">${item.name}</span>
+                        <div class="flex items-center space-x-1">
+                            <span class="font-bold text-pink-300">$${item.precio}</span>
+                            <button onclick="removeItem(${idx})" class="text-red-400 font-bold px-1">✕</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function enviarOrden() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+            let cliente = document.getElementById('nombre-cliente').value.trim() || "Cliente General";
+            let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
+            orders.push({
+                id: Date.now().toString().slice(-4),
+                cliente: cliente,
+                items: carrito,
+                total: carrito.reduce((a, b) => a + b.precio, 0),
+                estado: "pendiente",
+                tiempo: new Date().toLocaleTimeString()
+            });
+            localStorage.setItem("db_orders", JSON.stringify(orders));
+            alert(`¡Orden enviada para ${cliente}!`);
+            carrito = [];
+            document.getElementById('nombre-cliente').value = "";
+            updateCart();
+        }
+
+        window.onload = initPOS;
+    </script>
+</body>
+</html>
