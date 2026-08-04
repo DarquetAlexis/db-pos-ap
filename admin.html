@@ -3,43 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DB - Panel de Dueño</title>
+    <title>DULCE BOCADO - Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.bg-morado-uva { background-color: #3b1443; }</style>
+    <style>
+        .bg-morado-uva { background-color: #3b1443; }
+        .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.95); backdrop-filter: blur(6px); }
+    </style>
 </head>
-<body class="bg-morado-uva text-white min-h-screen p-4">
-    <header class="flex justify-between items-center mb-6 border-b border-purple-900 pb-3">
-        <h1 class="text-2xl font-black text-pink-300">⚙️ PANEL DE CONTROL (DUEÑO)</h1>
-        <a href="index.html" class="bg-purple-800 px-3 py-1 rounded-lg text-xs">Cerrar Sesión</a>
-    </header>
+<body class="bg-morado-uva text-white min-h-screen p-3 md:p-6">
 
-    <div class="max-w-2xl mx-auto bg-[#290d2f] p-6 rounded-2xl border border-purple-900">
-        <h2 class="text-lg font-bold mb-4 text-purple-200">Ajustes Rápidos de Precios</h2>
-        <p class="text-sm text-purple-300 mb-4">Aquí puedes modificar los costos base de las crepas o ingredientes adicionales.</p>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-purple-300 mb-1">Precio Base Crepa (Sin ingredientes):</label>
-                <input type="number" id="input-base-crepa" value="50" class="w-full bg-purple-950 border border-purple-700 rounded-lg p-2 text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-purple-300 mb-1">Costo por Ingrediente Extra:</label>
-                <input type="number" id="input-extra-crepa" value="10" class="w-full bg-purple-950 border border-purple-700 rounded-lg p-2 text-white">
-            </div>
-            <button onclick="guardarCambios()" class="w-full bg-pink-600 hover:bg-pink-500 font-bold py-2.5 rounded-xl transition">
-                Guardar Configuración
-            </button>
+    <!-- LOGIN PIN -->
+    <div id="modal-pin" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div class="bg-dark-overlay border border-amber-500/50 p-6 rounded-2xl w-full max-w-xs text-center space-y-4 shadow-2xl">
+            <h2 class="text-lg font-black text-amber-300">🔐 Acceso Dueño</h2>
+            <p class="text-xs text-purple-300">Ingresa tu PIN de 4 dígitos</p>
+            <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 text-center text-xl tracking-widest text-white focus:outline-none focus:border-amber-400">
+            <button onclick="verificarPin()" class="w-full bg-amber-600 hover:bg-amber-500 font-bold py-2.5 rounded-xl text-xs">Entrar</button>
+            <a href="mesero.html" class="block text-[11px] text-gray-400 hover:text-white pt-2">← Regresar al POS</a>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- PANEL PRINCIPAL (Oculto hasta poner PIN) -->
+    <div id="panel-admin" class="max-w-4xl mx-auto space-y-6 hidden">
+        <header class="flex justify-between items-center bg-dark-overlay p-4 rounded-2xl border border-amber-500/40">
+            <div>
+                <h1 class="text-lg font-black text-amber-300">⚙️ Panel de Control</h1>
+                <p class="text-xs text-purple-300">Modifica precios, productos e ingredientes dinámicamente</p>
+            </div>
+            <div class="space-x-2">
+                <button onclick="guardarTodo()" class="bg-green-600 hover:bg-green-500 text-xs font-bold px-4 py-2 rounded-xl shadow">💾 Guardar Cambios</button>
+                <a href="mesero.html" class="bg-purple-900 hover:bg-purple-800 text-xs font-bold px-4 py-2 rounded-xl">Regresar</a>
+            </div>
+        </header>
+
+        <!-- CONFIGURACIÓN DE INGREDIENTES DE CREPAS -->
+        <div class="bg-dark-overlay p-4 rounded-2xl border border-pink-500/30 space-y-3">
+            <h2 class="text-sm font-black text-pink-300">🥞 Ingredientes para Crepas (Separados por coma)</h2>
+            <textarea id="txt-ingredientes" rows="3" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-pink-500"></textarea>
+        </div>
+
+        <!-- CONFIGURACIÓN DE PRECIOS Y PRODUCTOS (JSON Editable) -->
+        <div class="bg-dark-overlay p-4 rounded-2xl border border-cyan-500/30 space-y-3">
+            <h2 class="text-sm font-black text-cyan-300">🥤 Menú de Bebidas y Crepas Especiales (Estructura JSON)</h2>
+            <p class="text-[10px] text-gray-300">Aquí puedes cambiar nombres, descripciones y precios de Frappes, Crepas Especiales, Chamoyadas y Sodas.</p>
+            <textarea id="txt-config-json" rows="14" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 font-mono text-[11px] text-cyan-200 focus:outline-none focus:border-cyan-500"></textarea>
+        </div>
+    </div>
+
     <script>
-        function guardarCambios() {
-            let menu = getMenu();
-            menu.crepas.basePrecio = parseInt(document.getElementById('input-base-crepa').value);
-            menu.crepas.extraPorIngrediente = parseInt(document.getElementById('input-extra-crepa').value);
-            localStorage.setItem("db_dulce_bocado_data", JSON.stringify(menu));
-            alert("¡Configuración actualizada correctamente!");
+        function verificarPin() {
+            let pin = document.getElementById('input-pin').value;
+            if (pin === "1991") {
+                document.getElementById('modal-pin').style.display = 'none';
+                document.getElementById('panel-admin').classList.remove('hidden');
+                cargarDatosEnPanel();
+            } else {
+                alert("PIN incorrecto. Intenta de nuevo.");
+                document.getElementById('input-pin').value = "";
+            }
+        }
+
+        function getConfigData() {
+            let defaults = {
+                frappesBasicos: [{name:"Moka",med:50,gde:60,jumbo:120},{name:"Capuchino",med:50,gde:60,jumbo:120},{name:"Fresa",med:50,gde:60,jumbo:120}],
+                frappesPremium: [{name:"Ferrero Rocher",med:70,gde:75,jumbo:150},{name:"Kinder Délice",med:70,gde:75,jumbo:150},{name:"Gansito",med:70,gde:75,jumbo:150},{name:"Bubu Lubu",med:70,gde:75,jumbo:150}],
+                frappesEspeciales: [{name:"M&M's",med:65,gde:70,jumbo:140},{name:"Oreo",med:65,gde:70,jumbo:140},{name:"Taro",med:65,gde:70,jumbo:140},{name:"Carlos V",med:65,gde:70,jumbo:140}],
+                crepasEspeciales: [{name:"Crepa Ferrero",desc:"Nutella, Nuez, Almendra, Ferrero",precio:90},{name:"Crepa Gansito",desc:"Nutella, Philadelphia, Fresa, Gansito",precio:90},{name:"Crepa Kinder Délice",desc:"Nutella, Philadelphia, Kinder Délice",precio:95},{name:"Crepa Oreo",desc:"Nutella, Lechera, Oreo",precio:85},{name:"Crepa Peperoni",desc:"Manchego, Salsa Italiana, Peperoni",precio:80},{name:"Crepa Hawaiana",desc:"Manchego, Jamón, Piña",precio:80}],
+                ingredientes: ["Nutella","Cajeta","Queso Philadelphia","Mermelada Fresa","Lechera","Salsa Italiana","Mermelada Zarzamora","Fresa","Plátano","Piña","Durazno","Nuez","Almendra","Jamón","Manchego","Peperoni","Crema Batida"],
+                chamoyadas: [{name:"PicaFresa",precio:60},{name:"Mango",precio:60}],
+                sodas: [{name:"Blue - Manzana",precio:50},{name:"Green - Manzana",precio:50},{name:"Cereza",precio:50}]
+            };
+            let saved = localStorage.getItem("db_config_dulce");
+            return saved ? JSON.parse(saved) : defaults;
+        }
+
+        function cargarDatosEnPanel() {
+            let config = getConfigData();
+            document.getElementById('txt-ingredientes').value = config.ingredientes.join(", ");
+            
+            let copia = { ...config };
+            delete copia.ingredientes; // Separado para mayor comodidad
+            document.getElementById('txt-config-json').value = JSON.stringify(copia, null, 4);
+        }
+
+        function guardarTodo() {
+            try {
+                let ingText = document.getElementById('txt-ingredientes').value;
+                let ingredientesArray = ingText.split(",").map(i => i.trim()).filter(i => i.length > 0);
+                
+                let jsonParsed = JSON.parse(document.getElementById('txt-config-json').value);
+                jsonParsed.ingredientes = ingredientesArray;
+
+                localStorage.setItem("db_config_dulce", JSON.stringify(jsonParsed));
+                alert("¡Cambios guardados con éxito! Ya se reflejan en el POS.");
+                window.location.href = "mesero.html";
+            } catch (e) {
+                alert("Error en el formato JSON. Revisa que las llaves y comillas estén correctas.");
+            }
         }
     </script>
 </body>
