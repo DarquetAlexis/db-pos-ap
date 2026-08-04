@@ -3,142 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - Módulo Mesero</title>
+    <title>DULCE BOCADO - Carta y Pedidos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         .bg-morado-uva { background-color: #3b1443; }
-        .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.90); backdrop-filter: blur(5px); }
+        .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.92); backdrop-filter: blur(6px); }
+        /* Scroll personalizado elegante */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: #9333ea; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-morado-uva text-white min-h-screen flex flex-col p-4">
+<body class="bg-morado-uva text-white min-h-screen flex flex-col p-3 md:p-6">
 
     <!-- ENCABEZADO -->
-    <header class="flex justify-between items-center mb-6 bg-dark-overlay p-4 rounded-2xl border border-purple-900/80 shadow-lg">
-        <div>
-            <h1 class="text-xl font-black text-pink-300">🥞 Módulo de Mesero / Colaborador</h1>
-            <p class="text-xs text-purple-300">Dulce Bocado - Toma de Pedidos</p>
+    <header class="flex justify-between items-center mb-4 bg-dark-overlay p-4 rounded-2xl border border-purple-900/80 shadow-xl">
+        <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Logo" class="w-10 h-10 rounded-full border border-pink-400 object-contain">
+            <div>
+                <h1 class="text-lg font-black text-pink-300">DULCE BOCADO - Carta POS</h1>
+                <p class="text-[11px] text-purple-300">Toma de Pedidos Dinámica</p>
+            </div>
         </div>
-        <a href="index.html" class="bg-purple-900 hover:bg-purple-800 text-purple-200 px-4 py-2 rounded-xl text-xs font-bold transition">
-            🏠 Volver al Inicio
+        <a href="index.html" class="bg-purple-900 hover:bg-purple-800 text-purple-200 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+            🏠 Inicio
         </a>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full">
+    <!-- CONTENEDOR PRINCIPAL (2 Columnas: Menú Ancho / Carrito Compacto) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
         
-        <!-- MENÚ DE PRODUCTOS -->
-        <div class="md:col-span-2 space-y-4">
-            <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900/80 shadow-xl">
-                <h2 class="text-lg font-bold text-pink-300 mb-3">Menú Disponible</h2>
-                <div id="menu-container" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <!-- Se carga dinámicamente desde app.js -->
+        <!-- COLUMNA 1 & 2: CARTA DINÁMICA DEL MENÚ -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- 1. FRAPPES (Con Fran) -->
+            <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900 shadow-xl">
+                <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-purple-900">
+                    <img src="fran.png" alt="Fran" class="w-10 h-10 object-contain animate__animated animate__bounceIn">
+                    <div>
+                        <h2 class="text-base font-black text-pink-300">Frappes Artesanales</h2>
+                        <p class="text-[11px] text-purple-300">Presentado por Fran - Tamaños: Mediano, Grande y ¡Jumbo!</p>
+                    </div>
+                </div>
+                <div id="menu-frappes" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Dinámico -->
                 </div>
             </div>
+
+            <!-- 2. CREPAS (Con Dulce) -->
+            <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900 shadow-xl">
+                <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-purple-900">
+                    <img src="dulce.png" alt="Dulce" class="w-10 h-10 object-contain animate__animated animate__bounceIn">
+                    <div>
+                        <h2 class="text-base font-black text-pink-300">Crepas Dulces y Saladas</h2>
+                        <p class="text-[11px] text-purple-300">Presentado por Dulce - Armá tu crepa o elegí nuestras especiales</p>
+                    </div>
+                </div>
+
+                <!-- Creador de Crepa Base ($50 + extras) -->
+                <div class="bg-purple-950/70 p-3 rounded-xl border border-pink-500/30 mb-4">
+                    <h3 class="font-bold text-xs text-pink-200 mb-1">🥞 Arma tu Crepa Base ($50 inicial)</h3>
+                    <p class="text-[10px] text-gray-300 mb-2">Selecciona tus ingredientes extra ($10 c/u):</p>
+                    <div id="lista-ingredientes-crepa" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3 text-xs">
+                        <!-- Checkboxes de ingredientes -->
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Nutella" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Nutella</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Philadelphia" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Philadelphia</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Fresa" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Fresa</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Plátano" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Plátano</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Oreo" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Oreo</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Nuez" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Nuez</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Lechera" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Lechera</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Queso Manchego" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Manchego</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Jamón" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Jamón</span></label>
+                        <label class="flex items-center space-x-1 text-gray-200"><input type="checkbox" value="Peperoni" class="ing-crepa accent-pink-500" onchange="calcularCrepaPersonalizada()"> <span>Peperoni</span></label>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-purple-900">
+                        <span id="precio-crepa-custom" class="text-xs font-black text-pink-300">Total Crepa: $50</span>
+                        <button onclick="agregarCrepaPersonalizada()" class="bg-pink-600 hover:bg-pink-500 text-xs font-bold px-3 py-1.5 rounded-lg">Agregar a Orden</button>
+                    </div>
+                </div>
+
+                <!-- Crepas Especiales (Dulces y Saladas abajo de la básica) -->
+                <div id="menu-crepas-especiales" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+
+            <!-- 3. CHAMOYADAS (Con Moy) Y SODAS ITALIANAS (Con Talia) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Chamoyadas -->
+                <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900 shadow-xl">
+                    <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-purple-900">
+                        <img src="moy.png" alt="Moy" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                        <div>
+                            <h2 class="text-sm font-black text-pink-300">Chamoyadas</h2>
+                            <p class="text-[10px] text-purple-300">Por Moy</p>
+                        </div>
+                    </div>
+                    <div id="menu-chamoyadas" class="space-y-2"></div>
+                </div>
+
+                <!-- Sodas Italianas -->
+                <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900 shadow-xl">
+                    <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-purple-900">
+                        <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                        <div>
+                            <h2 class="text-sm font-black text-pink-300">Sodas Italianas</h2>
+                            <p class="text-[10px] text-purple-300">Por Talia</p>
+                        </div>
+                    </div>
+                    <div id="menu-sodas" class="space-y-2"></div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- CARRITO Y ORDEN -->
-        <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900/80 flex flex-col justify-between shadow-xl">
+        <!-- COLUMNA 3: CARRITO Y RESUMEN COMPACTO -->
+        <div class="bg-dark-overlay p-4 rounded-2xl border border-purple-900 shadow-xl flex flex-col justify-between h-fit sticky top-4">
             <div>
-                <h2 class="text-lg font-bold text-pink-300 mb-2">Orden Actual</h2>
+                <h2 class="text-sm font-bold text-pink-300 mb-2 border-b border-purple-900 pb-1">📋 Resumen de Orden</h2>
                 
-                <!-- CAMPO PARA NOMBRE DE CLIENTE -->
+                <!-- Nombre del Cliente -->
                 <div class="mb-3">
-                    <label class="block text-xs text-purple-300 mb-1">Nombre o Referencia del Cliente:</label>
-                    <input type="text" id="nombre-cliente" placeholder="Ej. Cliente 1 o Juan" class="w-full bg-purple-950 border border-purple-800 rounded-lg p-2 text-sm text-white focus:outline-none focus:border-pink-500">
+                    <label class="block text-[11px] text-purple-300 mb-1">Nombre o Cliente:</label>
+                    <input type="text" id="nombre-cliente" placeholder="Ej. Juan o Cliente 1" class="w-full bg-purple-950 border border-purple-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500">
                 </div>
 
-                <div id="carrito-items" class="space-y-2 max-h-[200px] overflow-y-auto text-sm">
-                    <p class="text-gray-400 text-center py-6">No hay productos añadidos.</p>
+                <!-- Lista de items en el carrito (compacta) -->
+                <div id="carrito-items" class="space-y-2 max-h-[35vh] overflow-y-auto pr-1 text-xs">
+                    <p class="text-gray-400 text-center py-6 text-xs">Aún no hay productos.</p>
                 </div>
             </div>
 
-            <div class="mt-4 pt-4 border-t border-purple-900">
-                <div class="flex justify-between text-xl font-black mb-4">
+            <!-- Total y Botón de Enviar -->
+            <div class="mt-4 pt-3 border-t border-purple-900">
+                <div class="flex justify-between text-base font-black mb-3">
                     <span>Total:</span>
                     <span id="carrito-total" class="text-pink-300">$0.00</span>
                 </div>
-                <button onclick="enviarOrden()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95">
-                    🚀 Enviar a Cocina
+                <button onclick="enviarOrden()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition transform active:scale-95">
+                    🚀 Enviar Orden a Cocina
                 </button>
             </div>
         </div>
 
     </div>
 
-    <!-- SCRIPT DE LÓGICA DE MESERO -->
-    <script src="app.js"></script>
+    <!-- SCRIPT DE GESTIÓN DE CARTA Y PEDIDO -->
     <script>
+        // Datos del Menú Actualizados con Precios Jumbo y Mazapán
+        const cartaMenu = {
+            frappes: {
+                basico: [
+                    { name: "Moka", med: 50, gde: 60, jumbo: 120 },
+                    { name: "Capuchino", med: 50, gde: 60, jumbo: 120 },
+                    { name: "Fresa", med: 50, gde: 60, jumbo: 120 }
+                ],
+                premium: [
+                    { name: "Ferrero Rocher", med: 70, gde: 75, jumbo: 150 },
+                    { name: "Kinder Délice", med: 70, gde: 75, jumbo: 150 },
+                    { name: "Gansito", med: 70, gde: 75, jumbo: 150 },
+                    { name: "Bubu Lubu", med: 70, gde: 75, jumbo: 150 }
+                ],
+                especial: [
+                    { name: "Mazapán", med: 65, gde: 70, jumbo: 140 }, // Reemplazó a M&M's
+                    { name: "Oreo", med: 65, gde: 70, jumbo: 140 },
+                    { name: "Taro", med: 65, gde: 70, jumbo: 140 },
+                    { name: "Carlos V", med: 65, gde: 70, jumbo: 140 }
+                ]
+            },
+            crepasEspeciales: [
+                { name: "Crepa Ferrero", desc: "Nutella, Nuez, Almendra, Ferrero", precio: 90 },
+                { name: "Crepa Gansito", desc: "Nutella, Philadelphia, Fresa, Gansito", precio: 90 },
+                { name: "Crepa Kinder Délice", desc: "Nutella, Philadelphia, Kinder", precio: 95 },
+                { name: "Crepa Oreo", desc: "Nutella, Lechera, Oreo", precio: 85 },
+                { name: "Crepa Peperoni (Salada)", desc: "Manchego, Salsa Italiana, Peperoni", precio: 80 },
+                { name: "Crepa Hawaiana (Salada)", desc: "Manchego, Jamón, Piña", precio: 80 }
+            ],
+            chamoyadas: [
+                { name: "PicaFresa (16 oz)", precio: 50 },
+                { name: "Mango (16 oz)", precio: 50 }
+            ],
+            sodas: [
+                { name: "Blue - Manzana (16 oz)", precio: 50 },
+                { name: "Green - Manzana (16 oz)", precio: 50 },
+                { name: "Cereza (16 oz)", precio: 50 }
+            ]
+        };
+
         let carrito = [];
 
-        function cargarMenu() {
-            const menu = getMenu();
-            const container = document.getElementById('menu-container');
-            container.innerHTML = '';
-
-            // Cargar Frappes
-            for (let categoria in menu.frappes) {
-                menu.frappes[categoria].forEach(item => {
-                    container.innerHTML += `
-                        <div class="bg-purple-950/60 p-3 rounded-xl border border-purple-900 flex justify-between items-center">
+        function cargarMenuVisual() {
+            // 1. Cargar Frappes
+            const containerFrappes = document.getElementById('menu-frappes');
+            containerFrappes.innerHTML = '';
+            for (let cat in cartaMenu.frappes) {
+                cartaMenu.frappes[cat].forEach(item => {
+                    containerFrappes.innerHTML += `
+                        <div class="bg-purple-950/60 p-2.5 rounded-xl border border-purple-900 flex flex-col justify-between">
                             <div>
-                                <h3 class="font-bold text-sm text-white">${item.name} <span class="text-xs text-purple-400">(${categoria})</span></h3>
-                                <p class="text-xs text-pink-300">Mediano: $${item.mediano} | Grande: $${item.grande}</p>
+                                <span class="text-[10px] uppercase font-bold text-purple-400">[${cat}]</span>
+                                <h3 class="font-bold text-xs text-white">${item.name}</h3>
                             </div>
-                            <div class="space-x-1">
-                                <button onclick="agregarAlCarrito('${item.name} (Mediano)', ${item.mediano})" class="bg-pink-600 hover:bg-pink-500 text-xs px-2 py-1.5 rounded-lg font-bold">Med</button>
-                                <button onclick="agregarAlCarrito('${item.name} (Grande)', ${item.grande})" class="bg-purple-700 hover:bg-purple-600 text-xs px-2 py-1.5 rounded-lg font-bold">Gde</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            // Cargar Crepas
-            for (let tipo in menu.crepas) {
-                menu.crepas[tipo].forEach(item => {
-                    container.innerHTML += `
-                        <div class="bg-purple-950/60 p-3 rounded-xl border border-purple-900 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-bold text-sm text-white">${item.name}</h3>
-                                <p class="text-[11px] text-gray-300">${item.descripcion || ''}</p>
-                                <p class="text-xs text-pink-300 font-bold">$${item.precio}</p>
-                            </div>
-                            <button onclick="agregarAlCarrito('${item.name}', ${item.precio})" class="bg-pink-600 hover:bg-pink-500 text-xs px-3 py-2 rounded-lg font-bold">Agregar</button>
-                        </div>
-                    `;
-                });
-            }
-
-            // Cargar Chamoyadas y Sodas
-            ['chamoyadas', 'sodas'].forEach(cat => {
-                if(menu[cat]) {
-                    menu[cat].forEach(item => {
-                        container.innerHTML += `
-                            <div class="bg-purple-950/60 p-3 rounded-xl border border-purple-900 flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-bold text-sm text-white">${item.name}</h3>
-                                    <p class="text-xs text-pink-300 font-bold">$${item.precio}</p>
+                            <div class="flex justify-between items-center mt-2 pt-1 border-t border-purple-900/50">
+                                <span class="text-[10px] text-pink-300">M:$${item.med} | G:$${item.gde} | J:$${item.jumbo}</span>
+                                <div class="space-x-0.5">
+                                    <button onclick="agregarItem('${item.name} (Med)', ${item.med})" class="bg-pink-600 hover:bg-pink-500 text-[10px] px-1.5 py-0.5 rounded font-bold">Med</button>
+                                    <button onclick="agregarItem('${item.name} (Gde)', ${item.gde})" class="bg-purple-700 hover:bg-purple-600 text-[10px] px-1.5 py-0.5 rounded font-bold">Gde</button>
+                                    <button onclick="agregarItem('${item.name} (Jumbo)', ${item.jumbo})" class="bg-amber-600 hover:bg-amber-500 text-[10px] px-1.5 py-0.5 rounded font-bold">Jumbo</button>
                                 </div>
-                                <button onclick="agregarAlCarrito('${item.name}', ${item.precio})" class="bg-pink-600 hover:bg-pink-500 text-xs px-3 py-2 rounded-lg font-bold">Agregar</button>
                             </div>
-                        `;
-                    });
-                }
+                        </div>
+                    `;
+                });
+            }
+
+            // 2. Cargar Crepas Especiales (Abajo de la básica)
+            const containerCrepasEsp = document.getElementById('menu-crepas-especiales');
+            containerCrepasEsp.innerHTML = '';
+            cartaMenu.crepasEspeciales.forEach(item => {
+                containerCrepasEsp.innerHTML += `
+                    <div class="bg-purple-950/60 p-2.5 rounded-xl border border-purple-900 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-xs text-white">${item.name}</h3>
+                            <p class="text-[10px] text-gray-300">${item.desc}</p>
+                            <span class="text-xs font-bold text-pink-300">$${item.precio}</span>
+                        </div>
+                        <button onclick="agregarItem('${item.name}', ${item.precio})" class="bg-pink-600 hover:bg-pink-500 text-xs px-2.5 py-1.5 rounded-lg font-bold">Agregar</button>
+                    </div>
+                `;
+            });
+
+            // 3. Cargar Chamoyadas
+            const containerChamoyadas = document.getElementById('menu-chamoyadas');
+            containerChamoyadas.innerHTML = '';
+            cartaMenu.chamoyadas.forEach(item => {
+                containerChamoyadas.innerHTML += `
+                    <div class="bg-purple-950/60 p-2 rounded-xl border border-purple-900 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-white">${item.name}</span>
+                            <span class="text-pink-300 ml-2 font-bold">$${item.precio}</span>
+                        </div>
+                        <button onclick="agregarItem('${item.name}', ${item.precio})" class="bg-pink-600 hover:bg-pink-500 text-[11px] px-2 py-1 rounded font-bold">Agregar</button>
+                    </div>
+                `;
+            });
+
+            // 4. Cargar Sodas
+            const containerSodas = document.getElementById('menu-sodas');
+            containerSodas.innerHTML = '';
+            cartaMenu.sodas.forEach(item => {
+                containerSodas.innerHTML += `
+                    <div class="bg-purple-950/60 p-2 rounded-xl border border-purple-900 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-white">${item.name}</span>
+                            <span class="text-pink-300 ml-2 font-bold">$${item.precio}</span>
+                        </div>
+                        <button onclick="agregarItem('${item.name}', ${item.precio})" class="bg-pink-600 hover:bg-pink-500 text-[11px] px-2 py-1 rounded font-bold">Agregar</button>
+                    </div>
+                `;
             });
         }
 
-        function agregarAlCarrito(nombre, precio) {
-            carrito.push({ name: nombre, precio: precio });
-            actualizarCarrito();
+        // Lógica de Crepa Personalizada ($50 + $10 por extra)
+        function calcularCrepaPersonalizada() {
+            const checkboxes = document.querySelectorAll('.ing-crepa:checked');
+            let total = 50 + (checkboxes.length * 10);
+            document.getElementById('precio-crepa-custom').innerText = `Total Crepa: $${total}`;
+            return total;
         }
 
-        function actualizarCarrito() {
+        function agregarCrepaPersonalizada() {
+            const checkboxes = document.querySelectorAll('.ing-crepa:checked');
+            let extras = Array.from(checkboxes).map(cb => cb.value);
+            let precioFinal = 50 + (extras.length * 10);
+            let descripcion = extras.length > 0 ? `Base + Extras: ${extras.join(', ')}` : `Crepa Base Sencilla`;
+            
+            carrito.push({
+                name: `Crepa Personalizada (${descripcion})`,
+                precio: precioFinal
+            });
+            
+            // Limpiar selección
+            checkboxes.forEach(cb => cb.checked = false);
+            calcularCrepaPersonalizada();
+            actualizarResumenCarrito();
+        }
+
+        function agregarItem(nombre, precio) {
+            carrito.push({ name: nombre, precio: precio });
+            actualizarResumenCarrito();
+        }
+
+        function actualizarResumenCarrito() {
             const container = document.getElementById('carrito-items');
             const totalContainer = document.getElementById('carrito-total');
             
             if (carrito.length === 0) {
-                container.innerHTML = `<p class="text-gray-400 text-center py-6">No hay productos añadidos.</p>`;
+                container.innerHTML = `<p class="text-gray-400 text-center py-6 text-xs">Aún no hay productos.</p>`;
                 totalContainer.innerText = "$0.00";
                 return;
             }
@@ -149,10 +312,10 @@
                 total += item.precio;
                 container.innerHTML += `
                     <div class="flex justify-between items-center bg-purple-950 p-2 rounded-lg border border-purple-900">
-                        <span class="text-xs">${item.name}</span>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs font-bold text-pink-300">$${item.precio}</span>
-                            <button onclick="eliminarDelCarrito(${index})" class="text-red-400 hover:text-red-300 text-xs font-bold px-1">✕</button>
+                        <span class="text-[11px] truncate w-36">${item.name}</span>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-[11px] font-bold text-pink-300">$${item.precio}</span>
+                            <button onclick="eliminarItem(${index})" class="text-red-400 hover:text-red-300 font-bold px-1 text-xs">✕</button>
                         </div>
                     </div>
                 `;
@@ -160,9 +323,9 @@
             totalContainer.innerText = `$${total.toFixed(2)}`;
         }
 
-        function eliminarDelCarrito(index) {
+        function eliminarItem(index) {
             carrito.splice(index, 1);
-            actualizarCarrito();
+            actualizarResumenCarrito();
         }
 
         function enviarOrden() {
@@ -187,13 +350,13 @@
             orders.push(nuevaOrden);
             localStorage.setItem("db_orders", JSON.stringify(orders));
             
-            alert(`¡Orden de ${nombreCliente} enviada a cocina con éxito!`);
+            alert(`¡Orden de ${nombreCliente} enviada a cocina correctamente!`);
             carrito = [];
             document.getElementById('nombre-cliente').value = "";
-            actualizarCarrito();
+            actualizarResumenCarrito();
         }
 
-        window.onload = cargarMenu;
+        window.onload = cargarMenuVisual;
     </script>
 </body>
 </html>
