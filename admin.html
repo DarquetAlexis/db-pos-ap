@@ -12,7 +12,6 @@
 </head>
 <body class="bg-morado-uva text-white min-h-screen p-3 md:p-6">
 
-    <!-- LOGIN PIN -->
     <div id="modal-pin" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
         <div class="bg-dark-overlay border border-amber-500/50 p-6 rounded-2xl w-full max-w-xs text-center space-y-4 shadow-2xl">
             <h2 class="text-lg font-black text-amber-300">🔐 Acceso Dueño</h2>
@@ -23,30 +22,36 @@
         </div>
     </div>
 
-    <!-- PANEL PRINCIPAL (Oculto hasta poner PIN) -->
     <div id="panel-admin" class="max-w-4xl mx-auto space-y-6 hidden">
         <header class="flex justify-between items-center bg-dark-overlay p-4 rounded-2xl border border-amber-500/40">
             <div>
-                <h1 class="text-lg font-black text-amber-300">⚙️ Panel de Control</h1>
-                <p class="text-xs text-purple-300">Modifica precios, productos e ingredientes dinámicamente</p>
+                <h1 class="text-lg font-black text-amber-300">⚙️ Panel de Control Sincronizado</h1>
+                <p class="text-xs text-purple-300">Modifica precios y se actualizarán en todos tus dispositivos</p>
             </div>
             <div class="space-x-2">
-                <button onclick="guardarTodo()" class="bg-green-600 hover:bg-green-500 text-xs font-bold px-4 py-2 rounded-xl shadow">💾 Guardar Cambios</button>
+                <button onclick="guardarTodo()" class="bg-green-600 hover:bg-green-500 text-xs font-bold px-4 py-2 rounded-xl shadow">💾 Guardar y Sincronizar</button>
                 <a href="mesero.html" class="bg-purple-900 hover:bg-purple-800 text-xs font-bold px-4 py-2 rounded-xl">Regresar</a>
             </div>
         </header>
 
-        <!-- CONFIGURACIÓN DE INGREDIENTES DE CREPAS -->
+        <!-- CONFIGURACIÓN DE NUBE (JSONBIN) -->
+        <div class="bg-dark-overlay p-4 rounded-2xl border border-amber-500/30 space-y-2">
+            <h2 class="text-sm font-black text-amber-300">☁️ Configuración de Conexión Nube (Solo se configura una vez por dispositivo)</h2>
+            <p class="text-[10px] text-gray-300">Crea una cuenta gratuita en <a href="https://jsonbin.io" target="_blank" class="text-pink-400 underline">jsonbin.io</a>, crea un Bin JSON y pega aquí tus credenciales para la sincronización automática.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                <input type="text" id="input-bin-id" placeholder="Bin ID (ej. 65c...)" class="bg-purple-950 border border-purple-800 rounded-lg p-2 text-xs text-white">
+                <input type="text" id="input-api-key" placeholder="Master Key (ej. $2a$10...)" class="bg-purple-950 border border-purple-800 rounded-lg p-2 text-xs text-white">
+            </div>
+        </div>
+
         <div class="bg-dark-overlay p-4 rounded-2xl border border-pink-500/30 space-y-3">
-            <h2 class="text-sm font-black text-pink-300">🥞 Ingredientes para Crepas (Separados por coma)</h2>
+            <h2 class="text-sm font-black text-pink-300">🥞 Ingredientes para Crepas</h2>
             <textarea id="txt-ingredientes" rows="3" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-pink-500"></textarea>
         </div>
 
-        <!-- CONFIGURACIÓN DE PRECIOS Y PRODUCTOS (JSON Editable) -->
         <div class="bg-dark-overlay p-4 rounded-2xl border border-cyan-500/30 space-y-3">
-            <h2 class="text-sm font-black text-cyan-300">🥤 Menú de Bebidas y Crepas Especiales (Estructura JSON)</h2>
-            <p class="text-[10px] text-gray-300">Aquí puedes cambiar nombres, descripciones y precios de Frappes, Crepas Especiales, Chamoyadas y Sodas.</p>
-            <textarea id="txt-config-json" rows="14" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 font-mono text-[11px] text-cyan-200 focus:outline-none focus:border-cyan-500"></textarea>
+            <h2 class="text-sm font-black text-cyan-300">🥤 Menú y Precios (JSON)</h2>
+            <textarea id="txt-config-json" rows="12" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 font-mono text-[11px] text-cyan-200 focus:outline-none focus:border-cyan-500"></textarea>
         </div>
     </div>
 
@@ -58,12 +63,18 @@
                 document.getElementById('panel-admin').classList.remove('hidden');
                 cargarDatosEnPanel();
             } else {
-                alert("PIN incorrecto. Intenta de nuevo.");
+                alert("PIN incorrecto.");
                 document.getElementById('input-pin').value = "";
             }
         }
 
-        function getConfigData() {
+        async function cargarDatosEnPanel() {
+            document.getElementById('input-bin-id').value = localStorage.getItem("db_bin_id") || "";
+            document.getElementById('input-api-key').value = localStorage.getItem("db_api_key") || "";
+
+            let binId = localStorage.getItem("db_bin_id");
+            let apiKey = localStorage.getItem("db_api_key");
+
             let defaults = {
                 frappesBasicos: [{name:"Moka",med:50,gde:60,jumbo:120},{name:"Capuchino",med:50,gde:60,jumbo:120},{name:"Fresa",med:50,gde:60,jumbo:120}],
                 frappesPremium: [{name:"Ferrero Rocher",med:70,gde:75,jumbo:150},{name:"Kinder Délice",med:70,gde:75,jumbo:150},{name:"Gansito",med:70,gde:75,jumbo:150},{name:"Bubu Lubu",med:70,gde:75,jumbo:150}],
@@ -73,32 +84,57 @@
                 chamoyadas: [{name:"PicaFresa",precio:60},{name:"Mango",precio:60}],
                 sodas: [{name:"Blue - Manzana",precio:50},{name:"Green - Manzana",precio:50},{name:"Cereza",precio:50}]
             };
-            let saved = localStorage.getItem("db_config_dulce");
-            return saved ? JSON.parse(saved) : defaults;
-        }
 
-        function cargarDatosEnPanel() {
-            let config = getConfigData();
+            let config = defaults;
+            if (binId && apiKey && binId !== "DEFAULT") {
+                try {
+                    let res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                        headers: { 'X-Master-Key': apiKey }
+                    });
+                    let data = await res.json();
+                    config = data.record;
+                } catch(e) {}
+            }
+
             document.getElementById('txt-ingredientes').value = config.ingredientes.join(", ");
-            
             let copia = { ...config };
-            delete copia.ingredientes; // Separado para mayor comodidad
+            delete copia.ingredientes;
             document.getElementById('txt-config-json').value = JSON.stringify(copia, null, 4);
         }
 
-        function guardarTodo() {
+        async function guardarTodo() {
             try {
+                let binId = document.getElementById('input-bin-id').value.trim();
+                let apiKey = document.getElementById('input-api-key').value.trim();
+
+                localStorage.setItem("db_bin_id", binId);
+                localStorage.setItem("db_api_key", apiKey);
+
                 let ingText = document.getElementById('txt-ingredientes').value;
                 let ingredientesArray = ingText.split(",").map(i => i.trim()).filter(i => i.length > 0);
                 
                 let jsonParsed = JSON.parse(document.getElementById('txt-config-json').value);
                 jsonParsed.ingredientes = ingredientesArray;
 
+                // Guardar localmente también por respaldo
                 localStorage.setItem("db_config_dulce", JSON.stringify(jsonParsed));
-                alert("¡Cambios guardados con éxito! Ya se reflejan en el POS.");
+
+                // Sincronizar a la nube si hay credenciales
+                if (binId && apiKey) {
+                    await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': apiKey
+                        },
+                        body: JSON.stringify(jsonParsed)
+                    });
+                }
+
+                alert("¡Cambios guardados y sincronizados en la nube con éxito!");
                 window.location.href = "mesero.html";
             } catch (e) {
-                alert("Error en el formato JSON. Revisa que las llaves y comillas estén correctas.");
+                alert("Error al guardar. Revisa el formato JSON o tus claves de la nube.");
             }
         }
     </script>
