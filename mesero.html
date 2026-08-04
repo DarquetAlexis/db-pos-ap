@@ -3,24 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - Carta Oficial de Crepas</title>
+    <title>DULCE BOCADO - Carta Oficial POS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         .bg-morado-uva { background-color: #3b1443; }
         .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.94); backdrop-filter: blur(6px); }
-        /* Marcos estilo Dulce Bocado */
-        .marco-rosa {
-            border: 4px solid #ec4899;
-            border-radius: 2rem;
-            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.3);
-        }
-        .marco-cyan {
-            border: 4px solid #06b6d4;
-            border-radius: 2rem;
-            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
-        }
-        /* Scroll personalizado */
+        .marco-rosa { border: 4px solid #ec4899; border-radius: 2rem; box-shadow: 0 10px 25px rgba(236, 72, 153, 0.3); }
+        .marco-cyan { border: 4px solid #06b6d4; border-radius: 2rem; box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3); }
+        .marco-amarillo { border: 4px solid #eab308; border-radius: 2rem; box-shadow: 0 10px 25px rgba(234, 179, 8, 0.3); }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         ::-webkit-scrollbar-thumb { background: #9333ea; border-radius: 10px; }
@@ -34,7 +25,7 @@
             <img src="logo.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-pink-400 object-contain shadow-md">
             <div>
                 <h1 class="text-xl font-black text-pink-300 tracking-wider">DULCE BOCADO</h1>
-                <p class="text-xs text-purple-300 uppercase tracking-widest">Módulo de Pedidos - Carta Oficial</p>
+                <p class="text-xs text-purple-300 uppercase tracking-widest">Sistema de Pedidos - Cartas Oficiales</p>
             </div>
         </div>
         <a href="index.html" class="bg-purple-900 hover:bg-purple-800 text-purple-200 px-4 py-2 rounded-xl text-xs font-bold transition shadow">
@@ -42,82 +33,106 @@
         </a>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL (2 Columnas: Carta y Resumen) -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
         
-        <!-- COLUMNA 1 & 2: LA CARTA DE CREPAS Y PRODUCTOS -->
+        <!-- COLUMNA 1 & 2: CARTAS OFICIALES -->
         <div class="lg:col-span-2 space-y-6">
             
-            <!-- SECCIÓN 1: CREPAS ESPECIALES (Dulces y Saladas en Marco Rosa) -->
-            <div class="bg-dark-overlay p-5 marco-rosa">
-                <div class="text-center mb-5">
-                    <h2 class="text-2xl font-black text-pink-300 tracking-wide uppercase">¡Especiales Dulces y Saladas!</h2>
-                    <p class="text-xs text-purple-300">Recetas exclusivas de la casa</p>
+            <!-- 1. CARTA DE FRAPPES (Réplica exacta de tu imagen) -->
+            <div class="bg-dark-overlay p-5 marco-rosa space-y-4">
+                <div class="text-center">
+                    <h2 class="text-2xl font-black text-pink-300 tracking-wide uppercase">🥤 Carta de Frappes</h2>
+                    <p class="text-xs text-purple-300">Presentado por Fran</p>
                 </div>
 
-                <div id="menu-crepas-especiales" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Se carga dinámicamente -->
+                <!-- Básico -->
+                <div class="bg-purple-950/70 p-3 rounded-2xl border border-pink-500/30">
+                    <h3 class="font-black text-sm text-pink-200 mb-2 uppercase text-center bg-pink-950/60 py-1 rounded-lg">Frappé Básico (Jumbo $120 | Gde $60 | Med $50)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="frappes-basicos"></div>
+                </div>
+
+                <!-- Premium -->
+                <div class="bg-purple-950/70 p-3 rounded-2xl border border-pink-500/30">
+                    <h3 class="font-black text-sm text-pink-200 mb-2 uppercase text-center bg-pink-950/60 py-1 rounded-lg">Frappé Premium (Jumbo $150 | Gde $75 | Med $70)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2" id="frappes-premium"></div>
+                </div>
+
+                <!-- Especial -->
+                <div class="bg-purple-950/70 p-3 rounded-2xl border border-pink-500/30">
+                    <h3 class="font-black text-sm text-pink-200 mb-2 uppercase text-center bg-pink-950/60 py-1 rounded-lg">Frappé Especial (Jumbo $140 | Gde $70 | Med $65)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2" id="frappes-especiales"></div>
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: ÁRMALA A TU ANTOJO (Marco Cyan tal cual tu diseño) -->
+            <!-- 2. CARTA DE CREPAS (Con Dulce.PNG y Crepas Especiales) -->
             <div class="bg-dark-overlay p-5 marco-cyan">
+                <div class="flex items-center space-x-3 mb-4 pb-2 border-b border-cyan-500/30">
+                    <img src="Dulce.PNG" alt="Dulce" class="w-12 h-12 object-contain animate__animated animate__bounceIn">
+                    <div>
+                        <h2 class="text-xl font-black text-cyan-300 uppercase tracking-wide">Crepas Dulces y Saladas</h2>
+                        <p class="text-xs text-purple-300">Recetas Especiales</p>
+                    </div>
+                </div>
+
+                <div id="menu-crepas-especiales" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+            </div>
+
+            <!-- 3. ÁRMALA A TU ANTOJO (Crepa Base e Ingredientes) -->
+            <div class="bg-dark-overlay p-5 marco-amarillo">
                 <div class="text-center mb-4">
-                    <h2 class="text-xl md:text-2xl font-black text-cyan-300 tracking-wider uppercase">¡¡ÁRMALA A TU ANTOJO!!</h2>
-                    <h3 class="text-lg font-bold text-pink-300 uppercase tracking-wide">¡¡INGREDIENTES!!</h3>
-                    <p class="text-[11px] text-gray-300 mt-1">Crepa base incluye selección a medida ($50 inicial + $10 por ingrediente extra / Chocolates de marca $15)</p>
+                    <h2 class="text-xl font-black text-amber-300 uppercase tracking-wider">¡¡ÁRMALA A TU ANTOJO!!</h2>
+                    <h3 class="text-sm font-bold text-pink-300 uppercase">¡¡INGREDIENTES!!</h3>
+                    <p class="text-[11px] text-gray-300 mt-1">Crepa Base $50 | Cada Ingrediente Extra: $10 | Chocolates de marca: $15</p>
                 </div>
 
-                <!-- Lista completa de ingredientes de tu carta oficial -->
-                <div id="lista-ingredientes-oficiales" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-5 text-xs bg-purple-950/60 p-4 rounded-xl border border-cyan-500/30">
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Nutella" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Nutella</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Cajeta" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Cajeta</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Queso Philadelphia" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Queso Philadelphia</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Mermelada de Fresa" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Mermelada Fresa</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Lechera" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Lechera</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Salsa Italiana" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Salsa Italiana</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Mermelada de Zarzamora" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Mermelada Zarzamora</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Fresa" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Fresa</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Plátano" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Plátano</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Piña" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Piña</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Durazno" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Durazno</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Nuez" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Nuez</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Almendra" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Almendra</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Jamón" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Jamón</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Manchego" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Manchego</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Peperoni" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Peperoni</span></label>
-                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Crema Batida" class="ing-crepa accent-cyan-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Crema Batida</span></label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-4 text-xs bg-purple-950/60 p-4 rounded-xl border border-amber-500/30">
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Nutella" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Nutella</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Cajeta" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Cajeta</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Queso Philadelphia" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Philadelphia</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Mermelada de Fresa" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Mermelada Fresa</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Lechera" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Lechera</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Salsa Italiana" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Salsa Italiana</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Mermelada de Zarzamora" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Mermelada Zarzamora</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Fresa" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Fresa</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Plátano" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Plátano</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Piña" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Piña</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Durazno" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Durazno</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Nuez" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Nuez</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Almendra" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Almendra</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Jamón" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Jamón</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Manchego" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Manchego</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Peperoni" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Peperoni</span></label>
+                    <label class="flex items-center space-x-2 text-gray-200 cursor-pointer"><input type="checkbox" value="Crema Batida" class="ing-crepa accent-amber-400 w-4 h-4" onchange="calcularCrepaPersonalizada()"> <span>Crema Batida</span></label>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-center bg-purple-950/90 p-3 rounded-xl border border-cyan-500/50 gap-3">
-                    <span id="precio-crepa-custom" class="text-sm font-black text-cyan-300">Total Crepa Base: $50.00</span>
-                    <button onclick="agregarCrepaPersonalizada()" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition transform active:scale-95">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-purple-950/90 p-3 rounded-xl border border-amber-500/50 gap-3">
+                    <span id="precio-crepa-custom" class="text-sm font-black text-amber-300">Total Crepa Base: $50.00</span>
+                    <button onclick="agregarCrepaPersonalizada()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition transform active:scale-95">
                         🥞 Añadir Crepa Personalizada
                     </button>
                 </div>
             </div>
 
-            <!-- SECCIÓN 3: FRAPPES, SODAS Y CHAMOYADAS (Con personajes guías) -->
+            <!-- 4. CHAMOYADAS Y SODAS (Moy y Talia) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Frappes (Fran) -->
-                <div class="bg-dark-overlay p-4 marco-rosa">
-                    <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-pink-500/30">
-                        <img src="fran.png" alt="Fran" class="w-10 h-10 object-contain animate__animated animate__bounceIn">
+                <div class="bg-dark-overlay p-4 marco-amarillo">
+                    <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-amber-500/30">
+                        <img src="moy.png" alt="Moy" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
                         <div>
-                            <h2 class="text-sm font-black text-pink-300">Frappes (Fran)</h2>
-                            <p class="text-[10px] text-purple-300">Med, Gde y Jumbo</p>
+                            <h2 class="text-sm font-black text-amber-300">Chamoyadas (Moy)</h2>
+                            <p class="text-[10px] text-purple-300">Sabor 16 oz - $60</p>
                         </div>
                     </div>
-                    <div id="menu-frappes" class="space-y-2"></div>
+                    <div id="menu-chamoyadas" class="space-y-2"></div>
                 </div>
 
-                <!-- Sodas Italianas (Talia) -->
                 <div class="bg-dark-overlay p-4 marco-cyan">
                     <div class="flex items-center space-x-3 mb-3 pb-2 border-b border-cyan-500/30">
-                        <img src="talia.png" alt="Talia" class="w-10 h-10 object-contain animate__animated animate__bounceIn">
+                        <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
                         <div>
                             <h2 class="text-sm font-black text-cyan-300">Sodas Italianas (Talia)</h2>
-                            <p class="text-[10px] text-purple-300">Refrescantes 16 oz</p>
+                            <p class="text-[10px] text-purple-300">Refrescantes 16 oz - $50</p>
                         </div>
                     </div>
                     <div id="menu-sodas" class="space-y-2"></div>
@@ -154,9 +169,26 @@
 
     </div>
 
-    <!-- SCRIPT DE CARTA Y CÁLCULOS -->
+    <!-- SCRIPT DE CARTA Y LÓGICA -->
     <script>
-        const cartaOficial = {
+        const cartaCompleta = {
+            frappesBasicos: [
+                { name: "Moka", med: 50, gde: 60, jumbo: 120 },
+                { name: "Capuchino", med: 50, gde: 60, jumbo: 120 },
+                { name: "Fresa", med: 50, gde: 60, jumbo: 120 }
+            ],
+            frappesPremium: [
+                { name: "Ferrero Rocher", med: 70, gde: 75, jumbo: 150 },
+                { name: "Kinder Délice", med: 70, gde: 75, jumbo: 150 },
+                { name: "Gansito", med: 70, gde: 75, jumbo: 150 },
+                { name: "Bubu Lubu", med: 70, gde: 75, jumbo: 150 }
+            ],
+            frappesEspeciales: [
+                { name: "M&M's", med: 65, gde: 70, jumbo: 140 },
+                { name: "Oreo", med: 65, gde: 70, jumbo: 140 },
+                { name: "Taro", med: 65, gde: 70, jumbo: 140 },
+                { name: "Carlos V", med: 65, gde: 70, jumbo: 140 }
+            ],
             crepasEspeciales: [
                 { name: "Crepa Ferrero", desc: "Nutella, Nuez, Almendra, Ferrero", precio: 90 },
                 { name: "Crepa Gansito", desc: "Nutella, Philadelphia, Fresa, Gansito", precio: 90 },
@@ -165,12 +197,9 @@
                 { name: "Crepa Peperoni (Salada)", desc: "Manchego, Salsa Italiana, Peperoni", precio: 80 },
                 { name: "Crepa Hawaiana (Salada)", desc: "Manchego, Jamón, Piña", precio: 80 }
             ],
-            frappes: [
-                { name: "Moka", med: 50, gde: 60, jumbo: 120 },
-                { name: "Capuchino", med: 50, gde: 60, jumbo: 120 },
-                { name: "Ferrero Rocher", med: 70, gde: 75, jumbo: 150 },
-                { name: "Kinder Délice", med: 70, gde: 75, jumbo: 150 },
-                { name: "Mazapán", med: 65, gde: 70, jumbo: 140 }
+            chamoyadas: [
+                { name: "PicaFresa (16 oz)", precio: 60 },
+                { name: "Mango (16 oz)", precio: 60 }
             ],
             sodas: [
                 { name: "Blue - Manzana (16 oz)", precio: 50 },
@@ -181,47 +210,64 @@
 
         let carrito = [];
 
-        function cargarMenuCarta() {
-            // 1. Crepas Especiales
-            const containerCrepas = document.getElementById('menu-crepas-especiales');
-            containerCrepas.innerHTML = '';
-            cartaOficial.crepasEspeciales.forEach(item => {
-                containerCrepas.innerHTML += `
-                    <div class="bg-purple-950/70 p-3 rounded-xl border border-pink-500/30 flex justify-between items-center">
+        function renderizarCarta() {
+            // Renderizar Frappes Básicos
+            const cBasicos = document.getElementById('frappes-basicos');
+            cBasicos.innerHTML = '';
+            cartaCompleta.frappesBasicos.forEach(item => {
+                cBasicos.innerHTML += renderFrappeHTML(item);
+            });
+
+            // Renderizar Frappes Premium
+            const cPremium = document.getElementById('frappes-premium');
+            cPremium.innerHTML = '';
+            cartaCompleta.frappesPremium.forEach(item => {
+                cPremium.innerHTML += renderFrappeHTML(item);
+            });
+
+            // Renderizar Frappes Especiales
+            const cEspeciales = document.getElementById('frappes-especiales');
+            cEspeciales.innerHTML = '';
+            cartaCompleta.frappesEspeciales.forEach(item => {
+                cEspeciales.innerHTML += renderFrappeHTML(item);
+            });
+
+            // Renderizar Crepas Especiales
+            const cCrepas = document.getElementById('menu-crepas-especiales');
+            cCrepas.innerHTML = '';
+            cartaCompleta.crepasEspeciales.forEach(item => {
+                cCrepas.innerHTML += `
+                    <div class="bg-purple-950/70 p-3 rounded-xl border border-cyan-500/30 flex justify-between items-center text-xs">
                         <div>
-                            <h3 class="font-bold text-xs text-white">${item.name}</h3>
+                            <span class="font-bold text-white">${item.name}</span>
                             <p class="text-[10px] text-gray-300">${item.desc}</p>
-                            <span class="text-xs font-black text-pink-300">$${item.precio}</span>
+                            <span class="text-cyan-300 font-bold">$${item.precio}</span>
                         </div>
-                        <button onclick="agregarItem('${item.name}', ${item.precio})" class="bg-pink-600 hover:bg-pink-500 text-xs font-bold px-3 py-1.5 rounded-lg">Agregar</button>
+                        <button onclick="agregarItem('${item.name}', ${item.precio})" class="bg-cyan-600 hover:bg-cyan-500 text-xs px-2.5 py-1.5 rounded-lg font-bold">Agregar</button>
                     </div>
                 `;
             });
 
-            // 2. Frappes
-            const containerFrappes = document.getElementById('menu-frappes');
-            containerFrappes.innerHTML = '';
-            cartaOficial.frappes.forEach(item => {
-                containerFrappes.innerHTML += `
-                    <div class="bg-purple-950/70 p-2.5 rounded-xl border border-pink-500/30 flex flex-col justify-between text-xs">
-                        <span class="font-bold text-white">${item.name}</span>
-                        <div class="flex justify-between items-center mt-2 pt-1 border-t border-purple-900/50">
-                            <span class="text-[10px] text-pink-300">M:$${item.med} | G:$${item.gde} | J:$${item.jumbo}</span>
-                            <div class="space-x-1">
-                                <button onclick="agregarItem('${item.name} (Med)', ${item.med})" class="bg-pink-600 hover:bg-pink-500 text-[10px] px-1.5 py-0.5 rounded font-bold">Med</button>
-                                <button onclick="agregarItem('${item.name} (Gde)', ${item.gde})" class="bg-purple-700 hover:bg-purple-600 text-[10px] px-1.5 py-0.5 rounded font-bold">Gde</button>
-                                <button onclick="agregarItem('${item.name} (Jumbo)', ${item.jumbo})" class="bg-amber-600 hover:bg-amber-500 text-[10px] px-1.5 py-0.5 rounded font-bold">Jumbo</button>
-                            </div>
+            // Renderizar Chamoyadas
+            const cChamoyadas = document.getElementById('menu-chamoyadas');
+            cChamoyadas.innerHTML = '';
+            cartaCompleta.chamoyadas.forEach(item => {
+                cChamoyadas.innerHTML += `
+                    <div class="bg-purple-950/70 p-2.5 rounded-xl border border-amber-500/30 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-white">${item.name}</span>
+                            <span class="text-amber-300 ml-2 font-bold">$${item.precio}</span>
                         </div>
+                        <button onclick="agregarItem('${item.name}', ${item.precio})" class="bg-amber-600 hover:bg-amber-500 text-[11px] px-2.5 py-1 rounded font-bold">Agregar</button>
                     </div>
                 `;
             });
 
-            // 3. Sodas
-            const containerSodas = document.getElementById('menu-sodas');
-            containerSodas.innerHTML = '';
-            cartaOficial.sodas.forEach(item => {
-                containerSodas.innerHTML += `
+            // Renderizar Sodas
+            const cSodas = document.getElementById('menu-sodas');
+            cSodas.innerHTML = '';
+            cartaCompleta.sodas.forEach(item => {
+                cSodas.innerHTML += `
                     <div class="bg-purple-950/70 p-2.5 rounded-xl border border-cyan-500/30 flex justify-between items-center text-xs">
                         <div>
                             <span class="font-bold text-white">${item.name}</span>
@@ -233,7 +279,22 @@
             });
         }
 
-        // Cálculo dinámico de Crepa Base ($50 + $10 por ingrediente)
+        function renderFrappeHTML(item) {
+            return `
+                <div class="bg-purple-950/90 p-2.5 rounded-xl border border-pink-500/20 flex flex-col justify-between text-xs">
+                    <span class="font-bold text-white">${item.name}</span>
+                    <div class="flex justify-between items-center mt-2 pt-1 border-t border-purple-900">
+                        <span class="text-[10px] text-pink-300">M:$${item.med} | G:$${item.gde} | J:$${item.jumbo}</span>
+                        <div class="space-x-0.5">
+                            <button onclick="agregarItem('${item.name} (Med)', ${item.med})" class="bg-pink-600 hover:bg-pink-500 text-[10px] px-1.5 py-0.5 rounded font-bold">Med</button>
+                            <button onclick="agregarItem('${item.name} (Gde)', ${item.gde})" class="bg-purple-700 hover:bg-purple-600 text-[10px] px-1.5 py-0.5 rounded font-bold">Gde</button>
+                            <button onclick="agregarItem('${item.name} (Jumbo)', ${item.jumbo})" class="bg-amber-600 hover:bg-amber-500 text-[10px] px-1.5 py-0.5 rounded font-bold">Jumbo</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function calcularCrepaPersonalizada() {
             const checkboxes = document.querySelectorAll('.ing-crepa:checked');
             let total = 50 + (checkboxes.length * 10);
@@ -247,11 +308,7 @@
             let precioFinal = 50 + (extras.length * 10);
             let descripcion = extras.length > 0 ? `Base + ${extras.join(', ')}` : `Crepa Base Sencilla`;
             
-            carrito.push({
-                name: `Crepa Personalizada (${descripcion})`,
-                precio: precioFinal
-            });
-            
+            carrito.push({ name: `Crepa Personalizada (${descripcion})`, precio: precioFinal });
             checkboxes.forEach(cb => cb.checked = false);
             calcularCrepaPersonalizada();
             actualizarResumenCarrito();
@@ -322,7 +379,7 @@
             actualizarResumenCarrito();
         }
 
-        window.onload = cargarMenuCarta;
+        window.onload = renderizarCarta;
     </script>
 </body>
 </html>
