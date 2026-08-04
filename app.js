@@ -3,21 +3,21 @@ const DB_STORAGE_KEY = "db_dulce_bocado_data";
 const initialMenu = {
   frappes: {
     basico: [
-      { name: "Moka", mediano: 50, grande: 60 },
-      { name: "Capuchino", mediano: 50, grande: 60 },
-      { name: "Fresa", mediano: 50, grande: 60 }
+      { name: "Moka", mediano: 50, grande: 60, Jumbo 120 },
+      { name: "Capuchino", mediano: 50, grande: 60, Jumbo 120 },
+      { name: "Fresa", mediano: 50, grande: 60, Jumbo 120 }
     ],
     premium: [
-      { name: "Ferrero Rocher", mediano: 70, grande: 75 },
-      { name: "Kinder Délice", mediano: 70, grande: 75 },
-      { name: "Gansito", mediano: 70, grande: 75 },
-      { name: "Bubu Lubu", mediano: 70, grande: 75 }
+      { name: "Ferrero Rocher", mediano: 70, grande: 75, Jumbo 150 },
+      { name: "Kinder Délice", mediano: 70, grande: 75, Jumbo 150 },
+      { name: "Gansito", mediano: 70, grande: 75, Jumbo 150 },
+      { name: "Bubu Lubu", mediano: 70, grande: 75, Jumbo 150 }
     ],
     especial: [
-      { name: "M&M's", mediano: 65, grande: 70 },
-      { name: "Oreo", mediano: 65, grande: 70 },
-      { name: "Taro", mediano: 65, grande: 70 },
-      { name: "Carlos V", mediano: 65, grande: 70 }
+      { name: "Mazapan", mediano: 65, grande: 70, Jumbo 140 },
+      { name: "Oreo", mediano: 65, grande: 70, Jumbo 140 },
+      { name: "Taro", mediano: 65, grande: 70, Jumbo 140 },
+      { name: "Carlos V", mediano: 65, grande: 70, Jumbo 140 }
     ]
   },
   crepas: {
