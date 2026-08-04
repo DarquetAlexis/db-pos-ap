@@ -7,37 +7,34 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        body {
-            background-color: #3b1443;
-            background-image: url('patron.png');
-            background-repeat: repeat;
-            background-blend-mode: overlay;
-        }
+        body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
         .bg-dark-overlay { background-color: rgba(59, 20, 67, 0.94); backdrop-filter: blur(8px); }
         .marco-lila { border: 2px solid #d946ef; border-radius: 1.25rem; box-shadow: 0 4px 20px rgba(217, 70, 239, 0.25); }
-        .marco-crepa { border: 2px solid #fbbf24; border-radius: 1.25rem; box-shadow: 0 4px 20px rgba(251, 191, 36, 0.25); }
+        .marco-oferta { border: 2px solid #10b981; border-radius: 1.25rem; box-shadow: 0 0 15px #10b981, inset 0 0 10px #10b981; }
         
-        /* Animación Neón / Aureola */
         @keyframes neonGlow {
             0% { box-shadow: 0 0 5px #ec4899, 0 0 10px #ec4899, 0 0 15px #d946ef; }
             50% { box-shadow: 0 0 15px #f472b6, 0 0 25px #c084fc, 0 0 35px #a855f7; }
             100% { box-shadow: 0 0 5px #ec4899, 0 0 10px #ec4899, 0 0 15px #d946ef; }
         }
-        .neon-aura {
-            animation: neonGlow 2.5s infinite alternate;
-            transition: all 0.3s ease;
-        }
-        .neon-aura:hover {
-            transform: scale(1.03);
-        }
+        .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
+        .neon-aura:hover { transform: scale(1.03); }
+        
+        /* Toast de éxito */
+        #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col pb-28">
+<body class="text-white min-h-screen flex flex-col pb-32">
+
+    <!-- Toast / Mensaje Flotante -->
+    <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
+        ✨ ¡Agregado con Éxito!
+    </div>
 
     <!-- ENCABEZADO -->
     <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-purple-500/30 shadow-md">
         <div class="flex items-center space-x-2">
-            <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
+            <img id="logo-header" src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
             <div>
                 <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
                 <p class="text-[9px] text-purple-300">POS Móvil Dinámico</p>
@@ -49,13 +46,32 @@
         </div>
     </header>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
         
-        <!-- 1. CREPAS: ÁRMALA A TU ANTOJO (Colocado al principio por indicación) -->
-        <section class="bg-dark-overlay p-3 marco-crepa space-y-2">
+        <!-- SECCIÓN OFERTAS ESTRELLA -->
+        <section class="bg-dark-overlay p-3 marco-oferta space-y-2 animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
+            <div class="flex items-center justify-center space-x-2 pb-1 border-b border-green-500/30">
+                <h2 class="text-sm font-black text-green-400 uppercase tracking-widest">🔥 OFERTAS ESPECIALES 🔥</h2>
+            </div>
+            <div class="flex items-center justify-between bg-green-950/50 p-2 rounded-xl border border-green-500/40">
+                <div class="flex items-center space-x-3">
+                    <img id="img-oferta-cap" src="Capuchino.png" alt="Capuchino" class="w-12 h-12 object-contain drop-shadow-md">
+                    <div>
+                        <h3 class="text-xs font-black text-white">Frappe Capuchino 10oz</h3>
+                        <p class="text-[10px] text-green-300">¡El más pedido!</p>
+                    </div>
+                </div>
+                <div class="flex flex-col space-y-1">
+                    <button onclick="agregarConAnimacion('Frappe Cap. 10oz (1)', 30, 'img-oferta-cap')" class="bg-green-600 hover:bg-green-500 font-bold px-3 py-1 rounded-lg text-xs shadow">1 x $30</button>
+                    <button onclick="agregarConAnimacion('Promo Frappe Cap. 10oz (2)', 50, 'img-oferta-cap')" class="bg-amber-500 hover:bg-amber-400 font-bold px-3 py-1 rounded-lg text-xs shadow text-gray-900">2 x $50</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CREPAS: ÁRMALA A TU ANTOJO -->
+        <section class="bg-dark-overlay p-3 border-2 border-amber-500 rounded-xl shadow-[0_0_15px_rgba(251,191,36,0.3)] space-y-2">
             <div class="flex items-center space-x-2 pb-1.5 border-b border-amber-500/30">
-                <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain">
+                <img id="img-crepa-base" src="Crepa Basica.png" alt="Crepa" class="w-10 h-10 object-contain">
                 <div>
                     <h2 class="text-xs font-black text-amber-300 uppercase">🥞 Ármala a tu Antojo</h2>
                     <p class="text-[9px] text-gray-300">Base $50 + $10 c/u ingrediente</p>
@@ -68,57 +84,38 @@
             </div>
         </section>
 
-        <!-- 2. CARTA DE FRAPPES (En 2ª posición con imágenes, marca y efecto neón) -->
+        <!-- CARTA DE FRAPPES -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-3">
-            <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
-                <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
-                <div>
-                    <h2 class="text-xs font-black text-pink-300 uppercase">Carta de Frappes</h2>
-                    <p class="text-[9px] text-purple-300">Toca cualquier frappé para elegir tamaño</p>
-                </div>
-            </div>
-
-            <!-- Básico -->
-            <div class="space-y-1.5">
-                <span class="text-[10px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center">Básicos (M:$50 | G:$60 | J:$120)</span>
-                <div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div>
-            </div>
-            <!-- Premium -->
-            <div class="space-y-1.5 pt-1">
-                <span class="text-[10px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center">Premium (M:$70 | G:$75 | J:$150)</span>
-                <div id="box-frappes-premium" class="grid grid-cols-1 gap-2"></div>
-            </div>
-            <!-- Especial -->
-            <div class="space-y-1.5 pt-1">
-                <span class="text-[10px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center">Especiales (M:$65 | G:$70 | J:$140)</span>
-                <div id="box-frappes-especiales" class="grid grid-cols-1 gap-2"></div>
-            </div>
+            <h2 class="text-xs font-black text-pink-300 uppercase pb-1 border-b border-pink-500/30 text-center">🥤 Carta de Frappes</h2>
+            <div class="space-y-1.5"><div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div></div>
+            <div class="space-y-1.5 pt-1"><div id="box-frappes-premium" class="grid grid-cols-1 gap-2"></div></div>
+            <div class="space-y-1.5 pt-1"><div id="box-frappes-especiales" class="grid grid-cols-1 gap-2"></div></div>
         </section>
 
-        <!-- CREPAS ESPECIALES Y OTRAS BEBIDAS -->
+        <!-- CREPAS ESPECIALES -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-            <h2 class="text-xs font-black text-pink-300 uppercase pb-1 border-b border-pink-500/30">Crepas Especiales</h2>
-            <div id="box-crepas-especiales" class="space-y-1.5"></div>
+            <h2 class="text-xs font-black text-pink-300 uppercase pb-1 border-b border-pink-500/30 text-center">🥞 Crepas Especiales</h2>
+            <div id="box-crepas-especiales" class="space-y-2"></div>
         </section>
 
+        <!-- CHAMOYADAS Y SODAS -->
         <div class="grid grid-cols-2 gap-2">
             <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-                <h2 class="text-[11px] font-black text-amber-300">Chamoyadas</h2>
-                <div id="box-chamoyadas" class="space-y-1.5"></div>
+                <h2 class="text-[11px] font-black text-amber-300 text-center">🌶️ Chamoyadas</h2>
+                <div id="box-chamoyadas" class="space-y-2"></div>
             </section>
             <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-                <h2 class="text-[11px] font-black text-cyan-300">Sodas Italianas</h2>
-                <div id="box-sodas" class="space-y-1.5"></div>
+                <h2 class="text-[11px] font-black text-cyan-300 text-center">🫧 Sodas Italianas</h2>
+                <div id="box-sodas" class="space-y-2"></div>
             </section>
         </div>
-
     </main>
 
-    <!-- MODAL SELECTOR DE TAMAÑO NEÓN (Se abre al presionar un frappé) -->
-    <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden">
+    <!-- MODAL SELECTOR DE TAMAÑO NEÓN -->
+    <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="bg-dark-overlay border-2 border-pink-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
+            <img id="modal-img-frappe" src="" class="w-20 h-20 mx-auto object-contain drop-shadow-lg">
             <h3 id="modal-titulo-frappe" class="text-sm font-black text-pink-300 uppercase">Selecciona Tamaño</h3>
-            <p class="text-[10px] text-purple-200">Elige tu presentación ideal:</p>
             <div class="grid grid-cols-1 gap-2 pt-2">
                 <button onclick="seleccionarTamano('Mediano')" class="bg-purple-800 hover:bg-purple-700 font-bold py-2 rounded-xl text-xs flex justify-between px-4 border border-pink-500/40"><span>Mediano (M)</span> <span id="m-precio" class="text-pink-300">$50</span></button>
                 <button onclick="seleccionarTamano('Grande')" class="bg-purple-800 hover:bg-purple-700 font-bold py-2 rounded-xl text-xs flex justify-between px-4 border border-pink-500/40"><span>Grande (G)</span> <span id="g-precio" class="text-pink-300">$60</span></button>
@@ -128,19 +125,36 @@
         </div>
     </div>
 
+    <!-- MODAL DE PAGO (Efectivo / Tarjeta) -->
+    <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
+        <div class="bg-dark-overlay border-2 border-green-500 p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+            <h3 class="text-lg font-black text-green-400 uppercase">Total a Cobrar: <span id="lbl-total-cobro"></span></h3>
+            <p class="text-sm text-gray-200">¿Cómo pagará el cliente?</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="procesarPago('Efectivo')" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-green-400">
+                    <span class="text-2xl mb-1">💵</span> Efectivo
+                </button>
+                <button onclick="procesarPago('Tarjeta')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-blue-400">
+                    <span class="text-2xl mb-1">💳</span> Tarjeta
+                </button>
+            </div>
+            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-4">Cancelar Envío</button>
+        </div>
+    </div>
+
     <!-- CARRITO FLOTANTE COMPACTO -->
     <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-pink-500/40 p-3 shadow-2xl z-40 rounded-t-2xl">
         <div class="max-w-md mx-auto flex flex-col space-y-2">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="nombre-cliente" placeholder="Cliente..." class="bg-purple-950 border border-purple-800 rounded px-2 py-1 text-xs text-white w-28 focus:outline-none focus:border-pink-500">
-                    <span id="badge-contador" class="text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full font-bold">0 items</span>
+                    <input type="text" id="nombre-cliente" placeholder="Nombre cliente..." class="bg-purple-950 border border-purple-800 rounded px-2 py-1 text-xs text-white w-28 focus:outline-none focus:border-pink-500">
+                    <span id="badge-contador" class="text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full font-bold">0</span>
                 </div>
                 <div class="text-right">
                     <span class="text-[10px] text-purple-300">Total:</span>
                     <span id="total-carrito" class="text-sm font-black text-pink-300 ml-1">$0.00</span>
                 </div>
-                <button onclick="enviarOrden()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-4 py-1.5 rounded-xl text-xs shadow">Enviar 🚀</button>
+                <button onclick="abrirModalPago()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-4 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
             </div>
             <div id="minilist-carrito" class="max-h-24 overflow-y-auto space-y-1 text-[11px] border-t border-purple-900/50 pt-1 hidden"></div>
         </div>
@@ -149,103 +163,150 @@
     <script>
         let carrito = [];
         let productoSeleccionado = null;
+        let idAnimacionActual = null;
 
         function getConfig() {
             let defaults = {
                 frappesBasicos: [
-                    {name:"Moka", med:50, gde:60, jumbo:120, img:"Capuchino.png"},
-                    {name:"Capuchino", med:50, gde:60, jumbo:120, img:"Capuchino.png"},
-                    {name:"Fresa", med:50, gde:60, jumbo:120, img:"Fresa Frappe.png"}
+                    {id:"fb1", name:"Moka", med:50, gde:60, jumbo:120, img:"Capuchino.png"},
+                    {id:"fb2", name:"Capuchino", med:50, gde:60, jumbo:120, img:"Capuchino.png"},
+                    {id:"fb3", name:"Fresa", med:50, gde:60, jumbo:120, img:"Fresa Frappe.png"}
                 ],
                 frappesPremium: [
-                    {name:"Ferrero Rocher", med:70, gde:75, jumbo:150, img:"Ferrero rocher.png"},
-                    {name:"Kinder Délice", med:70, gde:75, jumbo:150, img:"Quinder delice.png"},
-                    {name:"Gansito", med:70, gde:75, jumbo:150, img:"Gansito.png"},
-                    {name:"Bubu Lubu", med:70, gde:75, jumbo:150, img:"Bubulubu.png"}
+                    {id:"fp1", name:"Ferrero Rocher", med:70, gde:75, jumbo:150, img:"Ferrero rocher.png"},
+                    {id:"fp2", name:"Kinder Délice", med:70, gde:75, jumbo:150, img:"Quinder delice.png"},
+                    {id:"fp3", name:"Gansito", med:70, gde:75, jumbo:150, img:"Gansito.png"},
+                    {id:"fp4", name:"Bubu Lubu", med:70, gde:75, jumbo:150, img:"Bubulubu.png"}
                 ],
                 frappesEspeciales: [
-                    {name:"M&M's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png"},
-                    {name:"Oreo", med:65, gde:70, jumbo:140, img:"Oreo.png"},
-                    {name:"Taro", med:65, gde:70, jumbo:140, img:"Taro.png"},
-                    {name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png"}
+                    {id:"fe1", name:"M&M's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png"},
+                    {id:"fe2", name:"Oreo", med:65, gde:70, jumbo:140, img:"Oreo.png"},
+                    {id:"fe3", name:"Taro", med:65, gde:70, jumbo:140, img:"Taro.png"},
+                    {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png"}
                 ],
                 crepasEspeciales: [
-                    {name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90},
-                    {name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90},
-                    {name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95},
-                    {name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85}
+                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90, img:"Crepa Fererro.png"},
+                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90, img:"Crepa Gansito.png"},
+                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95, img:"Crepa Basica.png"},
+                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85, img:"Crepa Oreo.png"}
                 ],
-                ingredientes: ["Nutella","Cajeta","Queso Philadelphia","Mermelada Fresa","Lechera","Salsa Italiana","Fresa","Plátano","Piña","Durazno","Nuez","Almendra","Jamón","Manchego","Peperoni","Crema Batida"],
-                chamoyadas: [{name:"PicaFresa",precio:60},{name:"Mango",precio:60}],
-                sodas: [{name:"Blue - Manzana",precio:50},{name:"Green - Manzana",precio:50},{name:"Cereza",precio:50}]
+                chamoyadas: [
+                    {id:"ch1", name:"PicaFresa", precio:60, img:"Chamoyada Fresa.png"},
+                    {id:"ch2", name:"Mango", precio:60, img:"Chamoyada Mango.png"}
+                ],
+                sodas: [
+                    {id:"so1", name:"Blue", precio:60, img:"Blu.png"},
+                    {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png"},
+                    {id:"so3", name:"Cereza", precio:60, img:"Cereza.png"}
+                ],
+                ingredientes: ["Nutella","Cajeta","Queso Philadelphia","Mermelada Fresa","Lechera","Fresa","Plátano","Nuez","Almendra","Crema Batida"]
             };
-            let saved = localStorage.getItem("db_config_dulce");
-            return saved ? JSON.parse(saved) : defaults;
+            return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
 
         function initPOS() {
             let config = getConfig();
 
-            // Render Ingredientes Crepa (Al principio)
+            // Ingredientes Crepa
             let b5 = document.getElementById('box-ingredientes'); b5.innerHTML = '';
             config.ingredientes.forEach(ing => {
                 b5.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing.trim()}" class="ing-chk accent-amber-400 w-3.5 h-3.5" onchange="calcCustom()"> <span class="truncate">${ing}</span></label>`;
             });
 
-            // Render Frappes con Imagen y Animación Neón
-            renderFrappeGrid('box-frappes-basicos', config.frappesBasicos);
-            renderFrappeGrid('box-frappes-premium', config.frappesPremium);
-            renderFrappeGrid('box-frappes-especiales', config.frappesEspeciales);
+            // Frappes
+            renderFrappeGrid('box-frappes-basicos', config.frappesBasicos, "Básicos");
+            renderFrappeGrid('box-frappes-premium', config.frappesPremium, "Premium");
+            renderFrappeGrid('box-frappes-especiales', config.frappesEspeciales, "Especiales");
 
-            // Render Crepas Especiales
+            // Crepas Especiales (Con Neon Aura)
             let b4 = document.getElementById('box-crepas-especiales'); b4.innerHTML = '';
             config.crepasEspeciales.forEach(i => {
                 b4.innerHTML += `
-                    <div class="bg-purple-950/70 p-2 rounded-xl border border-pink-500/20 flex justify-between items-center text-xs">
-                        <div>
-                            <span class="font-bold text-white">${i.name}</span>
-                            <p class="text-[9px] text-gray-300">${i.desc}</p>
-                            <span class="text-pink-300 font-bold">$${i.precio}</span>
-                        </div>
-                        <button onclick="addItem('${i.name}', ${i.precio})" class="bg-pink-600 font-bold px-3 py-1 rounded-lg text-xs">+</button>
-                    </div>`;
-            });
-
-            // Render Chamoyadas & Sodas
-            let b6 = document.getElementById('box-chamoyadas'); b6.innerHTML = '';
-            config.chamoyadas.forEach(i => {
-                b6.innerHTML += `<div class="bg-purple-950/70 p-1.5 rounded-lg border border-amber-500/20 flex justify-between items-center text-[11px]"><span>${i.name}</span><div class="flex items-center space-x-1"><span class="text-amber-300 font-bold">$${i.precio}</span><button onclick="addItem('${i.name} (Chamoyada)', ${i.precio})" class="bg-amber-600 px-1.5 py-0.5 rounded font-bold">+</button></div></div>`;
-            });
-
-            let b7 = document.getElementById('box-sodas'); b7.innerHTML = '';
-            config.sodas.forEach(i => {
-                b7.innerHTML += `<div class="bg-purple-950/70 p-1.5 rounded-lg border border-cyan-500/20 flex justify-between items-center text-[11px]"><span>${i.name}</span><div class="flex items-center space-x-1"><span class="text-cyan-300 font-bold">$${i.precio}</span><button onclick="addItem('${i.name} (Soda)', ${i.precio})" class="bg-cyan-600 px-1.5 py-0.5 rounded font-bold">+</button></div></div>`;
-            });
-        }
-
-        function renderFrappeGrid(elementId, items) {
-            let container = document.getElementById(elementId);
-            container.innerHTML = '';
-            items.forEach(i => {
-                let imgFile = i.img || 'logo.png';
-                container.innerHTML += `
-                    <div onclick='abrirModal(${JSON.stringify(i)})' class="bg-purple-950/80 p-2.5 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
+                    <div class="bg-purple-950/70 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
                         <div class="flex items-center space-x-3">
-                            <img src="${imgFile}" alt="${i.name}" class="w-12 h-12 object-contain rounded-xl bg-purple-900/50 p-1 border border-pink-400/40">
+                            <img id="img-${i.id}" src="${i.img}" class="w-12 h-12 object-contain drop-shadow-md">
                             <div>
-                                <span class="text-[10px] text-pink-400 font-bold uppercase tracking-wider">Fran Frappe</span>
-                                <h3 class="text-xs font-black text-white">${i.name}</h3>
-                                <p class="text-[10px] text-purple-300">Toca para elegir tamaño</p>
+                                <h3 class="text-[11px] font-black text-white">${i.name}</h3>
+                                <p class="text-[9px] text-gray-300 w-32 truncate">${i.desc}</p>
                             </div>
                         </div>
-                        <span class="bg-pink-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow">Ver ➔</span>
+                        <button onclick="agregarConAnimacion('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
+                    </div>`;
+            });
+
+            // Chamoyadas (Con Neon Aura)
+            let b6 = document.getElementById('box-chamoyadas'); b6.innerHTML = '';
+            config.chamoyadas.forEach(i => {
+                b6.innerHTML += `
+                    <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
+                        <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
+                        <span class="text-[10px] font-bold text-white">${i.name}</span>
+                        <span class="text-amber-300 text-xs font-black">$${i.precio}</span>
+                    </div>`;
+            });
+
+            // Sodas (Con Neon Aura)
+            let b7 = document.getElementById('box-sodas'); b7.innerHTML = '';
+            config.sodas.forEach(i => {
+                b7.innerHTML += `
+                    <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
+                        <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
+                        <span class="text-[10px] font-bold text-white">${i.name}</span>
+                        <span class="text-cyan-300 text-xs font-black">$${i.precio}</span>
                     </div>`;
             });
         }
 
-        function abrirModal(item) {
+        function renderFrappeGrid(elementId, items, categoria) {
+            let container = document.getElementById(elementId);
+            container.innerHTML = `<span class="text-[9px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center mb-1">${categoria}</span>`;
+            items.forEach(i => {
+                container.innerHTML += `
+                    <div onclick='abrirModal(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
+                        <div class="flex items-center space-x-3">
+                            <img id="img-${i.id}" src="${i.img}" class="w-10 h-10 object-contain drop-shadow-md">
+                            <div>
+                                <h3 class="text-[11px] font-black text-white">${i.name}</h3>
+                                <p class="text-[9px] text-purple-300">Toca para tamaños</p>
+                            </div>
+                        </div>
+                        <span class="bg-pink-600 text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
+                    </div>`;
+            });
+        }
+
+        // ANIMACIÓN Y TOAST
+        function mostrarToast() {
+            let toast = document.getElementById('toast-exito');
+            toast.classList.remove('opacity-0', 'scale-90');
+            toast.classList.add('opacity-100', 'scale-100', 'animate__animated', 'animate__tada');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'scale-100', 'animate__animated', 'animate__tada');
+                toast.classList.add('opacity-0', 'scale-90');
+            }, 1200);
+        }
+
+        function animarImagen(imgId) {
+            let img = document.getElementById(imgId);
+            if(img) {
+                img.classList.remove('animate__animated', 'animate__rubberBand');
+                void img.offsetWidth; // Trigger reflow
+                img.classList.add('animate__animated', 'animate__rubberBand');
+            }
+        }
+
+        function agregarConAnimacion(nombre, precio, imgId) {
+            carrito.push({ name: nombre, precio: precio });
+            updateCart();
+            animarImagen(imgId);
+            mostrarToast();
+        }
+
+        function abrirModal(item, imgId) {
             productoSeleccionado = item;
-            document.getElementById('modal-titulo-frappe').innerText = `Frappe ${item.name}`;
+            idAnimacionActual = imgId;
+            document.getElementById('modal-titulo-frappe').innerText = item.name;
+            document.getElementById('modal-img-frappe').src = item.img;
             document.getElementById('m-precio').innerText = `$${item.med}`;
             document.getElementById('g-precio').innerText = `$${item.gde}`;
             document.getElementById('j-precio').innerText = `$${item.jumbo}`;
@@ -255,13 +316,13 @@
         function cerrarModal() {
             document.getElementById('modal-tamano').classList.add('hidden');
             productoSeleccionado = null;
+            idAnimacionActual = null;
         }
 
         function seleccionarTamano(tamano) {
             if (!productoSeleccionado) return;
             let precio = tamano === 'Mediano' ? productoSeleccionado.med : (tamano === 'Grande' ? productoSeleccionado.gde : productoSeleccionado.jumbo);
-            carrito.push({ name: `${productoSeleccionado.name} (${tamano})`, precio: precio });
-            updateCart();
+            agregarConAnimacion(`${productoSeleccionado.name} (${tamano})`, precio, idAnimacionActual);
             cerrarModal();
         }
 
@@ -277,15 +338,9 @@
             let extras = Array.from(chks).map(c => c.value);
             let precio = 50 + (extras.length * 10);
             let desc = extras.length > 0 ? `Base + ${extras.join(', ')}` : `Sencilla`;
-            carrito.push({ name: `Crepa (${desc})`, precio: precio });
+            agregarConAnimacion(`Crepa (${desc})`, precio, 'img-crepa-base');
             chks.forEach(c => c.checked = false);
             calcCustom();
-            updateCart();
-        }
-
-        function addItem(name, price) {
-            carrito.push({ name: name, precio: price });
-            updateCart();
         }
 
         function removeItem(idx) {
@@ -299,7 +354,7 @@
             let miniList = document.getElementById('minilist-carrito');
             
             let total = carrito.reduce((acc, i) => acc + i.precio, 0);
-            badge.innerText = `${carrito.length} items`;
+            badge.innerText = `${carrito.length}`;
             totalLbl.innerText = `$${total.toFixed(2)}`;
 
             if (carrito.length === 0) {
@@ -322,26 +377,40 @@
             });
         }
 
-        function enviarOrden() {
-            if (carrito.length === 0) {
-                alert("El carrito está vacío.");
-                return;
-            }
-            let cliente = document.getElementById('nombre-cliente').value.trim() || "Cliente General";
+        // FLUJO DE COBRO
+        function abrirModalPago() {
+            if (carrito.length === 0) { alert("Agrega productos al carrito."); return; }
+            let total = carrito.reduce((a, b) => a + b.precio, 0);
+            document.getElementById('lbl-total-cobro').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('modal-pago').classList.remove('hidden');
+        }
+
+        function cerrarModalPago() {
+            document.getElementById('modal-pago').classList.add('hidden');
+        }
+
+        function procesarPago(metodo) {
+            let cliente = document.getElementById('nombre-cliente').value.trim() || "Mostrador";
+            let total = carrito.reduce((a, b) => a + b.precio, 0);
+            
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
             orders.push({
                 id: Date.now().toString().slice(-4),
                 cliente: cliente,
                 items: carrito,
-                total: carrito.reduce((a, b) => a + b.precio, 0),
-                estado: "pendiente",
+                total: total,
+                pago: metodo, // AQUÍ SE GUARDA SI ES EFECTIVO O TARJETA
+                estado: "pagado",
+                fecha: new Date().toLocaleDateString(),
                 tiempo: new Date().toLocaleTimeString()
             });
             localStorage.setItem("db_orders", JSON.stringify(orders));
-            alert(`¡Orden enviada para ${cliente}!`);
+            
+            alert(`✅ Cobro exitoso con ${metodo}!\nTotal: $${total}`);
             carrito = [];
             document.getElementById('nombre-cliente').value = "";
             updateCart();
+            cerrarModalPago();
         }
 
         window.onload = initPOS;
