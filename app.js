@@ -22,20 +22,14 @@ const initialMenu = {
   },
   crepas: {
     dulces: [
-      { name: "Crepa Ferrero (Nutella, Nuez, Almendra, Ferrero)", precio: 90 },
-      { name: "Crepa Gansito (Nutella, Philadelphia, Fresa, Gansito)", precio: 90 },
-      { name: "Crepa Kinder Délice (Nutella, Philadelphia, Kinder)", precio: 95 },
-      { name: "Crepa Oreo (Nutella, Lechera, Oreo)", precio: 85 }
+      { name: "Crepa Ferrero", descripcion: "Nutella, Nuez, Almendra, Ferrero", precio: 90 },
+      { name: "Crepa Gansito", descripcion: "Nutella, Philadelphia, Fresa, Gansito", precio: 90 },
+      { name: "Crepa Kinder Délice", descripcion: "Nutella, Philadelphia, Kinder", precio: 95 },
+      { name: "Crepa Oreo", descripcion: "Nutella, Lechera, Oreo", precio: 85 }
     ],
     saladas: [
-      { name: "Crepa Peperoni (Manchego, Salsa Italiana, Peperoni)", precio: 80 },
-      { name: "Crepa Hawaiana (Manchego, Jamón, Piña)", precio: 80 }
-    ],
-    ingredientesDisponibles: [
-      "Nutella", "Cajeta", "Queso Philadelphia", "Mermelada de Fresa", 
-      "Lechera", "Salsa Italiana", "Mermelada de Zarzamora", "Fresa", 
-      "Plátano", "Piña", "Durazno", "Nuez", "Almendra", "Jamón", 
-      "Manchego", "Peperoni", "Crema Batida"
+      { name: "Crepa Peperoni", descripcion: "Manchego, Salsa Italiana, Peperoni", precio: 80 },
+      { name: "Crepa Hawaiana", descripcion: "Manchego, Jamón, Piña", precio: 80 }
     ]
   },
   chamoyadas: [
