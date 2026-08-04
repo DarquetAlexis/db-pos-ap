@@ -3,45 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DB - Comandas Cocina</title>
+    <title>DULCE BOCADO - Módulo Cocina (Comandas)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.bg-morado-uva { background-color: #240b2a; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        .bg-morado-uva { background-color: #3b1443; }
+        .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.90); backdrop-filter: blur(5px); }
+    </style>
 </head>
-<body class="bg-morado-uva text-white min-h-screen p-4">
-    <header class="flex justify-between items-center mb-6 border-b border-purple-900 pb-3">
-        <h1 class="text-2xl font-black text-pink-400">🍳 COCINA / PREPARACIÓN - DB</h1>
-        <a href="index.html" class="bg-purple-800 px-3 py-1 rounded-lg text-xs">Regresar</a>
+<body class="bg-morado-uva text-white min-h-screen flex flex-col p-4">
+
+    <!-- ENCABEZADO -->
+    <header class="flex justify-between items-center mb-6 bg-dark-overlay p-4 rounded-2xl border border-purple-900/80 shadow-lg">
+        <div>
+            <h1 class="text-xl font-black text-pink-300">🍳 Módulo de Cocina / Comandas</h1>
+            <p class="text-xs text-purple-300">Dulce Bocado - Pedidos en Tiempo Real</p>
+        </div>
+        <div class="space-x-2">
+            <button onclick="cargarOrdenes()" class="bg-pink-600 hover:bg-pink-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition">
+                🔄 Actualizar
+            </button>
+            <a href="index.html" class="bg-purple-900 hover:bg-purple-800 text-purple-200 px-4 py-2 rounded-xl text-xs font-bold transition">
+                🏠 Inicio
+            </a>
+        </div>
     </header>
 
-    <div id="contenedor-comandas" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- CONTENEDOR DE COMANDAS -->
+    <div class="max-w-6xl mx-auto w-full">
+        <h2 class="text-lg font-bold text-pink-300 mb-4">Órdenes Pendientes en Cocina</h2>
+        <div id="comandas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Se cargan dinámicamente -->
+        </div>
     </div>
 
+    <!-- SCRIPT DE COCINA -->
     <script>
-        function cargarComandas() {
+        function cargarOrdenes() {
+            const container = document.getElementById('comandas-container');
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
-            let contenedor = document.getElementById("contenedor-comandas");
-            contenedor.innerHTML = "";
-
+            
+            // Filtrar solo las pendientes
             let pendientes = orders.filter(o => o.estado === "pendiente");
 
             if (pendientes.length === 0) {
-                contenedor.innerHTML = `<p class="text-purple-400 col-span-3 text-center py-10">No hay pedidos pendientes en este momento.</p>`;
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-dark-overlay rounded-2xl border border-purple-900">
+                        <p class="text-gray-400 text-sm">No hay comandas pendientes por ahora 👨‍🍳</p>
+                    </div>
+                `;
                 return;
             }
 
-            pendientes.forEach(order => {
-                let itemsHtml = order.items.map(i => `<li class="text-sm">• ${i.name}</li>`).join("");
-                contenedor.innerHTML += `
-                    <div class="bg-purple-950 border border-purple-600/40 rounded-xl p-4 shadow-xl flex flex-col justify-between">
+            container.innerHTML = '';
+            pendientes.forEach(orden => {
+                let itemsHtml = '';
+                orden.items.forEach(item => {
+                    itemsHtml += `<li class="text-xs py-1 border-b border-purple-900/50 flex justify-between">
+                        <span>• ${item.name}</span>
+                    </li>`;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-dark-overlay p-4 rounded-2xl border border-pink-500/30 shadow-xl flex flex-col justify-between animate__animated animate__fadeIn">
                         <div>
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="font-black text-pink-300 text-lg">Orden #${order.id}</span>
-                                <span class="text-xs text-gray-400">${order.tiempo}</span>
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-purple-900">
+                                <h3 class="font-black text-pink-300 text-sm">👤 ${orden.cliente}</h3>
+                                <span class="text-[10px] bg-purple-900 text-purple-200 px-2 py-0.5 rounded-full">${orden.tiempo}</span>
                             </div>
-                            <ul class="space-y-1 mb-4 text-purple-100">${itemsHtml}</ul>
+                            <p class="text-[11px] text-purple-400 mb-2">Folio: #${orden.id}</p>
+                            <ul class="space-y-1 mb-4">
+                                ${itemsHtml}
+                            </ul>
                         </div>
-                        <button onclick="completarOrden('${order.id}')" class="w-full bg-green-600 hover:bg-green-500 font-bold py-2 rounded-lg text-sm transition">
-                            Marcar como Listo ✔
+                        <button onclick="completarOrden('${orden.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-xl text-xs transition shadow-md">
+                            ✅ Marcar como Lista
                         </button>
                     </div>
                 `;
@@ -51,15 +87,20 @@
         function completarOrden(id) {
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
             orders = orders.map(o => {
-                if(o.id === id) o.estado = "completado";
+                if (o.id === id) {
+                    o.estado = "completada";
+                }
                 return o;
             });
             localStorage.setItem("db_orders", JSON.stringify(orders));
-            cargarComandas();
+            cargarOrdenes();
         }
 
-        setInterval(cargarComandas, 2000);
-        cargarComandas();
+        // Cargar al abrir y actualizar automáticamente cada 3 segundos
+        window.onload = () => {
+            cargarOrdenes();
+            setInterval(cargarOrdenes, 3000);
+        };
     </script>
 </body>
 </html>
