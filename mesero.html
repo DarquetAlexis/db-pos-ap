@@ -190,13 +190,15 @@
     </div>
 
     <script>
-        // Configuración Firebase Cloud Firestore Gratuita
+        // Configuración Personal de Firebase Cloud Firestore (DulceBocado)
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForCloudSyncDulceBocado99",
-            authDomain: "dulce-bocado-pos.firebaseapp.com",
-            projectId: "dulce-bocado-pos"
+            apiKey: "AIzaSyCwvgekDaMBkfiewGaT1duGmb5iIqSvLLI",
+            authDomain: "dulcebocado.firebaseapp.com",
+            projectId: "dulcebocado",
+            storageBucket: "dulcebocado.appspot.com",
+            messagingSenderId: "1086223287499",
+            appId: "1:1086223287499:web:4f9fd420e53a1eb3f4474e"
         };
-        // Inicialización segura con almacenamiento en memoria local temporal si no hay conexión
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
@@ -244,7 +246,6 @@
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
 
-        // Sincronización en tiempo real desde Firestore
         function iniciarSincronizacionCloud() {
             db.collection("orders").onSnapshot((snapshot) => {
                 cacheOrders = [];
@@ -257,19 +258,14 @@
                 }
                 actualizarUIOrdenActiva();
             }, (error) => {
-                // Fallback automático a LocalStorage si no hay internet momentáneo
                 cacheOrders = JSON.parse(localStorage.getItem("db_orders_fallback")) || [];
                 actualizarUIOrdenActiva();
             });
         }
 
         function guardarOrdenCloud(orden) {
-            // Guardar respaldo local
             localStorage.setItem("db_orders_fallback", JSON.stringify(cacheOrders));
-            // Guardar en Nube Firestore
-            db.collection("orders").doc(orden.id.toString()).set(orden).catch((err) => {
-                console.log("Modo offline activado");
-            });
+            db.collection("orders").doc(orden.id.toString()).set(orden).catch((err) => {});
         }
 
         function eliminarOrdenCloud(id) {
