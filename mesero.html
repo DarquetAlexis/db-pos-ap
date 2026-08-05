@@ -20,7 +20,6 @@
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
         .neon-aura:hover { transform: scale(1.03); }
         
-        /* Toast de éxito */
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
     </style>
 </head>
@@ -34,7 +33,7 @@
     <!-- ENCABEZADO -->
     <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-purple-500/30 shadow-md">
         <div class="flex items-center space-x-2">
-            <img id="logo-header" src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
+            <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
             <div>
                 <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
                 <p class="text-[9px] text-purple-300">POS Móvil Dinámico</p>
@@ -48,9 +47,10 @@
 
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
         
-        <!-- SECCIÓN OFERTAS ESTRELLA -->
+        <!-- SECCIÓN OFERTAS ESTRELLA (Presentado por Moy) -->
         <section class="bg-dark-overlay p-3 marco-oferta space-y-2 animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
-            <div class="flex items-center justify-center space-x-2 pb-1 border-b border-green-500/30">
+            <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
+                <img src="moy.png" alt="Moy" class="w-8 h-8 object-contain animate__animated animate__bounceIn">
                 <h2 class="text-sm font-black text-green-400 uppercase tracking-widest">🔥 OFERTAS ESPECIALES 🔥</h2>
             </div>
             <div class="flex items-center justify-between bg-green-950/50 p-2 rounded-xl border border-green-500/40">
@@ -58,7 +58,7 @@
                     <img id="img-oferta-cap" src="Capuchino.png" alt="Capuchino" class="w-12 h-12 object-contain drop-shadow-md">
                     <div>
                         <h3 class="text-xs font-black text-white">Frappe Capuchino 10oz</h3>
-                        <p class="text-[10px] text-green-300">¡El más pedido!</p>
+                        <p class="text-[10px] text-green-300">¡El favorito de Moy!</p>
                     </div>
                 </div>
                 <div class="flex flex-col space-y-1">
@@ -68,10 +68,10 @@
             </div>
         </section>
 
-        <!-- CREPAS: ÁRMALA A TU ANTOJO -->
+        <!-- CREPAS: ÁRMALA A TU ANTOJO (Presentado por Dulce) -->
         <section class="bg-dark-overlay p-3 border-2 border-amber-500 rounded-xl shadow-[0_0_15px_rgba(251,191,36,0.3)] space-y-2">
             <div class="flex items-center space-x-2 pb-1.5 border-b border-amber-500/30">
-                <img id="img-crepa-base" src="Crepa Basica.png" alt="Crepa" class="w-10 h-10 object-contain">
+                <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain animate__animated animate__bounceIn">
                 <div>
                     <h2 class="text-xs font-black text-amber-300 uppercase">🥞 Ármala a tu Antojo</h2>
                     <p class="text-[9px] text-gray-300">Base $50 + $10 c/u ingrediente</p>
@@ -84,17 +84,29 @@
             </div>
         </section>
 
-        <!-- CARTA DE FRAPPES -->
+        <!-- CARTA DE FRAPPES (Presentado por Fran) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-3">
-            <h2 class="text-xs font-black text-pink-300 uppercase pb-1 border-b border-pink-500/30 text-center">🥤 Carta de Frappes</h2>
+            <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
+                <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                <div>
+                    <h2 class="text-xs font-black text-pink-300 uppercase">🥤 Carta de Frappes</h2>
+                    <p class="text-[9px] text-purple-300">Toca cualquier frappé para elegir tamaño</p>
+                </div>
+            </div>
             <div class="space-y-1.5"><div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div></div>
             <div class="space-y-1.5 pt-1"><div id="box-frappes-premium" class="grid grid-cols-1 gap-2"></div></div>
             <div class="space-y-1.5 pt-1"><div id="box-frappes-especiales" class="grid grid-cols-1 gap-2"></div></div>
         </section>
 
-        <!-- CREPAS ESPECIALES -->
+        <!-- CREPAS ESPECIALES (Presentado por Talia) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-            <h2 class="text-xs font-black text-pink-300 uppercase pb-1 border-b border-pink-500/30 text-center">🥞 Crepas Especiales</h2>
+            <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
+                <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                <div>
+                    <h2 class="text-xs font-black text-pink-300 uppercase">🥞 Crepas Especiales</h2>
+                    <p class="text-[9px] text-purple-300">Las creaciones exclusivas de Talia</p>
+                </div>
+            </div>
             <div id="box-crepas-especiales" class="space-y-2"></div>
         </section>
 
@@ -168,36 +180,36 @@
         function getConfig() {
             let defaults = {
                 frappesBasicos: [
-                    {id:"fb1", name:"Moka", med:50, gde:60, jumbo:120, img:"Capuchino.png"},
-                    {id:"fb2", name:"Capuchino", med:50, gde:60, jumbo:120, img:"Capuchino.png"},
-                    {id:"fb3", name:"Fresa", med:50, gde:60, jumbo:120, img:"Fresa Frappe.png"}
+                    {id:"fb1", name:"Moka", med:50, gde:60, jumbo:120, img:"Capuchino.png", activo:true},
+                    {id:"fb2", name:"Capuchino", med:50, gde:60, jumbo:120, img:"Capuchino.png", activo:true},
+                    {id:"fb3", name:"Fresa", med:50, gde:60, jumbo:120, img:"Fresa Frappe.png", activo:true}
                 ],
                 frappesPremium: [
-                    {id:"fp1", name:"Ferrero Rocher", med:70, gde:75, jumbo:150, img:"Ferrero rocher.png"},
-                    {id:"fp2", name:"Kinder Délice", med:70, gde:75, jumbo:150, img:"Quinder delice.png"},
-                    {id:"fp3", name:"Gansito", med:70, gde:75, jumbo:150, img:"Gansito.png"},
-                    {id:"fp4", name:"Bubu Lubu", med:70, gde:75, jumbo:150, img:"Bubulubu.png"}
+                    {id:"fp1", name:"Ferrero Rocher", med:70, gde:75, jumbo:150, img:"Ferrero rocher.png", activo:true},
+                    {id:"fp2", name:"Kinder Délice", med:70, gde:75, jumbo:150, img:"Quinder delice.png", activo:true},
+                    {id:"fp3", name:"Gansito", med:70, gde:75, jumbo:150, img:"Gansito.png", activo:true},
+                    {id:"fp4", name:"Bubu Lubu", med:70, gde:75, jumbo:150, img:"Bubulubu.png", activo:true}
                 ],
                 frappesEspeciales: [
-                    {id:"fe1", name:"M&M's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png"},
-                    {id:"fe2", name:"Oreo", med:65, gde:70, jumbo:140, img:"Oreo.png"},
-                    {id:"fe3", name:"Taro", med:65, gde:70, jumbo:140, img:"Taro.png"},
-                    {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png"}
+                    {id:"fe1", name:"M&M's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png", activo:true},
+                    {id:"fe2", name:"Oreo", med:65, gde:70, jumbo:140, img:"Oreo.png", activo:true},
+                    {id:"fe3", name:"Taro", med:65, gde:70, jumbo:140, img:"Taro.png", activo:true},
+                    {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png", activo:true}
                 ],
                 crepasEspeciales: [
-                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90, img:"Crepa Fererro.png"},
-                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90, img:"Crepa Gansito.png"},
-                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95, img:"Crepa Basica.png"},
-                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85, img:"Crepa Oreo.png"}
+                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90, img:"Crepa Fererro.png", activo:true},
+                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90, img:"Crepa Gansito.png", activo:true},
+                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95, img:"Crepa Basica.png", activo:true},
+                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85, img:"Crepa Oreo.png", activo:true}
                 ],
                 chamoyadas: [
-                    {id:"ch1", name:"PicaFresa", precio:60, img:"Chamoyada Fresa.png"},
-                    {id:"ch2", name:"Mango", precio:60, img:"Chamoyada Mango.png"}
+                    {id:"ch1", name:"PicaFresa", precio:60, img:"Chamoyada Fresa.png", activo:true},
+                    {id:"ch2", name:"Mango", precio:60, img:"Chamoyada Mango.png", activo:true}
                 ],
                 sodas: [
-                    {id:"so1", name:"Blue", precio:60, img:"Blu.png"},
-                    {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png"},
-                    {id:"so3", name:"Cereza", precio:60, img:"Cereza.png"}
+                    {id:"so1", name:"Blue", precio:60, img:"Blu.png", activo:true},
+                    {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png", activo:true},
+                    {id:"so3", name:"Cereza", precio:60, img:"Cereza.png", activo:true}
                 ],
                 ingredientes: ["Nutella","Cajeta","Queso Philadelphia","Mermelada Fresa","Lechera","Fresa","Plátano","Nuez","Almendra","Crema Batida"]
             };
@@ -207,53 +219,54 @@
         function initPOS() {
             let config = getConfig();
 
-            // Ingredientes Crepa
             let b5 = document.getElementById('box-ingredientes'); b5.innerHTML = '';
             config.ingredientes.forEach(ing => {
                 b5.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing.trim()}" class="ing-chk accent-amber-400 w-3.5 h-3.5" onchange="calcCustom()"> <span class="truncate">${ing}</span></label>`;
             });
 
-            // Frappes
             renderFrappeGrid('box-frappes-basicos', config.frappesBasicos, "Básicos");
             renderFrappeGrid('box-frappes-premium', config.frappesPremium, "Premium");
             renderFrappeGrid('box-frappes-especiales', config.frappesEspeciales, "Especiales");
 
-            // Crepas Especiales (Con Neon Aura)
             let b4 = document.getElementById('box-crepas-especiales'); b4.innerHTML = '';
             config.crepasEspeciales.forEach(i => {
-                b4.innerHTML += `
-                    <div class="bg-purple-950/70 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
-                        <div class="flex items-center space-x-3">
-                            <img id="img-${i.id}" src="${i.img}" class="w-12 h-12 object-contain drop-shadow-md">
-                            <div>
-                                <h3 class="text-[11px] font-black text-white">${i.name}</h3>
-                                <p class="text-[9px] text-gray-300 w-32 truncate">${i.desc}</p>
+                if(i.activo !== false) {
+                    b4.innerHTML += `
+                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
+                            <div class="flex items-center space-x-3">
+                                <img id="img-${i.id}" src="${i.img}" class="w-12 h-12 object-contain drop-shadow-md">
+                                <div>
+                                    <h3 class="text-[11px] font-black text-white">${i.name}</h3>
+                                    <p class="text-[9px] text-gray-300 w-32 truncate">${i.desc || ''}</p>
+                                </div>
                             </div>
-                        </div>
-                        <button onclick="agregarConAnimacion('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
-                    </div>`;
+                            <button onclick="agregarConAnimacion('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
+                        </div>`;
+                }
             });
 
-            // Chamoyadas (Con Neon Aura)
             let b6 = document.getElementById('box-chamoyadas'); b6.innerHTML = '';
             config.chamoyadas.forEach(i => {
-                b6.innerHTML += `
-                    <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
-                        <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
-                        <span class="text-[10px] font-bold text-white">${i.name}</span>
-                        <span class="text-amber-300 text-xs font-black">$${i.precio}</span>
-                    </div>`;
+                if(i.activo !== false) {
+                    b6.innerHTML += `
+                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
+                            <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
+                            <span class="text-[10px] font-bold text-white">${i.name}</span>
+                            <span class="text-amber-300 text-xs font-black">$${i.precio}</span>
+                        </div>`;
+                }
             });
 
-            // Sodas (Con Neon Aura)
             let b7 = document.getElementById('box-sodas'); b7.innerHTML = '';
             config.sodas.forEach(i => {
-                b7.innerHTML += `
-                    <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
-                        <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
-                        <span class="text-[10px] font-bold text-white">${i.name}</span>
-                        <span class="text-cyan-300 text-xs font-black">$${i.precio}</span>
-                    </div>`;
+                if(i.activo !== false) {
+                    b7.innerHTML += `
+                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
+                            <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
+                            <span class="text-[10px] font-bold text-white">${i.name}</span>
+                            <span class="text-cyan-300 text-xs font-black">$${i.precio}</span>
+                        </div>`;
+                }
             });
         }
 
@@ -261,21 +274,22 @@
             let container = document.getElementById(elementId);
             container.innerHTML = `<span class="text-[9px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center mb-1">${categoria}</span>`;
             items.forEach(i => {
-                container.innerHTML += `
-                    <div onclick='abrirModal(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
-                        <div class="flex items-center space-x-3">
-                            <img id="img-${i.id}" src="${i.img}" class="w-10 h-10 object-contain drop-shadow-md">
-                            <div>
-                                <h3 class="text-[11px] font-black text-white">${i.name}</h3>
-                                <p class="text-[9px] text-purple-300">Toca para tamaños</p>
+                if(i.activo !== false) {
+                    container.innerHTML += `
+                        <div onclick='abrirModal(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
+                            <div class="flex items-center space-x-3">
+                                <img id="img-${i.id}" src="${i.img}" class="w-10 h-10 object-contain drop-shadow-md">
+                                <div>
+                                    <h3 class="text-[11px] font-black text-white">${i.name}</h3>
+                                    <p class="text-[9px] text-purple-300">Toca para tamaños</p>
+                                </div>
                             </div>
-                        </div>
-                        <span class="bg-pink-600 text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
-                    </div>`;
+                            <span class="bg-pink-600 text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
+                        </div>`;
+                }
             });
         }
 
-        // ANIMACIÓN Y TOAST
         function mostrarToast() {
             let toast = document.getElementById('toast-exito');
             toast.classList.remove('opacity-0', 'scale-90');
@@ -290,7 +304,7 @@
             let img = document.getElementById(imgId);
             if(img) {
                 img.classList.remove('animate__animated', 'animate__rubberBand');
-                void img.offsetWidth; // Trigger reflow
+                void img.offsetWidth;
                 img.classList.add('animate__animated', 'animate__rubberBand');
             }
         }
@@ -377,7 +391,6 @@
             });
         }
 
-        // FLUJO DE COBRO
         function abrirModalPago() {
             if (carrito.length === 0) { alert("Agrega productos al carrito."); return; }
             let total = carrito.reduce((a, b) => a + b.precio, 0);
@@ -399,7 +412,7 @@
                 cliente: cliente,
                 items: carrito,
                 total: total,
-                pago: metodo, // AQUÍ SE GUARDA SI ES EFECTIVO O TARJETA
+                pago: metodo,
                 estado: "pagado",
                 fecha: new Date().toLocaleDateString(),
                 tiempo: new Date().toLocaleTimeString()
