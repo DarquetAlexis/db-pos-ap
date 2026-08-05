@@ -19,35 +19,32 @@
         }
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
         .neon-aura:hover { transform: scale(1.03); }
-        
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col pb-32">
 
-    <!-- Toast / Mensaje Flotante -->
     <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
         ✨ ¡Agregado con Éxito!
     </div>
 
-    <!-- ENCABEZADO -->
     <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-purple-500/30 shadow-md">
         <div class="flex items-center space-x-2">
             <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
             <div>
                 <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
-                <p class="text-[9px] text-purple-300">POS Móvil Dinámico</p>
+                <p class="text-[9px] text-purple-300">POS Sincronizado</p>
             </div>
         </div>
         <div class="flex space-x-2">
+            <a href="cocina.html" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">🍳 Cocina</a>
             <a href="admin.html" class="bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">⚙️ Admin</a>
             <a href="index.html" class="bg-purple-900 text-purple-200 px-2.5 py-1.5 rounded-lg text-xs font-bold">🏠</a>
         </div>
     </header>
 
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
-        
-        <!-- SECCIÓN OFERTAS ESTRELLA (Presentado por Moy) -->
+        <!-- OFERTAS (Moy) -->
         <section class="bg-dark-overlay p-3 marco-oferta space-y-2 animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
             <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
                 <img src="moy.png" alt="Moy" class="w-8 h-8 object-contain animate__animated animate__bounceIn">
@@ -58,7 +55,7 @@
                     <img id="img-oferta-cap" src="Capuchino.png" alt="Capuchino" class="w-12 h-12 object-contain drop-shadow-md">
                     <div>
                         <h3 class="text-xs font-black text-white">Frappe Capuchino 10oz</h3>
-                        <p class="text-[10px] text-green-300">¡El favorito de Moy!</p>
+                        <p class="text-[10px] text-green-300">¡Favorito de Moy!</p>
                     </div>
                 </div>
                 <div class="flex flex-col space-y-1">
@@ -68,7 +65,7 @@
             </div>
         </section>
 
-        <!-- CREPAS: ÁRMALA A TU ANTOJO (Presentado por Dulce) -->
+        <!-- CREPAS ANTOJO (Dulce) -->
         <section class="bg-dark-overlay p-3 border-2 border-amber-500 rounded-xl shadow-[0_0_15px_rgba(251,191,36,0.3)] space-y-2">
             <div class="flex items-center space-x-2 pb-1.5 border-b border-amber-500/30">
                 <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain animate__animated animate__bounceIn">
@@ -84,13 +81,13 @@
             </div>
         </section>
 
-        <!-- CARTA DE FRAPPES (Presentado por Fran) -->
+        <!-- FRAPPES (Fran) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-3">
             <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
                 <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
                 <div>
                     <h2 class="text-xs font-black text-pink-300 uppercase">🥤 Carta de Frappes</h2>
-                    <p class="text-[9px] text-purple-300">Toca cualquier frappé para elegir tamaño</p>
+                    <p class="text-[9px] text-purple-300">Toca para elegir tamaño</p>
                 </div>
             </div>
             <div class="space-y-1.5"><div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div></div>
@@ -98,19 +95,18 @@
             <div class="space-y-1.5 pt-1"><div id="box-frappes-especiales" class="grid grid-cols-1 gap-2"></div></div>
         </section>
 
-        <!-- CREPAS ESPECIALES (Presentado por Talia) -->
+        <!-- CREPAS ESPECIALES (Talia) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-2">
             <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
                 <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
                 <div>
                     <h2 class="text-xs font-black text-pink-300 uppercase">🥞 Crepas Especiales</h2>
-                    <p class="text-[9px] text-purple-300">Las creaciones exclusivas de Talia</p>
+                    <p class="text-[9px] text-purple-300">Creaciones de Talia</p>
                 </div>
             </div>
             <div id="box-crepas-especiales" class="space-y-2"></div>
         </section>
 
-        <!-- CHAMOYADAS Y SODAS -->
         <div class="grid grid-cols-2 gap-2">
             <section class="bg-dark-overlay p-3 marco-lila space-y-2">
                 <h2 class="text-[11px] font-black text-amber-300 text-center">🌶️ Chamoyadas</h2>
@@ -123,7 +119,7 @@
         </div>
     </main>
 
-    <!-- MODAL SELECTOR DE TAMAÑO NEÓN -->
+    <!-- MODAL TAMAÑO -->
     <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="bg-dark-overlay border-2 border-pink-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
             <img id="modal-img-frappe" src="" class="w-20 h-20 mx-auto object-contain drop-shadow-lg">
@@ -137,7 +133,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE PAGO (Efectivo / Tarjeta) -->
+    <!-- MODAL PAGO -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-green-500 p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
             <h3 class="text-lg font-black text-green-400 uppercase">Total a Cobrar: <span id="lbl-total-cobro"></span></h3>
@@ -150,11 +146,11 @@
                     <span class="text-2xl mb-1">💳</span> Tarjeta
                 </button>
             </div>
-            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-4">Cancelar Envío</button>
+            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-4">Cancelar</button>
         </div>
     </div>
 
-    <!-- CARRITO FLOTANTE COMPACTO -->
+    <!-- CARRITO -->
     <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-pink-500/40 p-3 shadow-2xl z-40 rounded-t-2xl">
         <div class="max-w-md mx-auto flex flex-col space-y-2">
             <div class="flex justify-between items-center">
@@ -218,7 +214,6 @@
 
         function initPOS() {
             let config = getConfig();
-
             let b5 = document.getElementById('box-ingredientes'); b5.innerHTML = '';
             config.ingredientes.forEach(ing => {
                 b5.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing.trim()}" class="ing-chk accent-amber-400 w-3.5 h-3.5" onchange="calcCustom()"> <span class="truncate">${ing}</span></label>`;
@@ -366,7 +361,6 @@
             let badge = document.getElementById('badge-contador');
             let totalLbl = document.getElementById('total-carrito');
             let miniList = document.getElementById('minilist-carrito');
-            
             let total = carrito.reduce((acc, i) => acc + i.precio, 0);
             badge.innerText = `${carrito.length}`;
             totalLbl.innerText = `$${total.toFixed(2)}`;
@@ -406,6 +400,7 @@
             let cliente = document.getElementById('nombre-cliente').value.trim() || "Mostrador";
             let total = carrito.reduce((a, b) => a + b.precio, 0);
             
+            // LA ORDEN SE ENVÍA DIRECTAMENTE A LA BASE DE DATOS COMPARTIDA (COCINA Y DUEÑO)
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
             orders.push({
                 id: Date.now().toString().slice(-4),
@@ -413,13 +408,13 @@
                 items: carrito,
                 total: total,
                 pago: metodo,
-                estado: "pagado",
+                estado: "pendiente", // Inicia pendiente para cocina
                 fecha: new Date().toLocaleDateString(),
                 tiempo: new Date().toLocaleTimeString()
             });
             localStorage.setItem("db_orders", JSON.stringify(orders));
             
-            alert(`✅ Cobro exitoso con ${metodo}!\nTotal: $${total}`);
+            alert(`🚀 ¡Pedido enviado con éxito a Cocina y Caja!\nMétodo: ${metodo} | Total: $${total}`);
             carrito = [];
             document.getElementById('nombre-cliente').value = "";
             updateCart();
