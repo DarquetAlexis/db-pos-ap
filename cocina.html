@@ -8,27 +8,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
+        body { background-color: #2e0671; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
         .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.96); backdrop-filter: blur(6px); }
-        .marco-cocina { border: 2px solid #3b82f6; border-radius: 1rem; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        .marco-cocina { border: 2px solid #526DB7; border-radius: 1rem; box-shadow: 0 4px 20px rgba(82,109,183,0.3); }
     </style>
 </head>
-<body class="text-white min-h-screen p-3 md:p-6 pb-20">
+<body class="text-white min-h-screen p-3 md:p-6 pb-20" style="background-color: #2e0671;">
 
     <header class="flex justify-between items-center bg-dark-overlay p-4 marco-cocina mb-4">
         <div>
-            <h1 class="text-base font-black text-blue-400">🍳 Cocina - Nube en Tiempo Real</h1>
-            <p class="text-[10px] text-purple-300">Conectado con Meseros y Dueño</p>
+            <h1 class="text-base font-black text-[#A3E3F8]">🍳 Cocina - Nube en Tiempo Real</h1>
+            <p class="text-[10px] text-[#B0D0F8]">Conectado con Meseros y Dueño</p>
         </div>
         <div class="flex space-x-2">
-            <a href="mesero.html" class="bg-purple-900 hover:bg-purple-800 text-xs font-bold px-3 py-2 rounded-xl">📱 POS</a>
-            <a href="admin.html" class="bg-amber-600 text-xs font-bold px-3 py-2 rounded-xl">⚙️ Admin</a>
+            <a href="mesero.html" class="bg-[#6C4A8D] hover:bg-[#526DB7] text-xs font-bold px-3 py-2 rounded-xl text-white">📱 POS</a>
+            <a href="admin.html" class="bg-[#6C4A8D] text-xs font-bold px-3 py-2 rounded-xl text-white">⚙️ Admin</a>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto space-y-4">
         <section class="bg-dark-overlay p-4 marco-cocina space-y-3">
-            <h2 class="text-xs font-black text-blue-300 uppercase">📋 Comandas Activas</h2>
+            <h2 class="text-xs font-black text-[#B0D0F8] uppercase">📋 Comandas Activas</h2>
             <div id="contenedor-comandas-cocina" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </section>
     </main>
@@ -64,28 +64,30 @@
             }
 
             activas.slice().reverse().forEach(orden => {
-                let colorBorde = orden.estado === 'listo' ? 'border-green-500 bg-green-950/40' : 'border-blue-500/60 bg-purple-950/80';
+                let colorBorde = orden.estado === 'listo' ? 'border-green-500 bg-green-950/40' : (orden.estado === 'en_preparacion' ? 'border-amber-500 bg-amber-950/30' : 'border-[#526DB7] bg-[#6C4A8D]/40');
                 let listaItems = '';
                 orden.items.forEach(item => {
-                    let badgeNuevo = item.nuevo ? `<span class="bg-amber-500 text-gray-900 text-[9px] font-black px-1.5 py-0.5 rounded ml-1 animate-pulse">¡NUEVO!</span>` : '';
-                    listaItems += `<li class="text-xs text-gray-200 flex justify-between items-center py-0.5 border-b border-purple-900/40"><span>• ${item.name} ${badgeNuevo}</span> <span class="font-bold text-pink-300">$${item.precio}</span></li>`;
+                    let badgeNuevo = item.nuevo ? `<span class="bg-[#F6A9C5] text-gray-900 text-[9px] font-black px-1.5 py-0.5 rounded ml-1 animate-pulse">¡NUEVO!</span>` : '';
+                    listaItems += `<li class="text-xs text-gray-200 flex justify-between items-center py-0.5 border-b border-[#6C4A8D]/40"><span>• ${item.name} ${badgeNuevo}</span> <span class="font-bold text-[#F6A9C5]">$${item.precio}</span></li>`;
                 });
 
+                let indicadorEstado = orden.estado === 'listo' ? 'LISTO' : (orden.estado === 'en_preparacion' ? 'EN PREPARACIÓN 🔒' : 'PENDIENTE');
+
                 contenedor.innerHTML += `
-                    <div class="p-3 rounded-xl border ${colorBorde} space-y-2 shadow-xl">
-                        <div class="flex justify-between items-center border-b border-purple-900 pb-1">
+                    <div class="p-3 rounded-xl border ${colorBorde} space-y-2 shadow-xl" style="border-left: 6px solid ${orden.color || '#526DB7'}">
+                        <div class="flex justify-between items-center border-b border-[#6C4A8D] pb-1">
                             <div>
-                                <span class="text-xs font-black text-amber-300">Orden #${orden.id} - ${orden.cliente}</span>
+                                <span class="text-xs font-black text-[#A3E3F8]" style="color: ${orden.color || '#A3E3F8'}">Orden #${orden.id} - ${orden.cliente}</span>
                                 <p class="text-[9px] text-gray-400">🕒 ${orden.tiempo}</p>
                             </div>
-                            <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${orden.estado === 'listo' ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}">${orden.estado.replace('_', ' ')}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${orden.estado === 'listo' ? 'bg-green-600 text-white' : (orden.estado === 'en_preparacion' ? 'bg-amber-600 text-white' : 'bg-[#526DB7] text-white')}">${indicadorEstado}</span>
                         </div>
                         <ul class="space-y-1 my-1 max-h-32 overflow-y-auto pr-1">${listaItems}</ul>
-                        <div class="flex justify-between items-center pt-2 border-t border-purple-900/60 text-xs">
-                            <span class="font-bold text-pink-300">Total: $${orden.items.reduce((a,b)=>a+b.precio,0).toFixed(2)}</span>
+                        <div class="flex justify-between items-center pt-2 border-t border-[#6C4A8D]/60 text-xs">
+                            <span class="font-bold text-[#F6A9C5]">Total: $${orden.items.reduce((a,b)=>a+b.precio,0).toFixed(2)}</span>
                             <div class="space-x-1">
-                                <button onclick="cambiarEstado('${orden.id}', 'en_preparacion')" class="bg-amber-600 text-[10px] font-bold px-2 py-1 rounded">🔥 Preparar</button>
-                                <button onclick="cambiarEstado('${orden.id}', 'listo')" class="bg-green-600 text-[10px] font-bold px-2.5 py-1 rounded">✅ Listo</button>
+                                <button onclick="cambiarEstado('${orden.id}', 'en_preparacion')" class="bg-amber-600 text-[10px] font-bold px-2 py-1 rounded text-white">🔥 Preparar</button>
+                                <button onclick="cambiarEstado('${orden.id}', 'listo')" class="bg-green-600 text-[10px] font-bold px-2.5 py-1 rounded text-white">✅ Listo</button>
                             </div>
                         </div>
                     </div>`;
