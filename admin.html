@@ -8,21 +8,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
+        body { background-color: #2e0671; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
         .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.96); backdrop-filter: blur(6px); }
-        .marco-admin { border: 2px solid #f59e0b; border-radius: 1rem; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2); }
+        .marco-admin { border: 2px solid #6C4A8D; border-radius: 1rem; box-shadow: 0 4px 20px rgba(108,74,141,0.3); }
     </style>
 </head>
-<body class="text-white min-h-screen p-3 md:p-6 pb-20">
+<body class="text-white min-h-screen p-3 md:p-6 pb-20" style="background-color: #2e0671;">
 
     <header class="flex justify-between items-center bg-dark-overlay p-4 marco-admin mb-4">
         <div>
-            <h1 class="text-base font-black text-amber-400">⚙️ Panel del Dueño & Gestor de Menú</h1>
-            <p class="text-[10px] text-purple-300">Control de Caja y Productos en Tiempo Real</p>
+            <h1 class="text-base font-black text-[#D994F8]">⚙️ Panel del Dueño & Gestor de Menú</h1>
+            <p class="text-[10px] text-[#B0D0F8]">Control de Caja y Productos en Tiempo Real</p>
         </div>
         <div class="flex space-x-2">
-            <a href="mesero.html" class="bg-purple-900 text-xs font-bold px-3 py-2 rounded-xl">📱 POS</a>
-            <a href="cocina.html" class="bg-blue-600 text-xs font-bold px-3 py-2 rounded-xl">🍳 Cocina</a>
+            <a href="mesero.html" class="bg-[#526DB7] text-xs font-bold px-3 py-2 rounded-xl text-white">📱 POS</a>
+            <a href="cocina.html" class="bg-[#526DB7] text-xs font-bold px-3 py-2 rounded-xl text-white">🍳 Cocina</a>
         </div>
     </header>
 
@@ -35,15 +35,15 @@
             </div>
             <div class="bg-dark-overlay p-4 marco-admin text-center">
                 <span class="text-[10px] text-gray-300 uppercase font-bold">Órdenes Cobradas</span>
-                <h2 id="lbl-ordenes-cobradas" class="text-xl font-black text-amber-300 mt-1">0</h2>
+                <h2 id="lbl-ordenes-cobradas" class="text-xl font-black text-[#A3E3F8] mt-1">0</h2>
             </div>
         </div>
 
         <!-- GESTOR DE PRODUCTOS Y MENÚ -->
         <section class="bg-dark-overlay p-4 marco-admin space-y-3">
-            <h2 class="text-xs font-black text-amber-300 uppercase">🍔 Agregar / Quitar Productos del Menú</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 bg-purple-950/60 p-3 rounded-xl border border-amber-500/30 text-xs">
-                <select id="nuevo-cat" class="bg-purple-900 border border-purple-700 rounded p-2 text-white">
+            <h2 class="text-xs font-black text-[#D994F8] uppercase">🍔 Agregar / Quitar Productos del Menú</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 bg-[#6C4A8D]/40 p-3 rounded-xl border border-[#D994F8]/30 text-xs">
+                <select id="nuevo-cat" class="bg-purple-900 border border-[#D994F8] rounded p-2 text-white">
                     <option value="crepasEspeciales">Crepa Especial</option>
                     <option value="frappesBasicos">Frappe Básico</option>
                     <option value="frappesPremium">Frappe Premium</option>
@@ -51,16 +51,16 @@
                     <option value="chamoyadas">Chamoyada</option>
                     <option value="sodas">Soda Italiana</option>
                 </select>
-                <input type="text" id="nuevo-nombre" placeholder="Nombre producto..." class="bg-purple-900 border border-purple-700 rounded p-2 text-white">
-                <input type="number" id="nuevo-precio" placeholder="Precio ($)..." class="bg-purple-900 border border-purple-700 rounded p-2 text-white">
-                <button onclick="agregarNuevoProducto()" class="bg-emerald-600 hover:bg-emerald-500 font-bold p-2 rounded text-white shadow">➕ Añadir Producto</button>
+                <input type="text" id="nuevo-nombre" placeholder="Nombre producto..." class="bg-purple-900 border border-[#D994F8] rounded p-2 text-white">
+                <input type="number" id="nuevo-precio" placeholder="Precio ($)..." class="bg-purple-900 border border-[#D994F8] rounded p-2 text-white">
+                <button onclick="agregarNuevoProducto()" class="bg-[#526DB7] hover:bg-[#6C4A8D] font-bold p-2 rounded text-white shadow">➕ Añadir Producto</button>
             </div>
             <div id="lista-productos-admin" class="space-y-1 max-h-48 overflow-y-auto pr-1"></div>
         </section>
 
         <!-- HISTORIAL DE COBROS -->
         <section class="bg-dark-overlay p-4 marco-admin space-y-3">
-            <h2 class="text-xs font-black text-amber-300 uppercase">📊 Historial de Cuentas Cobradas</h2>
+            <h2 class="text-xs font-black text-[#D994F8] uppercase">📊 Historial de Cuentas Cobradas</h2>
             <div id="contenedor-historial-cobrados" class="space-y-2"></div>
         </section>
     </main>
@@ -106,10 +106,10 @@
                     {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png", activo:true}
                 ],
                 crepasEspeciales: [
-                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90, img:"Crepa Fererro.png", activo:true},
-                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90, img:"Crepa Gansito.png", activo:true},
-                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95, img:"Crepa Basica.png", activo:true},
-                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85, img:"Crepa Oreo.png", activo:true}
+                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", ingredientesBase:["Nutella", "Nuez", "Almendra"], precio:90, img:"Crepa Fererro.png", activo:true},
+                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Queso Philadelphia, Fresa, Gansito", ingredientesBase:["Nutella", "Queso Philadelphia", "Fresa"], precio:90, img:"Crepa Gansito.png", activo:true},
+                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Queso Philadelphia, Kinder Délice", ingredientesBase:["Nutella", "Queso Philadelphia"], precio:95, img:"Crepa Basica.png", activo:true},
+                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", ingredientesBase:["Nutella", "Lechera"], precio:85, img:"Crepa Oreo.png", activo:true}
                 ],
                 chamoyadas: [
                     {id:"ch1", name:"PicaFresa", precio:60, img:"Chamoyada Fresa.png", activo:true},
@@ -120,7 +120,7 @@
                     {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png", activo:true},
                     {id:"so3", name:"Cereza", precio:60, img:"Cereza.png", activo:true}
                 ],
-                ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada Fresa", "Lechera", "Fresa", "Plátano", "Durazno", "Nuez", "Almendra", "Chispas de chocolate", "Crema Batida"]
+                ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada de Fresa", "Lechera", "Salsa Italiana", "Mermelada de Zarzamora", "Fresa", "Plátano", "Piña", "Durazno", "Nuez", "Almendra", "Jamón", "Manchego", "Peperoni", "Crema Batida", "Chocolate Especial"]
             };
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
@@ -136,10 +136,10 @@
                     config[cat].forEach((item, idx) => {
                         let precioTxt = item.precio ? `$${item.precio}` : `Med: $${item.med}`;
                         container.innerHTML += `
-                            <div class="bg-purple-950/80 p-2 rounded-lg border border-amber-500/30 flex justify-between items-center text-xs">
+                            <div class="bg-[#6C4A8D]/40 p-2 rounded-lg border border-[#D994F8]/30 flex justify-between items-center text-xs">
                                 <div>
                                     <span class="font-bold text-white">${item.name}</span>
-                                    <span class="text-[10px] text-purple-300 ml-2">(${cat}) - ${precioTxt}</span>
+                                    <span class="text-[10px] text-[#B0D0F8] ml-2">(${cat}) - ${precioTxt}</span>
                                 </div>
                                 <button onclick="eliminarProductoMenu('${cat}', ${idx})" class="bg-red-900 hover:bg-red-800 text-white font-bold px-2 py-1 rounded text-[10px]">🗑️ Quitar</button>
                             </div>`;
@@ -170,6 +170,10 @@
             } else {
                 nuevoItem.precio = precio;
                 nuevoItem.img = "Crepa Basica.png";
+                if(cat === 'crepasEspeciales') {
+                    nuevoItem.ingredientesBase = ["Nutella"];
+                    nuevoItem.desc = "Personalizada";
+                }
             }
 
             config[cat].push(nuevoItem);
@@ -207,9 +211,9 @@
             cobradas.slice().reverse().forEach(orden => {
                 let itemsTxt = orden.items.map(i => i.name).join(', ');
                 contenedor.innerHTML += `
-                    <div class="p-3 rounded-xl border border-amber-500/30 bg-purple-950/60 flex justify-between items-center text-xs">
+                    <div class="p-3 rounded-xl border border-[#6C4A8D]/50 bg-[#6C4A8D]/40 flex justify-between items-center text-xs" style="border-left: 6px solid ${orden.color || '#D994F8'}">
                         <div>
-                            <span class="font-black text-amber-300">Orden #${orden.id} - ${orden.cliente}</span>
+                            <span class="font-black text-[#A3E3F8]" style="color: ${orden.color || '#A3E3F8'}">Orden #${orden.id} - ${orden.cliente}</span>
                             <p class="text-[10px] text-gray-300 truncate w-60">Items: ${itemsTxt}</p>
                             <p class="text-[9px] text-gray-400">🕒 ${orden.fecha} ${orden.tiempo} | Pago: <b>${orden.pagoMetodo || 'Efectivo'}</b></p>
                         </div>
