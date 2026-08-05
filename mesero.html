@@ -9,110 +9,92 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
-        .bg-dark-overlay { background-color: rgba(59, 20, 67, 0.94); backdrop-filter: blur(8px); }
-        .marco-lila { border: 2px solid #d946ef; border-radius: 1.25rem; box-shadow: 0 4px 20px rgba(217, 70, 239, 0.25); }
-        .marco-oferta { border: 2px solid #10b981; border-radius: 1.25rem; box-shadow: 0 0 15px #10b981, inset 0 0 10px #10b981; }
+        body { background-color: #2e0671; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
+        .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.96); backdrop-filter: blur(8px); }
+        .marco-lila { border: 2px solid #D994F8; border-radius: 1.25rem; box-shadow: 0 4px 20px rgba(217, 148, 248, 0.25); }
+        .marco-oferta { border: 2px solid #526DB7; border-radius: 1.25rem; box-shadow: 0 0 15px #526DB7, inset 0 0 10px #526DB7; }
         @keyframes neonGlow {
-            0% { box-shadow: 0 0 5px #ec4899, 0 0 10px #ec4899, 0 0 15px #d946ef; }
-            50% { box-shadow: 0 0 15px #f472b6, 0 0 25px #c084fc, 0 0 35px #a855f7; }
-            100% { box-shadow: 0 0 5px #ec4899, 0 0 10px #ec4899, 0 0 15px #d946ef; }
+            0% { box-shadow: 0 0 5px #F6A9C5, 0 0 10px #D994F8, 0 0 15px #A3E3F8; }
+            50% { box-shadow: 0 0 15px #B0D0F8, 0 0 25px #6C4A8D, 0 0 35px #526DB7; }
+            100% { box-shadow: 0 0 5px #F6A9C5, 0 0 10px #D994F8, 0 0 15px #A3E3F8; }
         }
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col pb-36">
+<body class="text-white min-h-screen flex flex-col pb-36" style="background-color: #2e0671;">
 
-    <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
+    <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-[#526DB7] text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
         ✨ ¡Sincronizado!
     </div>
 
-    <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-purple-500/30 shadow-md">
+    <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-[#6C4A8D] shadow-md">
         <div class="flex items-center space-x-2">
-            <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
+            <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-[#F6A9C5] object-contain">
             <div>
-                <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
-                <p class="text-[9px] text-purple-300">Nube en Tiempo Real</p>
+                <h1 class="text-sm font-black text-[#D994F8]">DULCE BOCADO</h1>
+                <p class="text-[9px] text-[#B0D0F8]">Nube en Tiempo Real</p>
             </div>
         </div>
         <div class="flex space-x-2">
-            <button onclick="abrirModalSelectorOrdenes()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">📂 Órdenes (<span id="lbl-num-ordenes">0</span>)</button>
-            <a href="cocina.html" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">🍳 Cocina</a>
-            <a href="admin.html" class="bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">⚙️ Admin</a>
+            <button onclick="abrirModalSelectorOrdenes()" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">📂 Órdenes (<span id="lbl-num-ordenes">0</span>)</button>
+            <a href="cocina.html" class="bg-[#526DB7] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">🍳 Cocina</a>
+            <a href="admin.html" class="bg-[#6C4A8D] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">⚙️ Admin</a>
         </div>
     </header>
 
-    <div class="bg-purple-950/90 border-b border-pink-500/40 p-2 text-xs sticky top-[57px] z-30 backdrop-blur-md shadow-lg">
+    <div class="bg-purple-950/90 border-b border-[#D994F8]/40 p-2 text-xs sticky top-[57px] z-30 backdrop-blur-md shadow-lg">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <span class="bg-pink-600 text-white px-2 py-0.5 rounded font-bold text-[10px]" id="txt-id-orden-actual">Orden #--</span>
-                <input type="text" id="nombre-cliente" placeholder="Nombre / Mesa..." class="bg-purple-900 border border-purple-700 rounded px-2 py-0.5 text-xs text-white w-28 focus:outline-none focus:border-pink-500" onchange="actualizarNombreOrdenActiva()">
+                <span id="badge-color-mesa" class="bg-[#D994F8] text-gray-900 px-2 py-0.5 rounded font-black text-[10px]" id="txt-id-orden-actual">Orden #--</span>
+                <input type="text" id="nombre-cliente" placeholder="Nombre / Mesa..." class="bg-[#6C4A8D]/60 border border-[#D994F8]/60 rounded px-2 py-0.5 text-xs text-white w-28 focus:outline-none focus:border-[#F6A9C5]" onchange="actualizarNombreOrdenActiva()">
             </div>
-            <button onclick="crearNuevaOrden()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[11px] shadow">+ Nueva Cuenta</button>
+            <button onclick="crearNuevaOrden()" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold px-2.5 py-1 rounded text-[11px] shadow">+ Nueva Cuenta</button>
         </div>
     </div>
 
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
-        <!-- VASO COMBO -->
-        <section class="bg-dark-overlay p-3 marco-oferta space-y-2">
-            <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
-                <span class="text-xl">🍨</span>
-                <h2 class="text-sm font-black text-green-400 uppercase tracking-widest">VASO COMBO</h2>
+        <!-- OFERTAS (Frappe Capuchino 10oz integrado) -->
+        <section class="bg-dark-overlay p-3 marco-oferta space-y-2" style="border-color: #526DB7;">
+            <div class="flex items-center space-x-2 pb-1 border-b border-[#526DB7]/30">
+                <img src="Capuchino.png" alt="Capuchino" class="w-8 h-8 object-contain">
+                <h2 class="text-sm font-black text-[#A3E3F8] uppercase tracking-widest">🔥 CAPUCHINO 10OZ 🔥</h2>
             </div>
-            <div class="flex items-center justify-between bg-green-950/50 p-2 rounded-xl border border-green-500/40">
+            <div class="flex items-center justify-between bg-[#6C4A8D]/40 p-2 rounded-xl border border-[#526DB7]/40">
                 <div>
-                    <h3 class="text-xs font-black text-white">Vaso Combo Especial</h3>
-                    <p class="text-[9px] text-green-300">Incluye selección</p>
+                    <h3 class="text-xs font-black text-white">Frappe Capuchino 10oz</h3>
+                    <p class="text-[10px] text-[#B0D0F8]">¡Precio especial!</p>
                 </div>
-                <button onclick="abrirModalVasoCombo()" class="bg-green-600 hover:bg-green-500 font-bold px-3 py-1 rounded-lg text-xs shadow text-white">$150 ➔</button>
-            </div>
-        </section>
-
-        <!-- OFERTAS (Moy) -->
-        <section class="bg-dark-overlay p-3 marco-oferta space-y-2">
-            <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
-                <img src="moy.png" alt="Moy" class="w-8 h-8 object-contain">
-                <h2 class="text-sm font-black text-green-400 uppercase tracking-widest">🔥 OFERTAS ESPECIALES 🔥</h2>
-            </div>
-            <div class="flex items-center justify-between bg-green-950/50 p-2 rounded-xl border border-green-500/40">
-                <div class="flex items-center space-x-3">
-                    <img id="img-oferta-cap" src="Capuchino.png" alt="Capuchino" class="w-12 h-12 object-contain drop-shadow-md">
-                    <div>
-                        <h3 class="text-xs font-black text-white">Frappe Capuchino 10oz</h3>
-                        <p class="text-[10px] text-green-300">¡Favorito de Moy!</p>
-                    </div>
-                </div>
-                <div class="flex flex-col space-y-1">
-                    <button onclick="agregarProductoALaOrdenActive('Frappe Cap. 10oz (1)', 30, 'img-oferta-cap')" class="bg-green-600 hover:bg-green-500 font-bold px-3 py-1 rounded-lg text-xs shadow">1 x $30</button>
-                    <button onclick="agregarProductoALaOrdenActive('Promo Frappe Cap. 10oz (2)', 50, 'img-oferta-cap')" class="bg-amber-500 hover:bg-amber-400 font-bold px-3 py-1 rounded-lg text-xs shadow text-gray-900">2 x $50</button>
+                <div class="flex space-x-1">
+                    <button onclick="agregarCapuchinoPromo(1, 30)" class="bg-[#526DB7] hover:bg-[#6C4A8D] font-bold px-2 py-1 rounded-lg text-xs shadow text-white">1 x $30</button>
+                    <button onclick="agregarCapuchinoPromo(2, 50)" class="bg-[#F6A9C5] hover:bg-[#D994F8] font-bold px-2 py-1 rounded-lg text-xs shadow text-gray-900">2 x $50</button>
                 </div>
             </div>
         </section>
 
-        <!-- CREPAS ANTOJO (Dulce) -->
-        <section class="bg-dark-overlay p-3 border-2 border-amber-500 rounded-xl shadow-[0_0_15px_rgba(251,191,36,0.3)] space-y-2">
-            <div class="flex items-center space-x-2 pb-1.5 border-b border-amber-500/30">
+        <!-- CREPAS ANTOJO (Todos los ingredientes de la lona + Chocolate Especial) -->
+        <section class="bg-dark-overlay p-3 border-2 border-[#D994F8] rounded-xl shadow-[0_0_15px_rgba(217,148,248,0.3)] space-y-2">
+            <div class="flex items-center space-x-2 pb-1.5 border-b border-[#D994F8]/30">
                 <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain">
                 <div>
-                    <h2 class="text-xs font-black text-amber-300 uppercase">🥞 Ármala a tu Antojo</h2>
-                    <p class="text-[9px] text-gray-300">Base $50 + $10 c/u ingrediente adicional</p>
+                    <h2 class="text-xs font-black text-[#D994F8] uppercase">🥞 Ármala a tu Antojo</h2>
+                    <p class="text-[9px] text-[#B0D0F8]">Base $50 + $10 c/u adic. (Chocolate Esp. $15)</p>
                 </div>
             </div>
-            <div id="box-ingredientes" class="grid grid-cols-2 gap-1.5 text-[11px] bg-purple-950/60 p-2.5 rounded-xl border border-amber-500/20"></div>
-            <div class="flex justify-between items-center bg-purple-950 p-2 rounded-xl border border-amber-500/40 text-xs">
-                <span id="txt-precio-base" class="font-bold text-amber-300">Base: $50</span>
-                <button onclick="agregarCrepaCustomActiva()" class="bg-amber-600 hover:bg-amber-500 font-bold px-3 py-1.5 rounded-lg text-xs shadow">Añadir Crepa</button>
+            <div id="box-ingredientes" class="grid grid-cols-2 gap-1.5 text-[11px] bg-[#6C4A8D]/30 p-2.5 rounded-xl border border-[#D994F8]/20"></div>
+            <div class="flex justify-between items-center bg-[#6C4A8D]/50 p-2 rounded-xl border border-[#D994F8]/40 text-xs">
+                <span id="txt-precio-base" class="font-bold text-[#D994F8]">Base: $50</span>
+                <button onclick="agregarCrepaCustomActiva()" class="bg-[#526DB7] hover:bg-[#6C4A8D] font-bold px-3 py-1.5 rounded-lg text-xs shadow text-white">Añadir Crepa</button>
             </div>
         </section>
 
         <!-- FRAPPES (Fran) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-3">
-            <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
+            <div class="flex items-center space-x-2 pb-2 border-b border-[#D994F8]/30">
                 <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain">
                 <div>
-                    <h2 class="text-xs font-black text-pink-300 uppercase">🥤 Carta de Frappes</h2>
-                    <p class="text-[9px] text-purple-300">Toca para elegir tamaño</p>
+                    <h2 class="text-xs font-black text-[#D994F8] uppercase">🥤 Carta de Frappes</h2>
+                    <p class="text-[9px] text-[#B0D0F8]">Toca para tamaños y personalizar</p>
                 </div>
             </div>
             <div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div>
@@ -120,76 +102,139 @@
             <div id="box-frappes-especiales" class="grid grid-cols-1 gap-2 pt-1"></div>
         </section>
 
-        <!-- CREPAS ESPECIALES (Talia) -->
+        <!-- CREPAS ESPECIALES (Talia - Con opción de modificar ingredientes) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-            <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
+            <div class="flex items-center space-x-2 pb-2 border-b border-[#D994F8]/30">
                 <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain">
                 <div>
-                    <h2 class="text-xs font-black text-pink-300 uppercase">🥞 Crepas Especiales</h2>
-                    <p class="text-[9px] text-purple-300">Creaciones de Talia</p>
+                    <h2 class="text-xs font-black text-[#D994F8] uppercase">🥞 Crepas Especiales</h2>
+                    <p class="text-[9px] text-[#B0D0F8]">Personaliza o intercambia ingredientes</p>
                 </div>
             </div>
             <div id="box-crepas-especiales" class="space-y-2"></div>
         </section>
 
+        <!-- GRID INFERIOR: Chamoyadas, Sodas, Vaso Combo y Maruchan -->
         <div class="grid grid-cols-2 gap-2">
-            <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-                <h2 class="text-[11px] font-black text-amber-300 text-center">🌶️ Chamoyadas</h2>
-                <div id="box-chamoyadas" class="space-y-2"></div>
+            <section class="bg-dark-overlay p-3 marco-lila space-y-2 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-[11px] font-black text-[#A3E3F8] text-center mb-1">🌶️ Chamoyadas</h2>
+                    <div id="box-chamoyadas" class="space-y-2"></div>
+                </div>
             </section>
-            <section class="bg-dark-overlay p-3 marco-lila space-y-2">
-                <h2 class="text-[11px] font-black text-cyan-300 text-center">🫧 Sodas Italianas</h2>
-                <div id="box-sodas" class="space-y-2"></div>
+            <section class="bg-dark-overlay p-3 marco-lila space-y-2 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-[11px] font-black text-[#B0D0F8] text-center mb-1">🫧 Sodas Italianas</h2>
+                    <div id="box-sodas" class="space-y-2"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- VASO COMBO Y MARUCHAN ABAJO -->
+        <div class="grid grid-cols-2 gap-2">
+            <section class="bg-dark-overlay p-3 marco-oferta space-y-2 flex flex-col justify-between" style="border-color: #F6A9C5;">
+                <div class="text-center space-y-1" onclick="abrirModalVasoCombo()">
+                    <img src="vaso Combo.png" class="w-14 h-14 mx-auto object-contain cursor-pointer">
+                    <h3 class="text-xs font-black text-[#F6A9C5]">Vaso Combo</h3>
+                    <p class="text-[10px] text-white font-bold">$150</p>
+                </div>
+                <button onclick="abrirModalVasoCombo()" class="bg-[#F6A9C5] text-gray-900 font-bold py-1 rounded text-xs">Elegir ➔</button>
+            </section>
+            <section class="bg-dark-overlay p-3 marco-oferta space-y-2 flex flex-col justify-between" style="border-color: #A3E3F8;">
+                <div class="text-center space-y-1" onclick="agregarProductoALaOrdenActive('Sopa Maruchan', 35, null)">
+                    <img src="Maruchan.png" class="w-14 h-14 mx-auto object-contain cursor-pointer">
+                    <h3 class="text-xs font-black text-[#A3E3F8]">Sopa Maruchan</h3>
+                    <p class="text-[10px] text-white font-bold">$35</p>
+                </div>
+                <button onclick="agregarProductoALaOrdenActive('Sopa Maruchan', 35, null)" class="bg-[#A3E3F8] text-gray-900 font-bold py-1 rounded text-xs">+ Agregar</button>
             </section>
         </div>
     </main>
 
-    <!-- MODAL VASO COMBO -->
-    <div id="modal-vaso-combo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
-        <div class="bg-dark-overlay border-2 border-green-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 shadow-2xl">
-            <h3 class="text-sm font-black text-green-300 uppercase">🍨 Personalizar Vaso Combo ($150)</h3>
-            <div class="text-left space-y-2 bg-purple-950/80 p-3 rounded-xl border border-green-500/30 text-xs">
-                <p class="font-bold text-amber-300">Frutas (Elige):</p>
-                <div class="grid grid-cols-2 gap-1">
-                    <label class="flex items-center space-x-1"><input type="checkbox" value="Fresa" class="combo-fruta accent-green-500"> <span>Fresa</span></label>
-                    <label class="flex items-center space-x-1"><input type="checkbox" value="Platano" class="combo-fruta accent-green-500"> <span>Plátano</span></label>
-                    <label class="flex items-center space-x-1"><input type="checkbox" value="Durazno" class="combo-fruta accent-green-500"> <span>Durazno</span></label>
+    <!-- MODAL PERSONALIZAR FRAPPE (Con pedido especial y opciones) -->
+    <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
+        <div class="bg-dark-overlay border-2 border-[#D994F8] p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
+            <img id="modal-img-frappe" src="" class="w-16 h-16 mx-auto object-contain drop-shadow-lg">
+            <h3 id="modal-titulo-frappe" class="text-sm font-black text-[#D994F8] uppercase">Selecciona Tamaño</h3>
+            <div class="grid grid-cols-1 gap-2 pt-1">
+                <button onclick="seleccionarTamano('Mediano')" class="bg-[#6C4A8D]/80 hover:bg-[#6C4A8D] font-bold py-1.5 rounded-xl text-xs flex justify-between px-4 border border-[#D994F8]/40"><span>Mediano (M)</span> <span id="m-precio" class="text-[#D994F8]">$50</span></button>
+                <button onclick="seleccionarTamano('Grande')" class="bg-[#6C4A8D]/80 hover:bg-[#6C4A8D] font-bold py-1.5 rounded-xl text-xs flex justify-between px-4 border border-[#D994F8]/40"><span>Grande (G)</span> <span id="g-precio" class="text-[#D994F8]">$60</span></button>
+                <button onclick="seleccionarTamano('Jumbo')" class="bg-amber-700/80 hover:bg-amber-600 font-bold py-1.5 rounded-xl text-xs flex justify-between px-4 border border-amber-400/40"><span>Jumbo (J)</span> <span id="j-precio" class="text-amber-300">$120</span></button>
+            </div>
+            
+            <div class="text-left bg-[#6C4A8D]/40 p-2.5 rounded-xl border border-[#D994F8]/30 space-y-2 text-xs">
+                <p class="font-bold text-[#A3E3F8] text-[11px]">✨ Pedido Especial (Opcional):</p>
+                <label class="flex items-center space-x-1.5 text-gray-200"><input type="checkbox" id="esp-sin-crema" class="accent-[#D994F8]"> <span>Quitar crema batida</span></label>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Azúcar:</span>
+                    <select id="esp-azucar" class="bg-purple-900 border border-[#D994F8] rounded px-1 py-0.5 text-white text-[10px]">
+                        <option value="Normal">Normal</option>
+                        <option value="Menos azúcar">Menos azúcar</option>
+                        <option value="Más azúcar">Más azúcar</option>
+                    </select>
                 </div>
-                <p class="font-bold text-amber-300 pt-2">Toppings (Elige):</p>
-                <div class="grid grid-cols-2 gap-1">
-                    <label class="flex items-center space-x-1"><input type="checkbox" value="Nuez" class="combo-topping accent-green-500"> <span>Nuez</span></label>
-                    <label class="flex items-center space-x-1"><input type="checkbox" value="Almendra" class="combo-topping accent-green-500"> <span>Almendra</span></label>
-                    <label class="flex items-center space-x-1"><input type="checkbox" value="Chispas de chocolate" class="combo-topping accent-green-500"> <span class="text-[10px]">Chispas chocolate</span></label>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Leche:</span>
+                    <select id="esp-leche" class="bg-purple-900 border border-[#D994F8] rounded px-1 py-0.5 text-white text-[10px]">
+                        <option value="Entera">Entera</option>
+                        <option value="Deslactosada">Deslactosada</option>
+                    </select>
                 </div>
             </div>
-            <div class="flex space-x-2 pt-2">
-                <button onclick="agregarVasoComboOrden()" class="flex-1 bg-green-600 hover:bg-green-500 font-bold py-2 rounded-xl text-xs text-white">Añadir ($150)</button>
-                <button onclick="cerrarModalVasoCombo()" class="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-3 rounded-xl text-xs">Cancelar</button>
+
+            <button onclick="cerrarModal()" class="mt-1 text-[11px] text-gray-400 hover:text-white underline">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL PERSONALIZAR CREPA ESPECIAL -->
+    <div id="modal-crepa-esp" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
+        <div class="bg-dark-overlay border-2 border-[#D994F8] p-5 rounded-2xl w-full max-w-sm text-center space-y-3 shadow-2xl">
+            <h3 id="modal-esp-titulo" class="text-sm font-black text-[#D994F8] uppercase">Modificar Ingredientes</h3>
+            <p class="text-[10px] text-[#B0D0F8]">Selecciona o desmarca ingredientes de la base:</p>
+            <div id="modal-esp-lista" class="grid grid-cols-2 gap-1.5 text-left text-[11px] bg-[#6C4A8D]/40 p-3 rounded-xl border border-[#D994F8]/30 max-h-48 overflow-y-auto"></div>
+            <div class="flex justify-between items-center bg-[#6C4A8D]/60 p-2 rounded-xl text-xs font-bold">
+                <span class="text-[#A3E3F8]">Precio Final:</span>
+                <span id="modal-esp-precio" class="text-green-400">$0</span>
+            </div>
+            <div class="flex space-x-2 pt-1">
+                <button onclick="confirmarCrepaEspecialModificada()" class="flex-1 bg-[#526DB7] hover:bg-[#6C4A8D] font-bold py-2 rounded-xl text-xs text-white">Añadir a Cuenta</button>
+                <button onclick="cerrarModalCrepaEsp()" class="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-3 rounded-xl text-xs">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL TAMAÑO -->
-    <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
-        <div class="bg-dark-overlay border-2 border-pink-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
-            <img id="modal-img-frappe" src="" class="w-20 h-20 mx-auto object-contain drop-shadow-lg">
-            <h3 id="modal-titulo-frappe" class="text-sm font-black text-pink-300 uppercase">Selecciona Tamaño</h3>
-            <div class="grid grid-cols-1 gap-2 pt-2">
-                <button onclick="seleccionarTamano('Mediano')" class="bg-purple-800 hover:bg-purple-700 font-bold py-2 rounded-xl text-xs flex justify-between px-4 border border-pink-500/40"><span>Mediano (M)</span> <span id="m-precio" class="text-pink-300">$50</span></button>
-                <button onclick="seleccionarTamano('Grande')" class="bg-purple-800 hover:bg-purple-700 font-bold py-2 rounded-xl text-xs flex justify-between px-4 border border-pink-500/40"><span>Grande (G)</span> <span id="g-precio" class="text-pink-300">$60</span></button>
-                <button onclick="seleccionarTamano('Jumbo')" class="bg-amber-700 hover:bg-amber-600 font-bold py-2 rounded-xl text-xs flex justify-between px-4 border border-amber-400/40"><span>Jumbo (J)</span> <span id="j-precio" class="text-amber-300">$120</span></button>
+    <!-- MODAL VASO COMBO -->
+    <div id="modal-vaso-combo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
+        <div class="bg-dark-overlay border-2 border-[#F6A9C5] p-5 rounded-2xl w-full max-w-xs text-center space-y-3 shadow-2xl">
+            <h3 class="text-sm font-black text-[#F6A9C5] uppercase">🍨 Vaso Combo ($150)</h3>
+            <div class="text-left space-y-2 bg-[#6C4A8D]/40 p-3 rounded-xl border border-[#F6A9C5]/30 text-xs">
+                <p class="font-bold text-[#A3E3F8]">Frutas:</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Fresa" class="combo-fruta accent-[#F6A9C5]"> <span>Fresa</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Platano" class="combo-fruta accent-[#F6A9C5]"> <span>Plátano</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Durazno" class="combo-fruta accent-[#F6A9C5]"> <span>Durazno</span></label>
+                </div>
+                <p class="font-bold text-[#A3E3F8] pt-2">Toppings:</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Nuez" class="combo-topping accent-[#F6A9C5]"> <span>Nuez</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Almendra" class="combo-topping accent-[#F6A9C5]"> <span>Almendra</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Chispas de chocolate" class="combo-topping accent-[#F6A9C5]"> <span class="text-[10px]">Chispas chocolate</span></label>
+                </div>
             </div>
-            <button onclick="cerrarModal()" class="mt-2 text-[11px] text-gray-400 hover:text-white underline">Cancelar</button>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="agregarVasoComboOrden()" class="flex-1 bg-[#F6A9C5] hover:bg-[#D994F8] font-bold py-2 rounded-xl text-xs text-gray-900">Añadir ($150)</button>
+                <button onclick="cerrarModalVasoCombo()" class="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-3 rounded-xl text-xs text-white">Cancelar</button>
+            </div>
         </div>
     </div>
 
     <!-- MODAL SELECTOR ORDENES -->
     <div id="modal-selector-ordenes" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
-        <div class="bg-dark-overlay border-2 border-indigo-500 p-5 rounded-2xl w-full max-w-md text-center space-y-3 shadow-2xl max-h-[80vh] flex flex-col">
-            <h3 class="text-sm font-black text-indigo-300 uppercase">📂 Cuentas y Mesas Abiertas</h3>
+        <div class="bg-dark-overlay border-2 border-[#526DB7] p-5 rounded-2xl w-full max-w-md text-center space-y-3 shadow-2xl max-h-[80vh] flex flex-col">
+            <h3 class="text-sm font-black text-[#B0D0F8] uppercase">📂 Cuentas y Mesas Abiertas</h3>
             <div id="lista-cuadros-ordenes" class="overflow-y-auto space-y-2 flex-1 pr-1 text-left"></div>
             <div class="pt-2 flex justify-between">
-                <button onclick="crearNuevaOrdenDesdeModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-2 rounded-xl text-xs">+ Abrir Nueva Cuenta</button>
+                <button onclick="crearNuevaOrdenDesdeModal()" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold px-3 py-2 rounded-xl text-xs">+ Abrir Nueva Cuenta</button>
                 <button onclick="cerrarModalSelectorOrdenes()" class="bg-gray-700 hover:bg-gray-600 text-white font-bold px-3 py-2 rounded-xl text-xs">Cerrar</button>
             </div>
         </div>
@@ -197,34 +242,34 @@
 
     <!-- MODAL PAGO -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
-        <div class="bg-dark-overlay border-2 border-green-500 p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
-            <h3 class="text-lg font-black text-green-400 uppercase">Total cuenta: <span id="lbl-total-cobro"></span></h3>
+        <div class="bg-dark-overlay border-2 border-[#526DB7] p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(82,109,183,0.4)]">
+            <h3 class="text-lg font-black text-[#A3E3F8] uppercase">Total cuenta: <span id="lbl-total-cobro"></span></h3>
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="finalizarYCobrarOrden('Efectivo')" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-green-400"><span class="text-2xl mb-1">💵</span> Efectivo</button>
-                <button onclick="finalizarYCobrarOrden('Tarjeta')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-blue-400"><span class="text-2xl mb-1">💳</span> Tarjeta</button>
+                <button onclick="finalizarYCobrarOrden('Efectivo')" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-[#B0D0F8]"><span class="text-2xl mb-1">💵</span> Efectivo</button>
+                <button onclick="finalizarYCobrarOrden('Tarjeta')" class="bg-[#6C4A8D] hover:bg-[#526DB7] text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-[#D994F8]"><span class="text-2xl mb-1">💳</span> Tarjeta</button>
             </div>
             <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-4">Cancelar</button>
         </div>
     </div>
 
     <!-- BARRA INFERIOR -->
-    <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-pink-500/40 p-3 shadow-2xl z-40 rounded-t-2xl">
+    <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-[#6C4A8D] p-3 shadow-2xl z-40 rounded-t-2xl">
         <div class="max-w-md mx-auto flex flex-col space-y-2">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <span id="badge-contador-items" class="text-[10px] bg-pink-600 text-white px-2.5 py-1 rounded-full font-bold">0 ítems</span>
-                    <span class="text-[11px] text-pink-300 font-bold" id="txt-estado-cocina-badge">Estado: Abierta</span>
+                    <span id="badge-contador-items" class="text-[10px] bg-[#526DB7] text-white px-2.5 py-1 rounded-full font-bold">0 ítems</span>
+                    <span class="text-[11px] text-[#D994F8] font-bold" id="txt-estado-cocina-badge">Estado: Abierta</span>
                 </div>
                 <div class="text-right">
-                    <span class="text-[10px] text-purple-300">Total:</span>
-                    <span id="total-carrito-activo" class="text-sm font-black text-pink-300 ml-1">$0.00</span>
+                    <span class="text-[10px] text-[#B0D0F8]">Total:</span>
+                    <span id="total-carrito-activo" class="text-sm font-black text-[#F6A9C5] ml-1">$0.00</span>
                 </div>
                 <div class="flex space-x-1">
-                    <button onclick="enviarOrdenACocina()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">🍳 Enviar</button>
-                    <button onclick="abrirModalPago()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
+                    <button onclick="enviarOrdenACocina()" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">🍳 Enviar</button>
+                    <button onclick="abrirModalPago()" class="bg-[#F6A9C5] hover:bg-[#D994F8] text-gray-900 font-bold px-3 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
                 </div>
             </div>
-            <div id="minilist-carrito" class="max-h-28 overflow-y-auto space-y-1 text-[11px] border-t border-purple-900/50 pt-1"></div>
+            <div id="minilist-carrito" class="max-h-28 overflow-y-auto space-y-1 text-[11px] border-t border-[#6C4A8D]/50 pt-1"></div>
         </div>
     </div>
 
@@ -244,6 +289,10 @@
         let ordenActivaId = null;
         let productoSeleccionado = null;
         let idAnimacionActual = null;
+        let crepaEspecialSeleccionada = null;
+
+        // Gama de colores oficial para identificar órdenes
+        const gamaColores = ["#D994F8", "#6C4A8D", "#B0D0F8", "#526DB7", "#F6A9C5", "#A3E3F8"];
 
         function getConfig() {
             let defaults = {
@@ -265,10 +314,10 @@
                     {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png", activo:true}
                 ],
                 crepasEspeciales: [
-                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90, img:"Crepa Fererro.png", activo:true},
-                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90, img:"Crepa Gansito.png", activo:true},
-                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95, img:"Crepa Basica.png", activo:true},
-                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85, img:"Crepa Oreo.png", activo:true}
+                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", ingredientesBase:["Nutella", "Nuez", "Almendra"], precio:90, img:"Crepa Fererro.png", activo:true},
+                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Queso Philadelphia, Fresa, Gansito", ingredientesBase:["Nutella", "Queso Philadelphia", "Fresa"], precio:90, img:"Crepa Gansito.png", activo:true},
+                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Queso Philadelphia, Kinder Délice", ingredientesBase:["Nutella", "Queso Philadelphia"], precio:95, img:"Crepa Basica.png", activo:true},
+                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", ingredientesBase:["Nutella", "Lechera"], precio:85, img:"Crepa Oreo.png", activo:true}
                 ],
                 chamoyadas: [
                     {id:"ch1", name:"PicaFresa", precio:60, img:"Chamoyada Fresa.png", activo:true},
@@ -279,8 +328,8 @@
                     {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png", activo:true},
                     {id:"so3", name:"Cereza", precio:60, img:"Cereza.png", activo:true}
                 ],
-                // Ingredientes completos actualizados con todos los solicitados
-                ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada Fresa", "Lechera", "Fresa", "Plátano", "Durazno", "Nuez", "Almendra", "Chispas de chocolate", "Crema Batida"]
+                // Ingredientes exactos de la lona + Chocolate Especial
+                ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada de Fresa", "Lechera", "Salsa Italiana", "Mermelada de Zarzamora", "Fresa", "Plátano", "Piña", "Durazno", "Nuez", "Almendra", "Jamón", "Manchego", "Peperoni", "Crema Batida", "Chocolate Especial"]
             };
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
@@ -315,7 +364,8 @@
             let config = getConfig();
             let b5 = document.getElementById('box-ingredientes'); b5.innerHTML = '';
             config.ingredientes.forEach(ing => {
-                b5.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing.trim()}" class="ing-chk accent-amber-400 w-3.5 h-3.5" onchange="calcCustom()"> <span class="truncate">${ing}</span></label>`;
+                let precioTxt = (ing === "Chocolate Especial") ? " ($15)" : "";
+                b5.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing.trim()}" class="ing-chk accent-[#D994F8] w-3.5 h-3.5" onchange="calcCustom()"> <span class="truncate">${ing}${precioTxt}</span></label>`;
             });
 
             renderFrappeGrid('box-frappes-basicos', config.frappesBasicos, "Básicos");
@@ -326,12 +376,12 @@
             config.crepasEspeciales.forEach(i => {
                 if(i.activo !== false) {
                     b4.innerHTML += `
-                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
-                            <div class="flex items-center space-x-3">
-                                <img id="img-${i.id}" src="${i.img || 'Crepa Basica.png'}" class="w-12 h-12 object-contain drop-shadow-md">
-                                <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-gray-300 w-32 truncate">${i.desc || ''}</p></div>
+                        <div class="bg-[#6C4A8D]/40 p-2 rounded-2xl border border-[#D994F8]/30 flex items-center justify-between cursor-pointer neon-aura">
+                            <div class="flex items-center space-x-3" onclick='abrirModalCrepaEsp(${JSON.stringify(i)})'>
+                                <img src="${i.img || 'Crepa Basica.png'}" class="w-12 h-12 object-contain drop-shadow-md">
+                                <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-[#B0D0F8] w-32 truncate">${i.desc || ''}</p></div>
                             </div>
-                            <button onclick="agregarProductoALaOrdenActive('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
+                            <button onclick='abrirModalCrepaEsp(${JSON.stringify(i)})' class="bg-[#526DB7] text-white font-bold px-2.5 py-1.5 rounded-xl shadow text-xs">$${i.precio} ⚙️</button>
                         </div>`;
                 }
             });
@@ -340,10 +390,10 @@
             config.chamoyadas.forEach(i => {
                 if(i.activo !== false) {
                     b6.innerHTML += `
-                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
-                            <img id="img-${i.id}" src="${i.img || 'Chamoyada Fresa.png'}" class="w-14 h-14 object-contain">
+                        <div class="bg-[#6C4A8D]/40 p-2 rounded-xl border border-[#526DB7]/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
+                            <img src="${i.img || 'Chamoyada Fresa.png'}" class="w-12 h-12 object-contain">
                             <span class="text-[10px] font-bold text-white">${i.name}</span>
-                            <span class="text-amber-300 text-xs font-black">$${i.precio}</span>
+                            <span class="text-[#A3E3F8] text-xs font-black">$${i.precio}</span>
                         </div>`;
                 }
             });
@@ -352,10 +402,10 @@
             config.sodas.forEach(i => {
                 if(i.activo !== false) {
                     b7.innerHTML += `
-                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
-                            <img id="img-${i.id}" src="${i.img || 'Blu.png'}" class="w-14 h-14 object-contain">
+                        <div class="bg-[#6C4A8D]/40 p-2 rounded-xl border border-[#B0D0F8]/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
+                            <img src="${i.img || 'Blu.png'}" class="w-12 h-12 object-contain">
                             <span class="text-[10px] font-bold text-white">${i.name}</span>
-                            <span class="text-cyan-300 text-xs font-black">$${i.precio}</span>
+                            <span class="text-[#B0D0F8] text-xs font-black">$${i.precio}</span>
                         </div>`;
                 }
             });
@@ -376,16 +426,16 @@
 
         function renderFrappeGrid(elementId, items, categoria) {
             let container = document.getElementById(elementId);
-            container.innerHTML = `<span class="text-[9px] font-bold text-pink-200 uppercase bg-pink-950/80 px-2 py-0.5 rounded block text-center mb-1">${categoria}</span>`;
+            container.innerHTML = `<span class="text-[9px] font-bold text-[#D994F8] uppercase bg-[#6C4A8D]/60 px-2 py-0.5 rounded block text-center mb-1">${categoria}</span>`;
             items.forEach(i => {
                 if(i.activo !== false) {
                     container.innerHTML += `
-                        <div onclick='abrirModalModalFrappe(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
+                        <div onclick='abrirModalModalFrappe(${JSON.stringify(i)}, "img-${i.id}")' class="bg-[#6C4A8D]/40 p-2 rounded-2xl border border-[#D994F8]/30 flex items-center justify-between cursor-pointer neon-aura">
                             <div class="flex items-center space-x-3">
                                 <img id="img-${i.id}" src="${i.img || 'Capuchino.png'}" class="w-10 h-10 object-contain drop-shadow-md">
-                                <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-purple-300">Toca para tamaños</p></div>
+                                <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-[#B0D0F8]">Toca para tamaños y personalizar</p></div>
                             </div>
-                            <span class="bg-pink-600 text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
+                            <span class="bg-[#526DB7] text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
                         </div>`;
                 }
             });
@@ -412,9 +462,11 @@
         }
 
         function crearNuevaOrden(notificar = true) {
+            let colorIndex = cacheOrders.length % gamaColores.length;
             let nueva = {
                 id: Date.now().toString().slice(-4),
                 cliente: `Mesa/Cliente ${cacheOrders.length + 1}`,
+                color: gamaColores[colorIndex],
                 items: [],
                 estado: "pendiente",
                 fecha: new Date().toLocaleDateString(),
@@ -436,7 +488,11 @@
             let orden = obtenerOrdenActiva();
             if (!orden) return;
 
-            document.getElementById('txt-id-orden-actual').innerText = `Orden #${orden.id}`;
+            let badgeMesa = document.getElementById('badge-color-mesa');
+            badgeMesa.innerText = `Orden #${orden.id}`;
+            badgeMesa.style.backgroundColor = orden.color || "#D994F8";
+            badgeMesa.style.color = (orden.color === "#B0D0F8" || orden.color === "#F6A9C5") ? "#000" : "#fff";
+
             document.getElementById('nombre-cliente').value = orden.cliente;
             document.getElementById('txt-estado-cocina-badge').innerText = `Estado: ${orden.estado.toUpperCase()}`;
 
@@ -451,14 +507,20 @@
                 return;
             }
 
+            let bloqueadoPorCocina = (orden.estado === 'en_preparacion' || orden.estado === 'listo');
+
             orden.items.forEach((item, idx) => {
-                let etiquetaNuevo = item.nuevo ? `<span class="bg-amber-500 text-gray-900 text-[8px] font-bold px-1 rounded ml-1">NUEVO</span>` : '';
+                let etiquetaNuevo = item.nuevo ? `<span class="bg-[#F6A9C5] text-gray-900 text-[8px] font-bold px-1 rounded ml-1">NUEVO</span>` : '';
+                let botonBorrar = bloqueadoPorCocina 
+                    ? `<span class="text-[9px] text-amber-400 ml-2">En cocina 🔒</span>` 
+                    : `<button onclick="eliminarItemDeOrden(${idx})" class="text-red-400 font-bold px-1">✕</button>`;
+
                 miniList.innerHTML += `
-                    <div class="flex justify-between items-center bg-purple-950 px-2 py-1 rounded">
-                        <span class="truncate w-40">${item.name} ${etiquetaNuevo}</span>
+                    <div class="flex justify-between items-center bg-[#6C4A8D]/40 px-2 py-1 rounded border border-[#D994F8]/20">
+                        <span class="truncate w-44">${item.name} ${etiquetaNuevo}</span>
                         <div class="flex items-center space-x-1">
-                            <span class="font-bold text-pink-300">$${item.precio}</span>
-                            <button onclick="eliminarItemDeOrden(${idx})" class="text-red-400 font-bold px-1">✕</button>
+                            <span class="font-bold text-[#F6A9C5]">$${item.precio}</span>
+                            ${botonBorrar}
                         </div>
                     </div>`;
             });
@@ -488,12 +550,20 @@
 
         function eliminarItemDeOrden(idx) {
             let orden = obtenerOrdenActiva();
-            if (orden) {
-                orden.items.splice(idx, 1);
-                guardarOrdenCloud(orden);
-                actualizarUIOrdenActiva();
-                mostrarToast("🗑️ Eliminado");
+            if (!orden) return;
+            if (orden.estado === 'en_preparacion' || orden.estado === 'listo') {
+                alert("⚠️ La cocina ya está preparando esta orden. Ya no se pueden quitar productos, solo agregar.");
+                return;
             }
+            orden.items.splice(idx, 1);
+            guardarOrdenCloud(orden);
+            actualizarUIOrdenActiva();
+            mostrarToast("🗑️ Eliminado");
+        }
+
+        function agregarCapuchinoPromo(cantidad, precioTotal) {
+            let nombre = cantidad === 1 ? "Frappe Capuchino 10oz (1x$30)" : "Promo Frappe Capuchino 10oz (2x$50)";
+            agregarProductoALaOrdenActive(nombre, precioTotal, null);
         }
 
         function abrirModalVasoCombo() {
@@ -522,6 +592,9 @@
             document.getElementById('m-precio').innerText = `$${item.med}`;
             document.getElementById('g-precio').innerText = `$${item.gde}`;
             document.getElementById('j-precio').innerText = `$${item.jumbo}`;
+            document.getElementById('esp-sin-crema').checked = false;
+            document.getElementById('esp-azucar').value = 'Normal';
+            document.getElementById('esp-leche').value = 'Entera';
             document.getElementById('modal-tamano').classList.remove('hidden');
         }
 
@@ -530,13 +603,84 @@
         function seleccionarTamano(tamano) {
             if (!productoSeleccionado) return;
             let precio = tamano === 'Mediano' ? productoSeleccionado.med : (tamano === 'Grande' ? productoSeleccionado.gde : productoSeleccionado.jumbo);
-            agregarProductoALaOrdenActive(`${productoSeleccionado.name} (${tamano})`, precio, idAnimacionActual);
+            
+            let sinCrema = document.getElementById('esp-sin-crema').checked;
+            let azucar = document.getElementById('esp-azucar').value;
+            let leche = document.getElementById('esp-leche').value;
+            
+            let specs = [];
+            if(sinCrema) specs.push("Sin crema");
+            if(azucar !== "Normal") specs.push(azucar);
+            if(leche !== "Entera") specs.push(`Leche ${leche}`);
+            
+            let detalleSpecs = specs.length > 0 ? ` [${specs.join(', ')}]` : '';
+            agregarProductoALaOrdenActive(`${productoSeleccionado.name} (${tamano})${detalleSpecs}`, precio, idAnimacionActual);
             cerrarModal();
+        }
+
+        // Modificar Crepas Especiales
+        function abrirModalCrepaEsp(crepa) {
+            crepaEspecialSeleccionada = crepa;
+            document.getElementById('modal-esp-titulo').innerText = crepa.name;
+            let container = document.getElementById('modal-esp-lista');
+            container.innerHTML = '';
+            
+            let config = getConfig();
+            config.ingredientes.forEach(ing => {
+                let marcada = crepa.ingredientesBase.includes(ing) ? 'checked' : '';
+                container.innerHTML += `<label class="flex items-center space-x-1.5 text-gray-200 cursor-pointer"><input type="checkbox" value="${ing}" ${marcada} class="crepa-esp-chk accent-[#D994F8] w-3.5 h-3.5" onchange="calcularPrecioCrepaEsp()"> <span class="truncate">${ing}</span></label>`;
+            });
+            calcularPrecioCrepaEsp();
+            document.getElementById('modal-crepa-esp').classList.remove('hidden');
+        }
+
+        function calcularPrecioCrepaEsp() {
+            if(!crepaEspecialSeleccionada) return 0;
+            let chks = document.querySelectorAll('.crepa-esp-chk:checked');
+            let seleccionados = Array.from(chks).map(c => c.value);
+            
+            // Diferencia contra base original
+            let baseCount = crepaEspecialSeleccionada.ingredientesBase.length;
+            let diff = seleccionados.length - baseCount;
+            let precioFinal = crepaEspecialSeleccionada.precio + (diff * 10);
+            
+            // Ajuste por Chocolate Especial si aplica
+            seleccionados.forEach(ing => {
+                if(ing === "Chocolate Especial" && !crepaEspecialSeleccionada.ingredientesBase.includes("Chocolate Especial")) {
+                    precioFinal += 5; // diferencia adicional si se añade chocolate especial
+                }
+            });
+
+            document.getElementById('modal-esp-precio').innerText = `$${precioFinal}`;
+            return precioFinal;
+        }
+
+        function cerrarModalCrepaEsp() {
+            document.getElementById('modal-crepa-esp').classList.add('hidden');
+            crepaEspecialSeleccionada = null;
+        }
+
+        function confirmarCrepaEspecialModificada() {
+            if(!crepaEspecialSeleccionada) return;
+            let chks = document.querySelectorAll('.crepa-esp-chk:checked');
+            let seleccionados = Array.from(chks).map(c => c.value);
+            let precioFinal = calcularPrecioCrepaEsp();
+            
+            let detalle = seleccionados.length > 0 ? ` (${seleccionados.join(', ')})` : ' (Sencilla)';
+            agregarProductoALaOrdenActive(`${crepaEspecialSeleccionada.name}${detalle}`, precioFinal, null);
+            cerrarModalCrepaEsp();
         }
 
         function calcCustom() {
             let chks = document.querySelectorAll('.ing-chk:checked');
-            let t = 50 + (chks.length * 10);
+            let t = 50;
+            chks.forEach(c => {
+                if(c.value === "Chocolate Especial") {
+                    t += 15;
+                } else {
+                    t += 10;
+                }
+            });
             document.getElementById('txt-precio-base').innerText = `Total: $${t}`;
             return t;
         }
@@ -544,9 +688,16 @@
         function agregarCrepaCustomActiva() {
             let chks = document.querySelectorAll('.ing-chk:checked');
             let extras = Array.from(chks).map(c => c.value);
-            let precio = 50 + (extras.length * 10);
+            let precio = 50;
+            chks.forEach(c => {
+                if(c.value === "Chocolate Especial") {
+                    precio += 15;
+                } else {
+                    precio += 10;
+                }
+            });
             let desc = extras.length > 0 ? `Base + ${extras.join(', ')}` : `Sencilla`;
-            agregarProductoALaOrdenActive(`Crepa (${desc})`, precio, 'img-crepa-base');
+            agregarProductoALaOrdenActive(`Crepa (${desc})`, precio, null);
             chks.forEach(c => c.checked = false);
             calcCustom();
         }
@@ -569,14 +720,14 @@
                 activas.forEach(ord => {
                     let totalOrd = ord.items.reduce((a, b) => a + b.precio, 0);
                     contenedor.innerHTML += `
-                        <div class="p-2.5 rounded-xl border border-indigo-500/50 bg-purple-950/60 flex justify-between items-center">
+                        <div class="p-2.5 rounded-xl border border-[#526DB7]/50 bg-[#6C4A8D]/40 flex justify-between items-center">
                             <div>
-                                <span class="text-xs font-black text-amber-300">Orden #${ord.id} - ${ord.cliente}</span>
+                                <span class="text-xs font-black text-[#A3E3F8]" style="color: ${ord.color || '#A3E3F8'}">Orden #${ord.id} - ${ord.cliente}</span>
                                 <p class="text-[9px] text-gray-300">${ord.items.length} productos | <b>$${totalOrd.toFixed(2)}</b></p>
-                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-600 text-white uppercase">${ord.estado}</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-[#6C4A8D] text-white uppercase">${ord.estado}</span>
                             </div>
                             <div class="space-x-1">
-                                <button onclick="cambiarOrdenActiva('${ord.id}')" class="bg-indigo-600 text-white font-bold px-2 py-1.5 rounded-lg text-xs">Abrir</button>
+                                <button onclick="cambiarOrdenActiva('${ord.id}')" class="bg-[#526DB7] text-white font-bold px-2 py-1.5 rounded-lg text-xs">Abrir</button>
                                 <button onclick="eliminarOrdenCompleta('${ord.id}')" class="bg-red-900 text-white font-bold px-2 py-1.5 rounded-lg text-xs">🗑️</button>
                             </div>
                         </div>`;
@@ -615,8 +766,11 @@
             orden.pagoMetodo = metodo;
             orden.total = orden.items.reduce((a, b) => a + b.precio, 0);
             guardarOrdenCloud(orden);
-            alert(`✅ ¡Orden #${orden.id} cobrada (${metodo})! Registrada en caja para el dueño.`);
+            alert(`✅ ¡Orden #${orden.id} cobrada (${metodo})! Registrada en caja y pantalla limpiada.`);
             cerrarModalPago();
+            
+            // Limpiar orden actual y crear una nueva automáticamente para el siguiente cliente
+            cacheOrders = cacheOrders.filter(o => o.id !== orden.id);
             crearNuevaOrden(false);
         }
 
