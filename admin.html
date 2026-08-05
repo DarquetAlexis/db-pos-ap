@@ -14,7 +14,7 @@
 </head>
 <body class="text-white min-h-screen p-3 md:p-6 pb-20">
 
-    <!-- MODAL DE ACCESO PRIVADO (PIN DE DUEÑO) -->
+    <!-- MODAL DE ACCESO PRIVADO (PIN DE DUEÑO - 1991) -->
     <div id="modal-pin" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-amber-500 p-6 rounded-2xl w-full max-w-xs text-center space-y-4 shadow-[0_0_30px_rgba(245,158,11,0.3)]">
             <h2 class="text-lg font-black text-amber-400 uppercase">🔒 Acceso Exclusivo Dueño</h2>
@@ -86,8 +86,8 @@
     </div>
 
     <script>
-        // PIN del Dueño (Modifícalo si deseas otro)
-        const PIN_DUEÑO = "1999"; 
+        // PIN del Dueño actualizado a 1991
+        const PIN_DUEÑO = "1991"; 
 
         function verificarPin() {
             let ingresado = document.getElementById('input-pin').value;
@@ -141,7 +141,6 @@
         }
 
         function cargarDatosAdmin() {
-            // 1. Calcular Arqueo
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
             let efectivo = 0, tarjeta = 0;
             let hoy = new Date().toLocaleDateString();
@@ -157,7 +156,6 @@
             document.getElementById('corte-tarjeta').innerText = `$${tarjeta.toFixed(2)}`;
             document.getElementById('corte-total').innerText = `$${(efectivo + tarjeta).toFixed(2)}`;
 
-            // 2. Cargar Descuentos
             let config = getConfig();
             let boxDesc = document.getElementById('lista-descuentos');
             boxDesc.innerHTML = '';
@@ -169,7 +167,6 @@
                 boxDesc.innerHTML = `<p class="text-[10px] text-gray-400 italic">No hay descuentos activos.</p>`;
             }
 
-            // 3. Cargar Gestor de Productos con Interruptores
             let boxProd = document.getElementById('contenedor-gestion-productos');
             boxProd.innerHTML = '';
             
