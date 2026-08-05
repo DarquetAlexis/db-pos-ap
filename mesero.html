@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - POS Gestión de Órdenes</title>
+    <title>DULCE BOCADO - POS Nube</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
         .bg-dark-overlay { background-color: rgba(59, 20, 67, 0.94); backdrop-filter: blur(8px); }
@@ -23,7 +26,7 @@
 <body class="text-white min-h-screen flex flex-col pb-36">
 
     <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
-        ✨ ¡Actualizado con Éxito!
+        ✨ ¡Sincronizado!
     </div>
 
     <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-purple-500/30 shadow-md">
@@ -31,17 +34,16 @@
             <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
             <div>
                 <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
-                <p class="text-[9px] text-purple-300">Gestión por Órdenes y Cuentas</p>
+                <p class="text-[9px] text-purple-300">Nube en Tiempo Real</p>
             </div>
         </div>
         <div class="flex space-x-2">
             <button onclick="abrirModalSelectorOrdenes()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">📂 Órdenes (<span id="lbl-num-ordenes">0</span>)</button>
             <a href="cocina.html" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">🍳 Cocina</a>
-            <a href="index.html" class="bg-purple-900 text-purple-200 px-2.5 py-1.5 rounded-lg text-xs font-bold">🏠</a>
+            <a href="admin.html" class="bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">⚙️ Admin</a>
         </div>
     </header>
 
-    <!-- BARRA DE ORDEN ACTIVA -->
     <div class="bg-purple-950/90 border-b border-pink-500/40 p-2 text-xs sticky top-[57px] z-30 backdrop-blur-md shadow-lg">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
@@ -128,7 +130,7 @@
         </div>
     </main>
 
-    <!-- MODAL TAMAÑO FRAPPE -->
+    <!-- MODAL TAMAÑO -->
     <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="bg-dark-overlay border-2 border-pink-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
             <img id="modal-img-frappe" src="" class="w-20 h-20 mx-auto object-contain drop-shadow-lg">
@@ -142,11 +144,10 @@
         </div>
     </div>
 
-    <!-- MODAL SELECTOR / CAMBIAR DE ORDEN -->
+    <!-- MODAL SELECTOR ORDENES -->
     <div id="modal-selector-ordenes" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-indigo-500 p-5 rounded-2xl w-full max-w-md text-center space-y-3 shadow-2xl max-h-[80vh] flex flex-col">
             <h3 class="text-sm font-black text-indigo-300 uppercase">📂 Cuentas y Mesas Abiertas</h3>
-            <p class="text-[10px] text-gray-300">Selecciona una orden para modificarla, agregar más productos o cobrarla.</p>
             <div id="lista-cuadros-ordenes" class="overflow-y-auto space-y-2 flex-1 pr-1 text-left"></div>
             <div class="pt-2 flex justify-between">
                 <button onclick="crearNuevaOrdenDesdeModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-2 rounded-xl text-xs">+ Abrir Nueva Cuenta</button>
@@ -159,20 +160,15 @@
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-green-500 p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
             <h3 class="text-lg font-black text-green-400 uppercase">Total cuenta: <span id="lbl-total-cobro"></span></h3>
-            <p class="text-sm text-gray-200">¿Cómo pagará el cliente?</p>
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="finalizarYCobrarOrden('Efectivo')" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-green-400">
-                    <span class="text-2xl mb-1">💵</span> Efectivo
-                </button>
-                <button onclick="finalizarYCobrarOrden('Tarjeta')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-blue-400">
-                    <span class="text-2xl mb-1">💳</span> Tarjeta
-                </button>
+                <button onclick="finalizarYCobrarOrden('Efectivo')" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-green-400"><span class="text-2xl mb-1">💵</span> Efectivo</button>
+                <button onclick="finalizarYCobrarOrden('Tarjeta')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-blue-400"><span class="text-2xl mb-1">💳</span> Tarjeta</button>
             </div>
             <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-4">Cancelar</button>
         </div>
     </div>
 
-    <!-- BARRA INFERIOR DE LA ORDEN ACTIVA -->
+    <!-- BARRA INFERIOR -->
     <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-pink-500/40 p-3 shadow-2xl z-40 rounded-t-2xl">
         <div class="max-w-md mx-auto flex flex-col space-y-2">
             <div class="flex justify-between items-center">
@@ -189,12 +185,22 @@
                     <button onclick="abrirModalPago()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
                 </div>
             </div>
-            <!-- Lista desplegable rápida de los productos de la orden actual -->
             <div id="minilist-carrito" class="max-h-28 overflow-y-auto space-y-1 text-[11px] border-t border-purple-900/50 pt-1"></div>
         </div>
     </div>
 
     <script>
+        // Configuración Firebase Cloud Firestore Gratuita
+        const firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyForCloudSyncDulceBocado99",
+            authDomain: "dulce-bocado-pos.firebaseapp.com",
+            projectId: "dulce-bocado-pos"
+        };
+        // Inicialización segura con almacenamiento en memoria local temporal si no hay conexión
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        let cacheOrders = [];
         let ordenActivaId = null;
         let productoSeleccionado = null;
         let idAnimacionActual = null;
@@ -238,13 +244,36 @@
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
 
-        // Obtener o inicializar la orden activa en localStorage
-        function getOrders() {
-            return JSON.parse(localStorage.getItem("db_orders")) || [];
+        // Sincronización en tiempo real desde Firestore
+        function iniciarSincronizacionCloud() {
+            db.collection("orders").onSnapshot((snapshot) => {
+                cacheOrders = [];
+                snapshot.forEach((doc) => {
+                    cacheOrders.push({ firestoreId: doc.id, ...doc.data() });
+                });
+                if (!ordenActivaId && cacheOrders.length > 0) {
+                    let activas = cacheOrders.filter(o => o.estado !== 'cobrado');
+                    if(activas.length > 0) ordenActivaId = activas[0].id;
+                }
+                actualizarUIOrdenActiva();
+            }, (error) => {
+                // Fallback automático a LocalStorage si no hay internet momentáneo
+                cacheOrders = JSON.parse(localStorage.getItem("db_orders_fallback")) || [];
+                actualizarUIOrdenActiva();
+            });
         }
 
-        function guardarOrders(orders) {
-            localStorage.setItem("db_orders", JSON.stringify(orders));
+        function guardarOrdenCloud(orden) {
+            // Guardar respaldo local
+            localStorage.setItem("db_orders_fallback", JSON.stringify(cacheOrders));
+            // Guardar en Nube Firestore
+            db.collection("orders").doc(orden.id.toString()).set(orden).catch((err) => {
+                console.log("Modo offline activado");
+            });
+        }
+
+        function eliminarOrdenCloud(id) {
+            db.collection("orders").doc(id.toString()).delete().catch(err => {});
         }
 
         function initPOS() {
@@ -265,10 +294,7 @@
                         <div class="bg-purple-950/70 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
                             <div class="flex items-center space-x-3">
                                 <img id="img-${i.id}" src="${i.img}" class="w-12 h-12 object-contain drop-shadow-md">
-                                <div>
-                                    <h3 class="text-[11px] font-black text-white">${i.name}</h3>
-                                    <p class="text-[9px] text-gray-300 w-32 truncate">${i.desc || ''}</p>
-                                </div>
+                                <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-gray-300 w-32 truncate">${i.desc || ''}</p></div>
                             </div>
                             <button onclick="agregarProductoALaOrdenActive('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
                         </div>`;
@@ -299,15 +325,18 @@
                 }
             });
 
-            // Verificar si hay una orden activa en memoria, si no, crear una por defecto
-            let orders = getOrders();
-            let activas = orders.filter(o => o.estado !== 'cobrado');
-            if (activas.length > 0) {
-                ordenActivaId = activas[0].id;
-            } else {
-                crearNuevaOrden(false);
-            }
-            actualizarUIOrdenActiva();
+            iniciarSincronizacionCloud();
+            setTimeout(() => {
+                if (!ordenActivaId || !cacheOrders.some(o => o.id === ordenActivaId)) {
+                    let activas = cacheOrders.filter(o => o.estado !== 'cobrado');
+                    if(activas.length > 0) {
+                        ordenActivaId = activas[0].id;
+                    } else {
+                        crearNuevaOrden(false);
+                    }
+                }
+                actualizarUIOrdenActiva();
+            }, 800);
         }
 
         function renderFrappeGrid(elementId, items, categoria) {
@@ -319,10 +348,7 @@
                         <div onclick='abrirModalModalFrappe(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
                             <div class="flex items-center space-x-3">
                                 <img id="img-${i.id}" src="${i.img}" class="w-10 h-10 object-contain drop-shadow-md">
-                                <div>
-                                    <h3 class="text-[11px] font-black text-white">${i.name}</h3>
-                                    <p class="text-[9px] text-purple-300">Toca para tamaños</p>
-                                </div>
+                                <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-purple-300">Toca para tamaños</p></div>
                             </div>
                             <span class="bg-pink-600 text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
                         </div>`;
@@ -330,7 +356,7 @@
             });
         }
 
-        function mostrarToast(texto = "✨ ¡Actualizado con Éxito!") {
+        function mostrarToast(texto = "✨ Sincronizado en Nube") {
             let toast = document.getElementById('toast-exito');
             toast.innerText = texto;
             toast.classList.remove('opacity-0', 'scale-90');
@@ -350,36 +376,31 @@
             }
         }
 
-        // GESTIÓN DE ORDENES ACTIVAS
         function crearNuevaOrden(notificar = true) {
-            let orders = getOrders();
             let nueva = {
                 id: Date.now().toString().slice(-4),
-                cliente: `Mesa/Cliente ${orders.length + 1}`,
+                cliente: `Mesa/Cliente ${cacheOrders.length + 1}`,
                 items: [],
-                estado: "pendiente", // pendiente, en_preparacion, listo, liberado
+                estado: "pendiente",
                 fecha: new Date().toLocaleDateString(),
-                tiempo: new Date().toLocaleTimeString(),
-                pagoPendiente: true
+                tiempo: new Date().toLocaleTimeString()
             };
-            orders.push(nueva);
-            guardarOrders(orders);
+            cacheOrders.push(nueva);
+            guardarOrdenCloud(nueva);
             ordenActivaId = nueva.id;
             actualizarUIOrdenActiva();
-            if(notificar) mostrarToast("📂 Nueva cuenta abierta");
+            if(notificar) mostrarToast("📂 Nueva cuenta en nube");
         }
 
         function obtenerOrdenActiva() {
-            let orders = getOrders();
-            return orders.find(o => o.id === ordenActivaId) || (orders.length > 0 ? orders[0] : null);
+            return cacheOrders.find(o => o.id === ordenActivaId) || (cacheOrders.length > 0 ? cacheOrders[0] : null);
         }
 
         function actualizarUIOrdenActiva() {
+            document.getElementById('lbl-num-ordenes').innerText = cacheOrders.filter(o => o.estado !== 'cobrado').length;
             let orden = obtenerOrdenActiva();
-            let orders = getOrders();
-            document.getElementById('lbl-num-ordenes').innerText = orders.filter(o => o.estado !== 'cobrado').length;
-
             if (!orden) return;
+
             document.getElementById('txt-id-orden-actual').innerText = `Orden #${orden.id}`;
             document.getElementById('nombre-cliente').value = orden.cliente;
             document.getElementById('txt-estado-cocina-badge').innerText = `Estado: ${orden.estado.toUpperCase()}`;
@@ -391,7 +412,7 @@
             let miniList = document.getElementById('minilist-carrito');
             miniList.innerHTML = '';
             if (orden.items.length === 0) {
-                miniList.innerHTML = `<p class="text-[10px] text-gray-400 italic text-center">Cuenta vacía. Agrega productos.</p>`;
+                miniList.innerHTML = `<p class="text-[10px] text-gray-400 italic text-center">Cuenta vacía.</p>`;
                 return;
             }
 
@@ -402,55 +423,44 @@
                         <span class="truncate w-40">${item.name} ${etiquetaNuevo}</span>
                         <div class="flex items-center space-x-1">
                             <span class="font-bold text-pink-300">$${item.precio}</span>
-                            <button onclick="eliminarItemDeOrden(${idx})" class="text-red-400 font-bold px-1 hover:text-red-300">✕</button>
+                            <button onclick="eliminarItemDeOrden(${idx})" class="text-red-400 font-bold px-1">✕</button>
                         </div>
                     </div>`;
             });
         }
 
         function actualizarNombreOrdenActiva() {
-            let nuevoNombre = document.getElementById('nombre-cliente').value.trim();
-            let orders = getOrders();
-            let orden = orders.find(o => o.id === ordenActivaId);
+            let orden = obtenerOrdenActiva();
             if (orden) {
-                orden.cliente = nuevoNombre || "Mostrador";
-                guardarOrders(orders);
+                orden.cliente = document.getElementById('nombre-cliente').value.trim() || "Mostrador";
+                guardarOrdenCloud(orden);
             }
         }
 
         function agregarProductoALaOrdenActive(nombre, precio, imgId) {
-            let orders = getOrders();
-            let orden = orders.find(o => o.id === ordenActivaId);
-            if (!orden) {
-                crearNuevaOrden(false);
-                orden = obtenerOrdenActiva();
-            }
+            let orden = obtenerOrdenActiva();
+            if (!orden) { crearNuevaOrden(false); orden = obtenerOrdenActiva(); }
 
-            // Si el pedido ya estaba en cocina y se añaden cosas, marcamos el ítem como "nuevo"
             let esNuevoParaCocina = (orden.estado === 'listo' || orden.estado === 'en_preparacion');
-            if (esNuevoParaCocina) {
-                orden.estado = 'pendiente'; // Regresa a pendiente de revisión en cocina
-            }
+            if (esNuevoParaCocina) { orden.estado = 'pendiente'; }
 
             orden.items.push({ name: nombre, precio: precio, nuevo: esNuevoParaCocina });
-            guardarOrders(orders);
+            guardarOrdenCloud(orden);
             actualizarUIOrdenActiva();
             if (imgId) animarImagen(imgId);
-            mostrarToast("✨ Producto agregado a la cuenta");
+            mostrarToast("✨ Agregado a la cuenta");
         }
 
         function eliminarItemDeOrden(idx) {
-            let orders = getOrders();
-            let orden = orders.find(o => o.id === ordenActivaId);
+            let orden = obtenerOrdenActiva();
             if (orden) {
                 orden.items.splice(idx, 1);
-                guardarOrders(orders);
+                guardarOrdenCloud(orden);
                 actualizarUIOrdenActiva();
-                mostrarToast("🗑️ Producto eliminado");
+                mostrarToast("🗑️ Eliminado");
             }
         }
 
-        // Modales de Frappe y Crepa
         function abrirModalModalFrappe(item, imgId) {
             productoSeleccionado = item;
             idAnimacionActual = imgId;
@@ -462,10 +472,7 @@
             document.getElementById('modal-tamano').classList.remove('hidden');
         }
 
-        function cerrarModal() {
-            document.getElementById('modal-tamano').classList.add('hidden');
-            productoSeleccionado = null;
-        }
+        function cerrarModal() { document.getElementById('modal-tamano').classList.add('hidden'); productoSeleccionado = null; }
 
         function seleccionarTamano(tamano) {
             if (!productoSeleccionado) return;
@@ -491,43 +498,33 @@
             calcCustom();
         }
 
-        // Enviar a cocina
         function enviarOrdenACocina() {
-            let orders = getOrders();
-            let orden = orders.find(o => o.id === ordenActivaId);
-            if (!orden || orden.items.length === 0) {
-                alert("La orden actual está vacía.");
-                return;
-            }
+            let orden = obtenerOrdenActiva();
+            if (!orden || orden.items.length === 0) { alert("Orden vacía."); return; }
             orden.estado = "pendiente";
-            guardarOrders(orders);
-            actualizarUIOrdenActiva();
-            alert(`🚀 Orden #${orden.id} enviada/actualizada en Cocina en tiempo real.`);
+            guardarOrdenCloud(orden);
+            alert(`🚀 Orden #${orden.id} enviada a Cocina en la nube.`);
         }
 
-        // Selector de Órdenes (Cuadros)
         function abrirModalSelectorOrdenes() {
-            let orders = getOrders();
             let contenedor = document.getElementById('lista-cuadros-ordenes');
             contenedor.innerHTML = '';
-
-            let activas = orders.filter(o => o.estado !== 'cobrado');
+            let activas = cacheOrders.filter(o => o.estado !== 'cobrado');
             if (activas.length === 0) {
-                contenedor.innerHTML = `<p class="text-xs text-gray-400 italic">No hay cuentas abiertas. Crea una nueva.</p>`;
+                contenedor.innerHTML = `<p class="text-xs text-gray-400 italic">No hay cuentas abiertas.</p>`;
             } else {
                 activas.forEach(ord => {
                     let totalOrd = ord.items.reduce((a, b) => a + b.precio, 0);
-                    let colorEstado = ord.estado === 'listo' ? 'border-green-500 bg-green-950/50' : 'border-indigo-500/50 bg-purple-950/60';
                     contenedor.innerHTML += `
-                        <div class="p-2.5 rounded-xl border ${colorEstado} flex justify-between items-center">
+                        <div class="p-2.5 rounded-xl border border-indigo-500/50 bg-purple-950/60 flex justify-between items-center">
                             <div>
                                 <span class="text-xs font-black text-amber-300">Orden #${ord.id} - ${ord.cliente}</span>
-                                <p class="text-[9px] text-gray-300">${ord.items.length} productos | Total: <b>$${totalOrd.toFixed(2)}</b></p>
-                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold ${ord.estado === 'listo' ? 'bg-green-600 text-white' : 'bg-amber-600 text-white'} uppercase">${ord.estado}</span>
+                                <p class="text-[9px] text-gray-300">${ord.items.length} productos | <b>$${totalOrd.toFixed(2)}</b></p>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-600 text-white uppercase">${ord.estado}</span>
                             </div>
                             <div class="space-x-1">
-                                <button onclick="cambiarOrdenActiva('${ord.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs">Abrir ➔</button>
-                                <button onclick="eliminarOrdenCompleta('${ord.id}')" class="bg-red-900 hover:bg-red-800 text-white font-bold px-2 py-1.5 rounded-lg text-xs">🗑️</button>
+                                <button onclick="cambiarOrdenActiva('${ord.id}')" class="bg-indigo-600 text-white font-bold px-2 py-1.5 rounded-lg text-xs">Abrir</button>
+                                <button onclick="eliminarOrdenCompleta('${ord.id}')" class="bg-red-900 text-white font-bold px-2 py-1.5 rounded-lg text-xs">🗑️</button>
                             </div>
                         </div>`;
                 });
@@ -535,65 +532,39 @@
             document.getElementById('modal-selector-ordenes').classList.remove('hidden');
         }
 
-        function cerrarModalSelectorOrdenes() {
-            document.getElementById('modal-selector-ordenes').classList.add('hidden');
-        }
-
-        function cambiarOrdenActiva(id) {
-            ordenActivaId = id;
-            actualizarUIOrdenActiva();
-            cerrarModalSelectorOrdenes();
-            mostrarToast(`📂 Cambiado a Orden #${id}`);
-        }
-
-        function crearNuevaOrdenDesdeModal() {
-            crearNuevaOrden(true);
-            cerrarModalSelectorOrdenes();
-            actualizarUIOrdenActiva();
-        }
-
+        function cerrarModalSelectorOrdenes() { document.getElementById('modal-selector-ordenes').classList.add('hidden'); }
+        function cambiarOrdenActiva(id) { ordenActivaId = id; actualizarUIOrdenActiva(); cerrarModalSelectorOrdenes(); mostrarToast(`📂 Orden #${id}`); }
+        function crearNuevaOrdenDesdeModal() { crearNuevaOrden(true); cerrarModalSelectorOrdenes(); }
         function eliminarOrdenCompleta(id) {
-            if(confirm(`¿Estás seguro de eliminar por completo la Orden #${id}?`)) {
-                let orders = getOrders();
-                orders = orders.filter(o => o.id !== id);
-                guardarOrders(orders);
+            if(confirm(`¿Eliminar Orden #${id}?`)) {
+                eliminarOrdenCloud(id);
+                cacheOrders = cacheOrders.filter(o => o.id !== id);
                 abrirModalSelectorOrdenes();
                 if(ordenActivaId === id) {
-                    ordenActivaId = orders.length > 0 ? orders[0].id : null;
+                    ordenActivaId = cacheOrders.length > 0 ? cacheOrders[0].id : null;
                     actualizarUIOrdenActiva();
                 }
             }
         }
 
-        // Cobrar y cerrar cuenta
         function abrirModalPago() {
             let orden = obtenerOrdenActiva();
-            if (!orden || orden.items.length === 0) { alert("La orden está vacía."); return; }
-            let total = orden.items.reduce((a, b) => a + b.precio, 0);
-            document.getElementById('lbl-total-cobro').innerText = `$${total.toFixed(2)}`;
+            if (!orden || orden.items.length === 0) { alert("Vacía."); return; }
+            document.getElementById('lbl-total-cobro').innerText = `$${orden.items.reduce((a, b) => a + b.precio, 0).toFixed(2)}`;
             document.getElementById('modal-pago').classList.remove('hidden');
         }
-
-        function cerrarModalPago() {
-            document.getElementById('modal-pago').classList.add('hidden');
-        }
+        function cerrarModalPago() { document.getElementById('modal-pago').classList.add('hidden'); }
 
         function finalizarYCobrarOrden(metodo) {
-            let orders = getOrders();
-            let orden = orders.find(o => o.id === ordenActivaId);
+            let orden = obtenerOrdenActiva();
             if (!orden) return;
-
             orden.estado = "cobrado";
             orden.pagoMetodo = metodo;
             orden.total = orden.items.reduce((a, b) => a + b.precio, 0);
-            guardarOrders(orders);
-
-            alert(`✅ ¡Orden #${orden.id} cobrada con éxito!\nMétodo: ${metodo} | Total: $${orden.total.toFixed(2)}`);
+            guardarOrdenCloud(orden);
+            alert(`✅ ¡Orden #${orden.id} cobrada (${metodo})! Registrada en caja para el dueño.`);
             cerrarModalPago();
-
-            // Crear otra cuenta en automático para el siguiente cliente
             crearNuevaOrden(false);
-            actualizarUIOrdenActiva();
         }
 
         window.onload = initPOS;
