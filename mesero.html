@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - POS Móvil</title>
+    <title>DULCE BOCADO - POS Gestión de Órdenes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
@@ -11,21 +11,19 @@
         .bg-dark-overlay { background-color: rgba(59, 20, 67, 0.94); backdrop-filter: blur(8px); }
         .marco-lila { border: 2px solid #d946ef; border-radius: 1.25rem; box-shadow: 0 4px 20px rgba(217, 70, 239, 0.25); }
         .marco-oferta { border: 2px solid #10b981; border-radius: 1.25rem; box-shadow: 0 0 15px #10b981, inset 0 0 10px #10b981; }
-        
         @keyframes neonGlow {
             0% { box-shadow: 0 0 5px #ec4899, 0 0 10px #ec4899, 0 0 15px #d946ef; }
             50% { box-shadow: 0 0 15px #f472b6, 0 0 25px #c084fc, 0 0 35px #a855f7; }
             100% { box-shadow: 0 0 5px #ec4899, 0 0 10px #ec4899, 0 0 15px #d946ef; }
         }
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
-        .neon-aura:hover { transform: scale(1.03); }
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col pb-32">
+<body class="text-white min-h-screen flex flex-col pb-36">
 
     <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
-        ✨ ¡Agregado con Éxito!
+        ✨ ¡Actualizado con Éxito!
     </div>
 
     <header class="flex justify-between items-center p-3 bg-dark-overlay sticky top-0 z-40 border-b border-purple-500/30 shadow-md">
@@ -33,21 +31,32 @@
             <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-pink-400 object-contain">
             <div>
                 <h1 class="text-sm font-black text-pink-300">DULCE BOCADO</h1>
-                <p class="text-[9px] text-purple-300">POS Sincronizado</p>
+                <p class="text-[9px] text-purple-300">Gestión por Órdenes y Cuentas</p>
             </div>
         </div>
         <div class="flex space-x-2">
+            <button onclick="abrirModalSelectorOrdenes()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">📂 Órdenes (<span id="lbl-num-ordenes">0</span>)</button>
             <a href="cocina.html" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">🍳 Cocina</a>
-            <a href="admin.html" class="bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">⚙️ Admin</a>
             <a href="index.html" class="bg-purple-900 text-purple-200 px-2.5 py-1.5 rounded-lg text-xs font-bold">🏠</a>
         </div>
     </header>
 
+    <!-- BARRA DE ORDEN ACTIVA -->
+    <div class="bg-purple-950/90 border-b border-pink-500/40 p-2 text-xs sticky top-[57px] z-30 backdrop-blur-md shadow-lg">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="bg-pink-600 text-white px-2 py-0.5 rounded font-bold text-[10px]" id="txt-id-orden-actual">Orden #--</span>
+                <input type="text" id="nombre-cliente" placeholder="Nombre / Mesa..." class="bg-purple-900 border border-purple-700 rounded px-2 py-0.5 text-xs text-white w-28 focus:outline-none focus:border-pink-500" onchange="actualizarNombreOrdenActiva()">
+            </div>
+            <button onclick="crearNuevaOrden()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[11px] shadow">+ Nueva Cuenta</button>
+        </div>
+    </div>
+
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
         <!-- OFERTAS (Moy) -->
-        <section class="bg-dark-overlay p-3 marco-oferta space-y-2 animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
+        <section class="bg-dark-overlay p-3 marco-oferta space-y-2">
             <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
-                <img src="moy.png" alt="Moy" class="w-8 h-8 object-contain animate__animated animate__bounceIn">
+                <img src="moy.png" alt="Moy" class="w-8 h-8 object-contain">
                 <h2 class="text-sm font-black text-green-400 uppercase tracking-widest">🔥 OFERTAS ESPECIALES 🔥</h2>
             </div>
             <div class="flex items-center justify-between bg-green-950/50 p-2 rounded-xl border border-green-500/40">
@@ -59,8 +68,8 @@
                     </div>
                 </div>
                 <div class="flex flex-col space-y-1">
-                    <button onclick="agregarConAnimacion('Frappe Cap. 10oz (1)', 30, 'img-oferta-cap')" class="bg-green-600 hover:bg-green-500 font-bold px-3 py-1 rounded-lg text-xs shadow">1 x $30</button>
-                    <button onclick="agregarConAnimacion('Promo Frappe Cap. 10oz (2)', 50, 'img-oferta-cap')" class="bg-amber-500 hover:bg-amber-400 font-bold px-3 py-1 rounded-lg text-xs shadow text-gray-900">2 x $50</button>
+                    <button onclick="agregarProductoALaOrdenActive('Frappe Cap. 10oz (1)', 30, 'img-oferta-cap')" class="bg-green-600 hover:bg-green-500 font-bold px-3 py-1 rounded-lg text-xs shadow">1 x $30</button>
+                    <button onclick="agregarProductoALaOrdenActive('Promo Frappe Cap. 10oz (2)', 50, 'img-oferta-cap')" class="bg-amber-500 hover:bg-amber-400 font-bold px-3 py-1 rounded-lg text-xs shadow text-gray-900">2 x $50</button>
                 </div>
             </div>
         </section>
@@ -68,7 +77,7 @@
         <!-- CREPAS ANTOJO (Dulce) -->
         <section class="bg-dark-overlay p-3 border-2 border-amber-500 rounded-xl shadow-[0_0_15px_rgba(251,191,36,0.3)] space-y-2">
             <div class="flex items-center space-x-2 pb-1.5 border-b border-amber-500/30">
-                <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain animate__animated animate__bounceIn">
+                <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain">
                 <div>
                     <h2 class="text-xs font-black text-amber-300 uppercase">🥞 Ármala a tu Antojo</h2>
                     <p class="text-[9px] text-gray-300">Base $50 + $10 c/u ingrediente</p>
@@ -77,28 +86,28 @@
             <div id="box-ingredientes" class="grid grid-cols-2 gap-1.5 text-[11px] bg-purple-950/60 p-2.5 rounded-xl border border-amber-500/20"></div>
             <div class="flex justify-between items-center bg-purple-950 p-2 rounded-xl border border-amber-500/40 text-xs">
                 <span id="txt-precio-base" class="font-bold text-amber-300">Base: $50</span>
-                <button onclick="agregarCrepaCustom()" class="bg-amber-600 hover:bg-amber-500 font-bold px-3 py-1.5 rounded-lg text-xs shadow">Añadir Crepa</button>
+                <button onclick="agregarCrepaCustomActiva()" class="bg-amber-600 hover:bg-amber-500 font-bold px-3 py-1.5 rounded-lg text-xs shadow">Añadir Crepa</button>
             </div>
         </section>
 
         <!-- FRAPPES (Fran) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-3">
             <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
-                <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain">
                 <div>
                     <h2 class="text-xs font-black text-pink-300 uppercase">🥤 Carta de Frappes</h2>
                     <p class="text-[9px] text-purple-300">Toca para elegir tamaño</p>
                 </div>
             </div>
-            <div class="space-y-1.5"><div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div></div>
-            <div class="space-y-1.5 pt-1"><div id="box-frappes-premium" class="grid grid-cols-1 gap-2"></div></div>
-            <div class="space-y-1.5 pt-1"><div id="box-frappes-especiales" class="grid grid-cols-1 gap-2"></div></div>
+            <div id="box-frappes-basicos" class="grid grid-cols-1 gap-2"></div>
+            <div id="box-frappes-premium" class="grid grid-cols-1 gap-2 pt-1"></div>
+            <div id="box-frappes-especiales" class="grid grid-cols-1 gap-2 pt-1"></div>
         </section>
 
         <!-- CREPAS ESPECIALES (Talia) -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-2">
             <div class="flex items-center space-x-2 pb-2 border-b border-pink-500/30">
-                <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain animate__animated animate__bounceIn">
+                <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain">
                 <div>
                     <h2 class="text-xs font-black text-pink-300 uppercase">🥞 Crepas Especiales</h2>
                     <p class="text-[9px] text-purple-300">Creaciones de Talia</p>
@@ -119,7 +128,7 @@
         </div>
     </main>
 
-    <!-- MODAL TAMAÑO -->
+    <!-- MODAL TAMAÑO FRAPPE -->
     <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="bg-dark-overlay border-2 border-pink-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
             <img id="modal-img-frappe" src="" class="w-20 h-20 mx-auto object-contain drop-shadow-lg">
@@ -133,16 +142,29 @@
         </div>
     </div>
 
+    <!-- MODAL SELECTOR / CAMBIAR DE ORDEN -->
+    <div id="modal-selector-ordenes" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
+        <div class="bg-dark-overlay border-2 border-indigo-500 p-5 rounded-2xl w-full max-w-md text-center space-y-3 shadow-2xl max-h-[80vh] flex flex-col">
+            <h3 class="text-sm font-black text-indigo-300 uppercase">📂 Cuentas y Mesas Abiertas</h3>
+            <p class="text-[10px] text-gray-300">Selecciona una orden para modificarla, agregar más productos o cobrarla.</p>
+            <div id="lista-cuadros-ordenes" class="overflow-y-auto space-y-2 flex-1 pr-1 text-left"></div>
+            <div class="pt-2 flex justify-between">
+                <button onclick="crearNuevaOrdenDesdeModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-2 rounded-xl text-xs">+ Abrir Nueva Cuenta</button>
+                <button onclick="cerrarModalSelectorOrdenes()" class="bg-gray-700 hover:bg-gray-600 text-white font-bold px-3 py-2 rounded-xl text-xs">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PAGO -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-green-500 p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
-            <h3 class="text-lg font-black text-green-400 uppercase">Total a Cobrar: <span id="lbl-total-cobro"></span></h3>
+            <h3 class="text-lg font-black text-green-400 uppercase">Total cuenta: <span id="lbl-total-cobro"></span></h3>
             <p class="text-sm text-gray-200">¿Cómo pagará el cliente?</p>
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="procesarPago('Efectivo')" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-green-400">
+                <button onclick="finalizarYCobrarOrden('Efectivo')" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-green-400">
                     <span class="text-2xl mb-1">💵</span> Efectivo
                 </button>
-                <button onclick="procesarPago('Tarjeta')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-blue-400">
+                <button onclick="finalizarYCobrarOrden('Tarjeta')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-blue-400">
                     <span class="text-2xl mb-1">💳</span> Tarjeta
                 </button>
             </div>
@@ -150,26 +172,30 @@
         </div>
     </div>
 
-    <!-- CARRITO -->
+    <!-- BARRA INFERIOR DE LA ORDEN ACTIVA -->
     <div class="fixed bottom-0 left-0 right-0 bg-dark-overlay border-t border-pink-500/40 p-3 shadow-2xl z-40 rounded-t-2xl">
         <div class="max-w-md mx-auto flex flex-col space-y-2">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="nombre-cliente" placeholder="Nombre cliente..." class="bg-purple-950 border border-purple-800 rounded px-2 py-1 text-xs text-white w-28 focus:outline-none focus:border-pink-500">
-                    <span id="badge-contador" class="text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full font-bold">0</span>
+                    <span id="badge-contador-items" class="text-[10px] bg-pink-600 text-white px-2.5 py-1 rounded-full font-bold">0 ítems</span>
+                    <span class="text-[11px] text-pink-300 font-bold" id="txt-estado-cocina-badge">Estado: Abierta</span>
                 </div>
                 <div class="text-right">
                     <span class="text-[10px] text-purple-300">Total:</span>
-                    <span id="total-carrito" class="text-sm font-black text-pink-300 ml-1">$0.00</span>
+                    <span id="total-carrito-activo" class="text-sm font-black text-pink-300 ml-1">$0.00</span>
                 </div>
-                <button onclick="abrirModalPago()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-4 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
+                <div class="flex space-x-1">
+                    <button onclick="enviarOrdenACocina()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">🍳 Enviar</button>
+                    <button onclick="abrirModalPago()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
+                </div>
             </div>
-            <div id="minilist-carrito" class="max-h-24 overflow-y-auto space-y-1 text-[11px] border-t border-purple-900/50 pt-1 hidden"></div>
+            <!-- Lista desplegable rápida de los productos de la orden actual -->
+            <div id="minilist-carrito" class="max-h-28 overflow-y-auto space-y-1 text-[11px] border-t border-purple-900/50 pt-1"></div>
         </div>
     </div>
 
     <script>
-        let carrito = [];
+        let ordenActivaId = null;
         let productoSeleccionado = null;
         let idAnimacionActual = null;
 
@@ -212,6 +238,15 @@
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
 
+        // Obtener o inicializar la orden activa en localStorage
+        function getOrders() {
+            return JSON.parse(localStorage.getItem("db_orders")) || [];
+        }
+
+        function guardarOrders(orders) {
+            localStorage.setItem("db_orders", JSON.stringify(orders));
+        }
+
         function initPOS() {
             let config = getConfig();
             let b5 = document.getElementById('box-ingredientes'); b5.innerHTML = '';
@@ -235,7 +270,7 @@
                                     <p class="text-[9px] text-gray-300 w-32 truncate">${i.desc || ''}</p>
                                 </div>
                             </div>
-                            <button onclick="agregarConAnimacion('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
+                            <button onclick="agregarProductoALaOrdenActive('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
                         </div>`;
                 }
             });
@@ -244,7 +279,7 @@
             config.chamoyadas.forEach(i => {
                 if(i.activo !== false) {
                     b6.innerHTML += `
-                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
+                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
                             <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
                             <span class="text-[10px] font-bold text-white">${i.name}</span>
                             <span class="text-amber-300 text-xs font-black">$${i.precio}</span>
@@ -256,13 +291,23 @@
             config.sodas.forEach(i => {
                 if(i.activo !== false) {
                     b7.innerHTML += `
-                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarConAnimacion('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
+                        <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
                             <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
                             <span class="text-[10px] font-bold text-white">${i.name}</span>
                             <span class="text-cyan-300 text-xs font-black">$${i.precio}</span>
                         </div>`;
                 }
             });
+
+            // Verificar si hay una orden activa en memoria, si no, crear una por defecto
+            let orders = getOrders();
+            let activas = orders.filter(o => o.estado !== 'cobrado');
+            if (activas.length > 0) {
+                ordenActivaId = activas[0].id;
+            } else {
+                crearNuevaOrden(false);
+            }
+            actualizarUIOrdenActiva();
         }
 
         function renderFrappeGrid(elementId, items, categoria) {
@@ -271,7 +316,7 @@
             items.forEach(i => {
                 if(i.activo !== false) {
                     container.innerHTML += `
-                        <div onclick='abrirModal(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
+                        <div onclick='abrirModalModalFrappe(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
                             <div class="flex items-center space-x-3">
                                 <img id="img-${i.id}" src="${i.img}" class="w-10 h-10 object-contain drop-shadow-md">
                                 <div>
@@ -285,8 +330,9 @@
             });
         }
 
-        function mostrarToast() {
+        function mostrarToast(texto = "✨ ¡Actualizado con Éxito!") {
             let toast = document.getElementById('toast-exito');
+            toast.innerText = texto;
             toast.classList.remove('opacity-0', 'scale-90');
             toast.classList.add('opacity-100', 'scale-100', 'animate__animated', 'animate__tada');
             setTimeout(() => {
@@ -304,14 +350,108 @@
             }
         }
 
-        function agregarConAnimacion(nombre, precio, imgId) {
-            carrito.push({ name: nombre, precio: precio });
-            updateCart();
-            animarImagen(imgId);
-            mostrarToast();
+        // GESTIÓN DE ORDENES ACTIVAS
+        function crearNuevaOrden(notificar = true) {
+            let orders = getOrders();
+            let nueva = {
+                id: Date.now().toString().slice(-4),
+                cliente: `Mesa/Cliente ${orders.length + 1}`,
+                items: [],
+                estado: "pendiente", // pendiente, en_preparacion, listo, liberado
+                fecha: new Date().toLocaleDateString(),
+                tiempo: new Date().toLocaleTimeString(),
+                pagoPendiente: true
+            };
+            orders.push(nueva);
+            guardarOrders(orders);
+            ordenActivaId = nueva.id;
+            actualizarUIOrdenActiva();
+            if(notificar) mostrarToast("📂 Nueva cuenta abierta");
         }
 
-        function abrirModal(item, imgId) {
+        function obtenerOrdenActiva() {
+            let orders = getOrders();
+            return orders.find(o => o.id === ordenActivaId) || (orders.length > 0 ? orders[0] : null);
+        }
+
+        function actualizarUIOrdenActiva() {
+            let orden = obtenerOrdenActiva();
+            let orders = getOrders();
+            document.getElementById('lbl-num-ordenes').innerText = orders.filter(o => o.estado !== 'cobrado').length;
+
+            if (!orden) return;
+            document.getElementById('txt-id-orden-actual').innerText = `Orden #${orden.id}`;
+            document.getElementById('nombre-cliente').value = orden.cliente;
+            document.getElementById('txt-estado-cocina-badge').innerText = `Estado: ${orden.estado.toUpperCase()}`;
+
+            let total = orden.items.reduce((acc, i) => acc + i.precio, 0);
+            document.getElementById('badge-contador-items').innerText = `${orden.items.length} ítems`;
+            document.getElementById('total-carrito-activo').innerText = `$${total.toFixed(2)}`;
+
+            let miniList = document.getElementById('minilist-carrito');
+            miniList.innerHTML = '';
+            if (orden.items.length === 0) {
+                miniList.innerHTML = `<p class="text-[10px] text-gray-400 italic text-center">Cuenta vacía. Agrega productos.</p>`;
+                return;
+            }
+
+            orden.items.forEach((item, idx) => {
+                let etiquetaNuevo = item.nuevo ? `<span class="bg-amber-500 text-gray-900 text-[8px] font-bold px-1 rounded ml-1">NUEVO</span>` : '';
+                miniList.innerHTML += `
+                    <div class="flex justify-between items-center bg-purple-950 px-2 py-1 rounded">
+                        <span class="truncate w-40">${item.name} ${etiquetaNuevo}</span>
+                        <div class="flex items-center space-x-1">
+                            <span class="font-bold text-pink-300">$${item.precio}</span>
+                            <button onclick="eliminarItemDeOrden(${idx})" class="text-red-400 font-bold px-1 hover:text-red-300">✕</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function actualizarNombreOrdenActiva() {
+            let nuevoNombre = document.getElementById('nombre-cliente').value.trim();
+            let orders = getOrders();
+            let orden = orders.find(o => o.id === ordenActivaId);
+            if (orden) {
+                orden.cliente = nuevoNombre || "Mostrador";
+                guardarOrders(orders);
+            }
+        }
+
+        function agregarProductoALaOrdenActive(nombre, precio, imgId) {
+            let orders = getOrders();
+            let orden = orders.find(o => o.id === ordenActivaId);
+            if (!orden) {
+                crearNuevaOrden(false);
+                orden = obtenerOrdenActiva();
+            }
+
+            // Si el pedido ya estaba en cocina y se añaden cosas, marcamos el ítem como "nuevo"
+            let esNuevoParaCocina = (orden.estado === 'listo' || orden.estado === 'en_preparacion');
+            if (esNuevoParaCocina) {
+                orden.estado = 'pendiente'; // Regresa a pendiente de revisión en cocina
+            }
+
+            orden.items.push({ name: nombre, precio: precio, nuevo: esNuevoParaCocina });
+            guardarOrders(orders);
+            actualizarUIOrdenActiva();
+            if (imgId) animarImagen(imgId);
+            mostrarToast("✨ Producto agregado a la cuenta");
+        }
+
+        function eliminarItemDeOrden(idx) {
+            let orders = getOrders();
+            let orden = orders.find(o => o.id === ordenActivaId);
+            if (orden) {
+                orden.items.splice(idx, 1);
+                guardarOrders(orders);
+                actualizarUIOrdenActiva();
+                mostrarToast("🗑️ Producto eliminado");
+            }
+        }
+
+        // Modales de Frappe y Crepa
+        function abrirModalModalFrappe(item, imgId) {
             productoSeleccionado = item;
             idAnimacionActual = imgId;
             document.getElementById('modal-titulo-frappe').innerText = item.name;
@@ -325,13 +465,12 @@
         function cerrarModal() {
             document.getElementById('modal-tamano').classList.add('hidden');
             productoSeleccionado = null;
-            idAnimacionActual = null;
         }
 
         function seleccionarTamano(tamano) {
             if (!productoSeleccionado) return;
             let precio = tamano === 'Mediano' ? productoSeleccionado.med : (tamano === 'Grande' ? productoSeleccionado.gde : productoSeleccionado.jumbo);
-            agregarConAnimacion(`${productoSeleccionado.name} (${tamano})`, precio, idAnimacionActual);
+            agregarProductoALaOrdenActive(`${productoSeleccionado.name} (${tamano})`, precio, idAnimacionActual);
             cerrarModal();
         }
 
@@ -342,52 +481,95 @@
             return t;
         }
 
-        function agregarCrepaCustom() {
+        function agregarCrepaCustomActiva() {
             let chks = document.querySelectorAll('.ing-chk:checked');
             let extras = Array.from(chks).map(c => c.value);
             let precio = 50 + (extras.length * 10);
             let desc = extras.length > 0 ? `Base + ${extras.join(', ')}` : `Sencilla`;
-            agregarConAnimacion(`Crepa (${desc})`, precio, 'img-crepa-base');
+            agregarProductoALaOrdenActive(`Crepa (${desc})`, precio, 'img-crepa-base');
             chks.forEach(c => c.checked = false);
             calcCustom();
         }
 
-        function removeItem(idx) {
-            carrito.splice(idx, 1);
-            updateCart();
-        }
-
-        function updateCart() {
-            let badge = document.getElementById('badge-contador');
-            let totalLbl = document.getElementById('total-carrito');
-            let miniList = document.getElementById('minilist-carrito');
-            let total = carrito.reduce((acc, i) => acc + i.precio, 0);
-            badge.innerText = `${carrito.length}`;
-            totalLbl.innerText = `$${total.toFixed(2)}`;
-
-            if (carrito.length === 0) {
-                miniList.classList.add('hidden');
-                miniList.innerHTML = '';
+        // Enviar a cocina
+        function enviarOrdenACocina() {
+            let orders = getOrders();
+            let orden = orders.find(o => o.id === ordenActivaId);
+            if (!orden || orden.items.length === 0) {
+                alert("La orden actual está vacía.");
                 return;
             }
-
-            miniList.classList.remove('hidden');
-            miniList.innerHTML = '';
-            carrito.forEach((item, idx) => {
-                miniList.innerHTML += `
-                    <div class="flex justify-between items-center bg-purple-950 px-2 py-0.5 rounded">
-                        <span class="truncate w-44">${item.name}</span>
-                        <div class="flex items-center space-x-1">
-                            <span class="font-bold text-pink-300">$${item.precio}</span>
-                            <button onclick="removeItem(${idx})" class="text-red-400 font-bold px-1">✕</button>
-                        </div>
-                    </div>`;
-            });
+            orden.estado = "pendiente";
+            guardarOrders(orders);
+            actualizarUIOrdenActiva();
+            alert(`🚀 Orden #${orden.id} enviada/actualizada en Cocina en tiempo real.`);
         }
 
+        // Selector de Órdenes (Cuadros)
+        function abrirModalSelectorOrdenes() {
+            let orders = getOrders();
+            let contenedor = document.getElementById('lista-cuadros-ordenes');
+            contenedor.innerHTML = '';
+
+            let activas = orders.filter(o => o.estado !== 'cobrado');
+            if (activas.length === 0) {
+                contenedor.innerHTML = `<p class="text-xs text-gray-400 italic">No hay cuentas abiertas. Crea una nueva.</p>`;
+            } else {
+                activas.forEach(ord => {
+                    let totalOrd = ord.items.reduce((a, b) => a + b.precio, 0);
+                    let colorEstado = ord.estado === 'listo' ? 'border-green-500 bg-green-950/50' : 'border-indigo-500/50 bg-purple-950/60';
+                    contenedor.innerHTML += `
+                        <div class="p-2.5 rounded-xl border ${colorEstado} flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-black text-amber-300">Orden #${ord.id} - ${ord.cliente}</span>
+                                <p class="text-[9px] text-gray-300">${ord.items.length} productos | Total: <b>$${totalOrd.toFixed(2)}</b></p>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold ${ord.estado === 'listo' ? 'bg-green-600 text-white' : 'bg-amber-600 text-white'} uppercase">${ord.estado}</span>
+                            </div>
+                            <div class="space-x-1">
+                                <button onclick="cambiarOrdenActiva('${ord.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs">Abrir ➔</button>
+                                <button onclick="eliminarOrdenCompleta('${ord.id}')" class="bg-red-900 hover:bg-red-800 text-white font-bold px-2 py-1.5 rounded-lg text-xs">🗑️</button>
+                            </div>
+                        </div>`;
+                });
+            }
+            document.getElementById('modal-selector-ordenes').classList.remove('hidden');
+        }
+
+        function cerrarModalSelectorOrdenes() {
+            document.getElementById('modal-selector-ordenes').classList.add('hidden');
+        }
+
+        function cambiarOrdenActiva(id) {
+            ordenActivaId = id;
+            actualizarUIOrdenActiva();
+            cerrarModalSelectorOrdenes();
+            mostrarToast(`📂 Cambiado a Orden #${id}`);
+        }
+
+        function crearNuevaOrdenDesdeModal() {
+            crearNuevaOrden(true);
+            cerrarModalSelectorOrdenes();
+            actualizarUIOrdenActiva();
+        }
+
+        function eliminarOrdenCompleta(id) {
+            if(confirm(`¿Estás seguro de eliminar por completo la Orden #${id}?`)) {
+                let orders = getOrders();
+                orders = orders.filter(o => o.id !== id);
+                guardarOrders(orders);
+                abrirModalSelectorOrdenes();
+                if(ordenActivaId === id) {
+                    ordenActivaId = orders.length > 0 ? orders[0].id : null;
+                    actualizarUIOrdenActiva();
+                }
+            }
+        }
+
+        // Cobrar y cerrar cuenta
         function abrirModalPago() {
-            if (carrito.length === 0) { alert("Agrega productos al carrito."); return; }
-            let total = carrito.reduce((a, b) => a + b.precio, 0);
+            let orden = obtenerOrdenActiva();
+            if (!orden || orden.items.length === 0) { alert("La orden está vacía."); return; }
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
             document.getElementById('lbl-total-cobro').innerText = `$${total.toFixed(2)}`;
             document.getElementById('modal-pago').classList.remove('hidden');
         }
@@ -396,29 +578,22 @@
             document.getElementById('modal-pago').classList.add('hidden');
         }
 
-        function procesarPago(metodo) {
-            let cliente = document.getElementById('nombre-cliente').value.trim() || "Mostrador";
-            let total = carrito.reduce((a, b) => a + b.precio, 0);
-            
-            // LA ORDEN SE ENVÍA DIRECTAMENTE A LA BASE DE DATOS COMPARTIDA (COCINA Y DUEÑO)
-            let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
-            orders.push({
-                id: Date.now().toString().slice(-4),
-                cliente: cliente,
-                items: carrito,
-                total: total,
-                pago: metodo,
-                estado: "pendiente", // Inicia pendiente para cocina
-                fecha: new Date().toLocaleDateString(),
-                tiempo: new Date().toLocaleTimeString()
-            });
-            localStorage.setItem("db_orders", JSON.stringify(orders));
-            
-            alert(`🚀 ¡Pedido enviado con éxito a Cocina y Caja!\nMétodo: ${metodo} | Total: $${total}`);
-            carrito = [];
-            document.getElementById('nombre-cliente').value = "";
-            updateCart();
+        function finalizarYCobrarOrden(metodo) {
+            let orders = getOrders();
+            let orden = orders.find(o => o.id === ordenActivaId);
+            if (!orden) return;
+
+            orden.estado = "cobrado";
+            orden.pagoMetodo = metodo;
+            orden.total = orden.items.reduce((a, b) => a + b.precio, 0);
+            guardarOrders(orders);
+
+            alert(`✅ ¡Orden #${orden.id} cobrada con éxito!\nMétodo: ${metodo} | Total: $${orden.total.toFixed(2)}`);
             cerrarModalPago();
+
+            // Crear otra cuenta en automático para el siguiente cliente
+            crearNuevaOrden(false);
+            actualizarUIOrdenActiva();
         }
 
         window.onload = initPOS;
