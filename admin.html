@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - Panel Dueño</title>
+    <title>DULCE BOCADO - Panel Dueño & Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -17,8 +17,8 @@
 
     <header class="flex justify-between items-center bg-dark-overlay p-4 marco-admin mb-4">
         <div>
-            <h1 class="text-base font-black text-amber-400">⚙️ Panel del Dueño (Caja e Historial)</h1>
-            <p class="text-[10px] text-purple-300">Sincronizado en la nube</p>
+            <h1 class="text-base font-black text-amber-400">⚙️ Panel del Dueño & Gestor de Menú</h1>
+            <p class="text-[10px] text-purple-300">Control de Caja y Productos en Tiempo Real</p>
         </div>
         <div class="flex space-x-2">
             <a href="mesero.html" class="bg-purple-900 text-xs font-bold px-3 py-2 rounded-xl">📱 POS</a>
@@ -39,6 +39,26 @@
             </div>
         </div>
 
+        <!-- GESTOR DE PRODUCTOS Y MENÚ -->
+        <section class="bg-dark-overlay p-4 marco-admin space-y-3">
+            <h2 class="text-xs font-black text-amber-300 uppercase">🍔 Agregar / Quitar Productos del Menú</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 bg-purple-950/60 p-3 rounded-xl border border-amber-500/30 text-xs">
+                <select id="nuevo-cat" class="bg-purple-900 border border-purple-700 rounded p-2 text-white">
+                    <option value="crepasEspeciales">Crepa Especial</option>
+                    <option value="frappesBasicos">Frappe Básico</option>
+                    <option value="frappesPremium">Frappe Premium</option>
+                    <option value="frappesEspeciales">Frappe Especial</option>
+                    <option value="chamoyadas">Chamoyada</option>
+                    <option value="sodas">Soda Italiana</option>
+                </select>
+                <input type="text" id="nuevo-nombre" placeholder="Nombre producto..." class="bg-purple-900 border border-purple-700 rounded p-2 text-white">
+                <input type="number" id="nuevo-precio" placeholder="Precio ($)..." class="bg-purple-900 border border-purple-700 rounded p-2 text-white">
+                <button onclick="agregarNuevoProducto()" class="bg-emerald-600 hover:bg-emerald-500 font-bold p-2 rounded text-white shadow">➕ Añadir Producto</button>
+            </div>
+            <div id="lista-productos-admin" class="space-y-1 max-h-48 overflow-y-auto pr-1"></div>
+        </section>
+
+        <!-- HISTORIAL DE COBROS -->
         <section class="bg-dark-overlay p-4 marco-admin space-y-3">
             <h2 class="text-xs font-black text-amber-300 uppercase">📊 Historial de Cuentas Cobradas</h2>
             <div id="contenedor-historial-cobrados" class="space-y-2"></div>
@@ -63,6 +83,110 @@
                 snapshot.forEach((doc) => { orders.push({ firestoreId: doc.id, ...doc.data() }); });
                 renderAdmin(orders);
             });
+            renderGestorMenu();
+        }
+
+        function getConfig() {
+            let defaults = {
+                frappesBasicos: [
+                    {id:"fb1", name:"Moka", med:50, gde:60, jumbo:120, img:"Capuchino.png", activo:true},
+                    {id:"fb2", name:"Capuchino", med:50, gde:60, jumbo:120, img:"Capuchino.png", activo:true},
+                    {id:"fb3", name:"Fresa", med:50, gde:60, jumbo:120, img:"Fresa Frappe.png", activo:true}
+                ],
+                frappesPremium: [
+                    {id:"fp1", name:"Ferrero Rocher", med:70, gde:75, jumbo:150, img:"Ferrero rocher.png", activo:true},
+                    {id:"fp2", name:"Kinder Délice", med:70, gde:75, jumbo:150, img:"Quinder delice.png", activo:true},
+                    {id:"fp3", name:"Gansito", med:70, gde:75, jumbo:150, img:"Gansito.png", activo:true},
+                    {id:"fp4", name:"Bubu Lubu", med:70, gde:75, jumbo:150, img:"Bubulubu.png", activo:true}
+                ],
+                frappesEspeciales: [
+                    {id:"fe1", name:"M&M's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png", activo:true},
+                    {id:"fe2", name:"Oreo", med:65, gde:70, jumbo:140, img:"Oreo.png", activo:true},
+                    {id:"fe3", name:"Taro", med:65, gde:70, jumbo:140, img:"Taro.png", activo:true},
+                    {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png", activo:true}
+                ],
+                crepasEspeciales: [
+                    {id:"ce1", name:"Crepa Ferrero", desc:"Nutella, Nuez, Almendra, Ferrero", precio:90, img:"Crepa Fererro.png", activo:true},
+                    {id:"ce2", name:"Crepa Gansito", desc:"Nutella, Philadelphia, Fresa, Gansito", precio:90, img:"Crepa Gansito.png", activo:true},
+                    {id:"ce3", name:"Crepa Kinder", desc:"Nutella, Philadelphia, Kinder Délice", precio:95, img:"Crepa Basica.png", activo:true},
+                    {id:"ce4", name:"Crepa Oreo", desc:"Nutella, Lechera, Oreo", precio:85, img:"Crepa Oreo.png", activo:true}
+                ],
+                chamoyadas: [
+                    {id:"ch1", name:"PicaFresa", precio:60, img:"Chamoyada Fresa.png", activo:true},
+                    {id:"ch2", name:"Mango", precio:60, img:"Chamoyada Mango.png", activo:true}
+                ],
+                sodas: [
+                    {id:"so1", name:"Blue", precio:60, img:"Blu.png", activo:true},
+                    {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png", activo:true},
+                    {id:"so3", name:"Cereza", precio:60, img:"Cereza.png", activo:true}
+                ],
+                ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada Fresa", "Lechera", "Fresa", "Plátano", "Durazno", "Nuez", "Almendra", "Chispas de chocolate", "Crema Batida"]
+            };
+            return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
+        }
+
+        function renderGestorMenu() {
+            let config = getConfig();
+            let container = document.getElementById('lista-productos-admin');
+            container.innerHTML = '';
+            
+            let categorias = ['crepasEspeciales', 'frappesBasicos', 'frappesPremium', 'frappesEspeciales', 'chamoyadas', 'sodas'];
+            categorias.forEach(cat => {
+                if(config[cat]) {
+                    config[cat].forEach((item, idx) => {
+                        let precioTxt = item.precio ? `$${item.precio}` : `Med: $${item.med}`;
+                        container.innerHTML += `
+                            <div class="bg-purple-950/80 p-2 rounded-lg border border-amber-500/30 flex justify-between items-center text-xs">
+                                <div>
+                                    <span class="font-bold text-white">${item.name}</span>
+                                    <span class="text-[10px] text-purple-300 ml-2">(${cat}) - ${precioTxt}</span>
+                                </div>
+                                <button onclick="eliminarProductoMenu('${cat}', ${idx})" class="bg-red-900 hover:bg-red-800 text-white font-bold px-2 py-1 rounded text-[10px]">🗑️ Quitar</button>
+                            </div>`;
+                    });
+                }
+            });
+        }
+
+        function agregarNuevoProducto() {
+            let cat = document.getElementById('nuevo-cat').value;
+            let name = document.getElementById('nuevo-nombre').value.trim();
+            let precio = parseFloat(document.getElementById('nuevo-precio').value);
+
+            if(!name || isNaN(precio)) { alert("Ingresa nombre y precio válido."); return; }
+
+            let config = getConfig();
+            let nuevoItem = {
+                id: "prod_" + Date.now(),
+                name: name,
+                activo: true
+            };
+
+            if(cat.includes('frappes')) {
+                nuevoItem.med = precio;
+                nuevoItem.gde = precio + 10;
+                nuevoItem.jumbo = precio + 60;
+                nuevoItem.img = "Capuchino.png";
+            } else {
+                nuevoItem.precio = precio;
+                nuevoItem.img = "Crepa Basica.png";
+            }
+
+            config[cat].push(nuevoItem);
+            localStorage.setItem("db_config_dulce", JSON.stringify(config));
+            document.getElementById('nuevo-nombre').value = '';
+            document.getElementById('nuevo-precio').value = '';
+            renderGestorMenu();
+            alert("✨ Producto agregado al menú con éxito.");
+        }
+
+        function eliminarProductoMenu(cat, idx) {
+            if(confirm("¿Eliminar este producto del menú?")) {
+                let config = getConfig();
+                config[cat].splice(idx, 1);
+                localStorage.setItem("db_config_dulce", JSON.stringify(config));
+                renderGestorMenu();
+            }
         }
 
         function renderAdmin(orders) {
