@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - Área de Cocina</title>
+    <title>DULCE BOCADO - Pantalla de Cocina</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
@@ -15,87 +15,87 @@
 
     <header class="flex justify-between items-center bg-dark-overlay p-4 marco-cocina mb-4">
         <div>
-            <h1 class="text-base font-black text-blue-400">🍳 Pantalla de Cocina y Comandas</h1>
-            <p class="text-[10px] text-purple-300">Sincronizado con Mesero y Dueño</p>
+            <h1 class="text-base font-black text-blue-400">🍳 Área de Cocina - Órdenes Activas</h1>
+            <p class="text-[10px] text-purple-300">Sincronización en tiempo real con Meseros</p>
         </div>
         <div class="flex space-x-2">
-            <button onclick="cargarComandas()" class="bg-blue-600 hover:bg-blue-500 text-xs font-bold px-3 py-2 rounded-xl shadow">🔄 Actualizar</button>
-            <a href="mesero.html" class="bg-purple-900 hover:bg-purple-800 text-xs font-bold px-3 py-2 rounded-xl">📱 POS</a>
+            <button onclick="cargarComandasCocina()" class="bg-blue-600 hover:bg-blue-500 text-xs font-bold px-3 py-2 rounded-xl shadow">🔄 Actualizar</button>
+            <a href="mesero.html" class="bg-purple-900 hover:bg-purple-800 text-xs font-bold px-3 py-2 rounded-xl">📱 POS Mesero</a>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto space-y-4">
         <section class="bg-dark-overlay p-4 marco-cocina space-y-3">
-            <h2 class="text-xs font-black text-blue-300 uppercase">📋 Comandas Activas e Historial</h2>
-            <div id="contenedor-comandas" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <h2 class="text-xs font-black text-blue-300 uppercase">📋 Comandas en Proceso</h2>
+            <div id="contenedor-comandas-cocina" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <!-- Se cargan dinámicamente -->
             </div>
         </section>
     </main>
 
     <script>
-        function cargarComandas() {
+        function cargarComandasCocina() {
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
-            let contenedor = document.getElementById('contenedor-comandas');
+            let contenedor = document.getElementById('contenedor-comandas-cocina');
             contenedor.innerHTML = '';
 
-            if (orders.length === 0) {
-                contenedor.innerHTML = `<p class="text-xs text-gray-400 italic col-span-2 text-center py-6">No hay comandas registradas en este momento.</p>`;
+            // Solo mostramos cuentas que no hayan sido cobradas
+            let activas = orders.filter(o => o.estado !== 'cobrado');
+
+            if (activas.length === 0) {
+                contenedor.innerHTML = `<p class="text-xs text-gray-400 italic col-span-2 text-center py-6">No hay pedidos pendientes en la cocina.</p>`;
                 return;
             }
 
-            // Mostramos los pedidos del más reciente al más antiguo
-            orders.slice().reverse().forEach((orden, index) => {
-                let realIndex = orders.length - 1 - index;
-                let colorEstado = orden.estado === 'listo' ? 'border-green-500 bg-green-950/40' : 'border-blue-500/50 bg-purple-950/80';
+            activas.slice().reverse().forEach(orden => {
+                let colorBorde = orden.estado === 'listo' ? 'border-green-500 bg-green-950/40' : 'border-blue-500/60 bg-purple-950/80';
                 
                 let listaItems = '';
                 orden.items.forEach(item => {
-                    listaItems += `<li class="text-xs text-gray-200 flex justify-between"><span>• ${item.name}</span> <span class="font-bold text-pink-300">$${item.precio}</span></li>`;
+                    let badgeNuevo = item.nuevo ? `<span class="bg-amber-500 text-gray-900 text-[9px] font-black px-1.5 py-0.5 rounded ml-1 animate-pulse">¡NUEVO!</span>` : '';
+                    listaItems += `<li class="text-xs text-gray-200 flex justify-between items-center py-0.5 border-b border-purple-900/40"><span>• ${item.name} ${badgeNuevo}</span> <span class="font-bold text-pink-300">$${item.precio}</span></li>`;
                 });
 
                 contenedor.innerHTML += `
-                    <div class="p-3 rounded-xl border ${colorEstado} space-y-2 shadow-lg">
+                    <div class="p-3 rounded-xl border ${colorBorde} space-y-2 shadow-xl">
                         <div class="flex justify-between items-center border-b border-purple-900 pb-1">
                             <div>
-                                <span class="text-xs font-black text-amber-300">Cliente: ${orden.cliente}</span>
-                                <p class="text-[9px] text-gray-400">🕒 ${orden.tiempo} | Pago: <b>${orden.pago || 'Efectivo'}</b></p>
+                                <span class="text-xs font-black text-amber-300">Orden #${orden.id} - ${orden.cliente}</span>
+                                <p class="text-[9px] text-gray-400">🕒 ${orden.tiempo}</p>
                             </div>
-                            <span class="text-[10px] px-2 py-0.5 rounded font-bold ${orden.estado === 'listo' ? 'bg-green-600 text-white' : 'bg-amber-600 text-white'}">${orden.estado.toUpperCase()}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${orden.estado === 'listo' ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}">${orden.estado.replace('_', ' ')}</span>
                         </div>
-                        <ul class="space-y-1 my-1">
+                        <ul class="space-y-1 my-1 max-h-32 overflow-y-auto pr-1">
                             ${listaItems}
                         </ul>
                         <div class="flex justify-between items-center pt-2 border-t border-purple-900/60 text-xs">
-                            <span class="font-bold text-pink-300">Total: $${orden.total.toFixed(2)}</span>
+                            <span class="font-bold text-pink-300">Total: $${orden.items.reduce((a,b)=>a+b.precio,0).toFixed(2)}</span>
                             <div class="space-x-1">
-                                <button onclick="cambiarEstado(${realIndex}, 'listo')" class="bg-green-600 hover:bg-green-500 text-[10px] font-bold px-2.5 py-1 rounded">✅ Listo</button>
-                                <button onclick="eliminarComanda(${realIndex})" class="bg-red-900 hover:bg-red-800 text-[10px] font-bold px-2 py-1 rounded">🗑️</button>
+                                <button onclick="cambiarEstadoOrden('${orden.id}', 'en_preparacion')" class="bg-amber-600 hover:bg-amber-500 text-[10px] font-bold px-2 py-1 rounded">🔥 Preparar</button>
+                                <button onclick="cambiarEstadoOrden('${orden.id}', 'listo')" class="bg-green-600 hover:bg-green-500 text-[10px] font-bold px-2.5 py-1 rounded">✅ Listo</button>
                             </div>
                         </div>
                     </div>`;
             });
         }
 
-        function cambiarEstado(index, nuevoEstado) {
+        function cambiarEstadoOrden(idOrden, nuevoEstado) {
             let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
-            orders[index].estado = nuevoEstado;
-            localStorage.setItem("db_orders", JSON.stringify(orders));
-            cargarComandas();
-        }
-
-        function eliminarComanda(index) {
-            if(confirm("¿Eliminar esta comanda del historial?")) {
-                let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
-                orders.splice(index, 1);
+            let orden = orders.find(o => o.id === idOrden);
+            if (orden) {
+                // Si el cocinero marca como listo, quitamos la etiqueta de "nuevo" para limpiar la vista
+                if (nuevoEstado === 'listo') {
+                    orden.items.forEach(i => i.nuevo = false);
+                }
+                orden.estado = nuevoEstado;
                 localStorage.setItem("db_orders", JSON.stringify(orders));
-                cargarComandas();
+                cargarComandasCocina();
             }
         }
 
-        // Auto-actualizar cada 3 segundos para sincronización instantánea
-        setInterval(cargarComandas, 3000);
-        window.onload = cargarComandas;
+        // Sincronización automática cada 3 segundos
+        setInterval(cargarComandasCocina, 3000);
+        window.onload = cargarComandasCocina;
     </script>
 </body>
 </html>
