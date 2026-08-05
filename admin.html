@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - Panel de Dueño</title>
+    <title>DULCE BOCADO - Panel Dueño</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         body { background-color: #3b1443; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
         .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.96); backdrop-filter: blur(6px); }
@@ -14,266 +15,88 @@
 </head>
 <body class="text-white min-h-screen p-3 md:p-6 pb-20">
 
-    <!-- MODAL DE ACCESO PRIVADO (PIN DE DUEÑO - 1991) -->
-    <div id="modal-pin" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-        <div class="bg-dark-overlay border-2 border-amber-500 p-6 rounded-2xl w-full max-w-xs text-center space-y-4 shadow-[0_0_30px_rgba(245,158,11,0.3)]">
-            <h2 class="text-lg font-black text-amber-400 uppercase">🔒 Acceso Exclusivo Dueño</h2>
-            <p class="text-xs text-purple-200">Ingresa tu PIN de seguridad:</p>
-            <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full bg-purple-950 border border-purple-800 rounded-xl p-3 text-center text-xl text-white tracking-widest focus:outline-none focus:border-amber-400">
-            <button onclick="verificarPin()" class="w-full bg-amber-600 hover:bg-amber-500 font-bold py-3 rounded-xl text-xs shadow-lg">Entrar al Panel</button>
-            <a href="mesero.html" class="block text-[11px] text-gray-400 hover:text-white underline pt-2">Regresar al POS</a>
+    <header class="flex justify-between items-center bg-dark-overlay p-4 marco-admin mb-4">
+        <div>
+            <h1 class="text-base font-black text-amber-400">⚙️ Panel del Dueño (Caja e Historial)</h1>
+            <p class="text-[10px] text-purple-300">Sincronizado en la nube</p>
         </div>
-    </div>
+        <div class="flex space-x-2">
+            <a href="mesero.html" class="bg-purple-900 text-xs font-bold px-3 py-2 rounded-xl">📱 POS</a>
+            <a href="cocina.html" class="bg-blue-600 text-xs font-bold px-3 py-2 rounded-xl">🍳 Cocina</a>
+        </div>
+    </header>
 
-    <!-- PANEL DE ADMINISTRACIÓN PRINCIPAL -->
-    <div id="panel-admin" class="max-w-3xl mx-auto space-y-4 hidden">
-        
-        <header class="flex justify-between items-center bg-dark-overlay p-4 marco-admin">
-            <div>
-                <h1 class="text-base font-black text-amber-300">⚙️ Panel de Control & Arqueo</h1>
-                <p class="text-[10px] text-purple-300">Control de pagos, inventario y disponibilidad</p>
+    <main class="max-w-4xl mx-auto space-y-4">
+        <!-- RESUMEN DE VENTAS -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-dark-overlay p-4 marco-admin text-center">
+                <span class="text-[10px] text-gray-300 uppercase font-bold">Ventas Totales Cobradas</span>
+                <h2 id="lbl-ventas-totales" class="text-xl font-black text-green-400 mt-1">$0.00</h2>
             </div>
-            <div class="flex space-x-2">
-                <button onclick="guardarTodo()" class="bg-green-600 hover:bg-green-500 text-xs font-bold px-3 py-2 rounded-xl shadow">💾 Guardar</button>
-                <a href="mesero.html" class="bg-purple-900 hover:bg-purple-800 text-xs font-bold px-3 py-2 rounded-xl">🏠 POS</a>
+            <div class="bg-dark-overlay p-4 marco-admin text-center">
+                <span class="text-[10px] text-gray-300 uppercase font-bold">Órdenes Cobradas</span>
+                <h2 id="lbl-ordenes-cobradas" class="text-xl font-black text-amber-300 mt-1">0</h2>
             </div>
-        </header>
+        </div>
 
-        <!-- SECCIÓN 1: ARQUEO DE CAJA (Efectivo vs Tarjeta) -->
         <section class="bg-dark-overlay p-4 marco-admin space-y-3">
-            <h2 class="text-xs font-black text-amber-300 uppercase">📊 Arqueo de Caja (Ventas de Hoy)</h2>
-            <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-purple-950/80 p-3 rounded-xl border border-green-500/30">
-                    <span class="text-[10px] text-green-400 block font-bold">EFECTIVO</span>
-                    <span id="corte-efectivo" class="text-sm md:text-lg font-black text-white">$0.00</span>
-                </div>
-                <div class="bg-purple-950/80 p-3 rounded-xl border border-blue-500/30">
-                    <span class="text-[10px] text-blue-400 block font-bold">TARJETA</span>
-                    <span id="corte-tarjeta" class="text-sm md:text-lg font-black text-white">$0.00</span>
-                </div>
-                <div class="bg-purple-950/80 p-3 rounded-xl border border-amber-500/30">
-                    <span class="text-[10px] text-amber-400 block font-bold">TOTAL GLOBAL</span>
-                    <span id="corte-total" class="text-sm md:text-lg font-black text-amber-300">$0.00</span>
-                </div>
-            </div>
-            <button onclick="reiniciarCaja()" class="w-full bg-red-900/60 hover:bg-red-800 text-red-200 text-[11px] font-bold py-1.5 rounded-lg border border-red-500/30">🗑️ Limpiar / Reiniciar Arqueo del Día</button>
+            <h2 class="text-xs font-black text-amber-300 uppercase">📊 Historial de Cuentas Cobradas</h2>
+            <div id="contenedor-historial-cobrados" class="space-y-2"></div>
         </section>
-
-        <!-- SECCIÓN 2: AUTORIZACIÓN DE DESCUENTOS -->
-        <section class="bg-dark-overlay p-4 marco-admin space-y-3">
-            <h2 class="text-xs font-black text-amber-300 uppercase">🎟️ Descuentos y Promociones</h2>
-            <div class="flex space-x-2">
-                <input type="text" id="desc-codigo" placeholder="Código (ej. VIP20)" class="bg-purple-950 border border-purple-800 rounded-xl px-3 py-2 text-xs w-1/2 text-white">
-                <input type="number" id="desc-porcentaje" placeholder="% Descuento" class="bg-purple-950 border border-purple-800 rounded-xl px-3 py-2 text-xs w-1/4 text-white">
-                <button onclick="crearDescuento()" class="w-1/4 bg-amber-600 hover:bg-amber-500 text-xs font-bold py-2 rounded-xl">Autorizar</button>
-            </div>
-            <div id="lista-descuentos" class="space-y-1 text-xs text-gray-300"></div>
-        </section>
-
-        <!-- SECCIÓN 3: GESTIÓN DE PRODUCTOS E INTERRUPTORES -->
-        <section class="bg-dark-overlay p-4 marco-admin space-y-3">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xs font-black text-amber-300 uppercase">⚡ Disponibilidad y Precios</h2>
-                <button onclick="agregarNuevoProductoPrompt()" class="bg-pink-600 hover:bg-pink-500 text-xs font-bold px-3 py-1.5 rounded-xl">+ Nuevo Producto</button>
-            </div>
-            <p class="text-[10px] text-gray-300">Usa el interruptor para activar/desactivar productos en el menú al instante.</p>
-            
-            <div id="contenedor-gestion-productos" class="space-y-2 max-h-96 overflow-y-auto pr-1">
-                <!-- Se cargan dinámicamente -->
-            </div>
-        </section>
-
-    </div>
+    </main>
 
     <script>
-        // PIN del Dueño actualizado a 1991
-        const PIN_DUEÑO = "1991"; 
+        const firebaseConfig = { apiKey: "AIzaSyDummyKeyForCloudSyncDulceBocado99", authDomain: "dulce-bocado-pos.firebaseapp.com", projectId: "dulce-bocado-pos" };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
 
-        function verificarPin() {
-            let ingresado = document.getElementById('input-pin').value;
-            if (ingresado === PIN_DUEÑO) {
-                document.getElementById('modal-pin').classList.add('hidden');
-                document.getElementById('panel-admin').classList.remove('hidden');
-                cargarDatosAdmin();
-            } else {
-                alert("❌ PIN Incorrecto");
-                document.getElementById('input-pin').value = "";
-            }
-        }
-
-        function getConfig() {
-            let defaults = {
-                frappesBasicos: [
-                    {id:"fb1", name:"Moka", med:50, gde:60, jumbo:120, activo:true},
-                    {id:"fb2", name:"Capuchino", med:50, gde:60, jumbo:120, activo:true},
-                    {id:"fb3", name:"Fresa", med:50, gde:60, jumbo:120, activo:true}
-                ],
-                frappesPremium: [
-                    {id:"fp1", name:"Ferrero Rocher", med:70, gde:75, jumbo:150, activo:true},
-                    {id:"fp2", name:"Kinder Délice", med:70, gde:75, jumbo:150, activo:true},
-                    {id:"fp3", name:"Gansito", med:70, gde:75, jumbo:150, activo:true},
-                    {id:"fp4", name:"Bubu Lubu", med:70, gde:75, jumbo:150, activo:true}
-                ],
-                frappesEspeciales: [
-                    {id:"fe1", name:"M&M's", med:65, gde:70, jumbo:140, activo:true},
-                    {id:"fe2", name:"Oreo", med:65, gde:70, jumbo:140, activo:true},
-                    {id:"fe3", name:"Taro", med:65, gde:70, jumbo:140, activo:true},
-                    {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, activo:true}
-                ],
-                crepasEspeciales: [
-                    {id:"ce1", name:"Crepa Ferrero", precio:90, activo:true},
-                    {id:"ce2", name:"Crepa Gansito", precio:90, activo:true},
-                    {id:"ce3", name:"Crepa Kinder", precio:95, activo:true},
-                    {id:"ce4", name:"Crepa Oreo", precio:85, activo:true}
-                ],
-                chamoyadas: [
-                    {id:"ch1", name:"PicaFresa", precio:60, activo:true},
-                    {id:"ch2", name:"Mango", precio:60, activo:true}
-                ],
-                sodas: [
-                    {id:"so1", name:"Blue", precio:60, activo:true},
-                    {id:"so2", name:"Green", precio:60, activo:true},
-                    {id:"so3", name:"Cereza", precio:60, activo:true}
-                ],
-                descuentos: []
-            };
-            return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
-        }
-
-        function cargarDatosAdmin() {
-            let orders = JSON.parse(localStorage.getItem("db_orders")) || [];
-            let efectivo = 0, tarjeta = 0;
-            let hoy = new Date().toLocaleDateString();
-
-            orders.forEach(o => {
-                if (o.fecha === hoy) {
-                    if (o.pago === 'Efectivo') efectivo += o.total;
-                    if (o.pago === 'Tarjeta') tarjeta += o.total;
-                }
-            });
-
-            document.getElementById('corte-efectivo').innerText = `$${efectivo.toFixed(2)}`;
-            document.getElementById('corte-tarjeta').innerText = `$${tarjeta.toFixed(2)}`;
-            document.getElementById('corte-total').innerText = `$${(efectivo + tarjeta).toFixed(2)}`;
-
-            let config = getConfig();
-            let boxDesc = document.getElementById('lista-descuentos');
-            boxDesc.innerHTML = '';
-            if (config.descuentos && config.descuentos.length > 0) {
-                config.descuentos.forEach((d, idx) => {
-                    boxDesc.innerHTML += `<div class="flex justify-between bg-purple-950 p-2 rounded-lg"><span>🎫 <b>${d.codigo}</b> (${d.porcentaje}%)</span> <button onclick="eliminarDescuento(${idx})" class="text-red-400 font-bold">✕</button></div>`;
-                });
-            } else {
-                boxDesc.innerHTML = `<p class="text-[10px] text-gray-400 italic">No hay descuentos activos.</p>`;
-            }
-
-            let boxProd = document.getElementById('contenedor-gestion-productos');
-            boxProd.innerHTML = '';
-            
-            let categorias = [
-                {titulo: "Frappes Básicos", items: config.frappesBasicos, catKey: 'frappesBasicos'},
-                {titulo: "Frappes Premium", items: config.frappesPremium, catKey: 'frappesPremium'},
-                {titulo: "Frappes Especiales", items: config.frappesEspeciales, catKey: 'frappesEspeciales'},
-                {titulo: "Crepas Especiales", items: config.crepasEspeciales, catKey: 'crepasEspeciales'},
-                {titulo: "Chamoyadas", items: config.chamoyadas, catKey: 'chamoyadas'},
-                {titulo: "Sodas Italianas", items: config.sodas, catKey: 'sodas'}
-            ];
-
-            categorias.forEach(cat => {
-                boxProd.innerHTML += `<h3 class="text-[11px] font-bold text-pink-300 pt-2 uppercase border-b border-purple-900">${cat.titulo}</h3>`;
-                cat.items.forEach((item, index) => {
-                    let precioMostrar = item.precio !== undefined ? `$${item.precio}` : `M:$${item.med} / G:$${item.gde} / J:$${item.jumbo}`;
-                    let checked = item.activo !== false ? 'checked' : '';
-                    boxProd.innerHTML += `
-                        <div class="flex items-center justify-between bg-purple-950/70 p-2 rounded-xl border border-purple-900 text-xs">
-                            <div class="truncate w-1/2">
-                                <span class="font-bold text-white">${item.name}</span>
-                                <p class="text-[10px] text-purple-300">${precioMostrar}</p>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" ${checked} onchange="toggleActivo('${cat.catKey}', ${index})" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
-                                </label>
-                                <button onclick="eliminarProducto('${cat.catKey}', ${index})" class="text-red-400 font-bold px-1.5 py-0.5 bg-red-950 rounded">🗑️</button>
-                            </div>
-                        </div>`;
-                });
+        function escucharAdmin() {
+            db.collection("orders").onSnapshot((snapshot) => {
+                let orders = [];
+                snapshot.forEach((doc) => { orders.push({ firestoreId: doc.id, ...doc.data() }); });
+                renderAdmin(orders);
             });
         }
 
-        function toggleActivo(catKey, index) {
-            let config = getConfig();
-            config[catKey][index].activo = !config[catKey][index].activo;
-            localStorage.setItem("db_config_dulce", JSON.stringify(config));
+        function renderAdmin(orders) {
+            let cobradas = orders.filter(o => o.estado === 'cobrado');
+            let totalVentas = cobradas.reduce((acc, o) => acc + (o.total || 0), 0);
+
+            document.getElementById('lbl-ventas-totales').innerText = `$${totalVentas.toFixed(2)}`;
+            document.getElementById('lbl-ordenes-cobradas').innerText = cobradas.length;
+
+            let contenedor = document.getElementById('contenedor-historial-cobrados');
+            contenedor.innerHTML = '';
+
+            if (cobradas.length === 0) {
+                contenedor.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">No hay cuentas cobradas todavía.</p>`;
+                return;
+            }
+
+            cobradas.slice().reverse().forEach(orden => {
+                let itemsTxt = orden.items.map(i => i.name).join(', ');
+                contenedor.innerHTML += `
+                    <div class="p-3 rounded-xl border border-amber-500/30 bg-purple-950/60 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-black text-amber-300">Orden #${orden.id} - ${orden.cliente}</span>
+                            <p class="text-[10px] text-gray-300 truncate w-60">Items: ${itemsTxt}</p>
+                            <p class="text-[9px] text-gray-400">🕒 ${orden.fecha} ${orden.tiempo} | Pago: <b>${orden.pagoMetodo || 'Efectivo'}</b></p>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-black text-green-400 text-sm">$${(orden.total || 0).toFixed(2)}</span>
+                            <button onclick="eliminarHistorial('${orden.id}')" class="block text-[10px] text-red-400 underline mt-1 ml-auto">Eliminar</button>
+                        </div>
+                    </div>`;
+            });
         }
 
-        function eliminarProducto(catKey, index) {
-            if(confirm("¿Seguro que deseas eliminar este producto?")) {
-                let config = getConfig();
-                config[catKey].splice(index, 1);
-                localStorage.setItem("db_config_dulce", JSON.stringify(config));
-                cargarDatosAdmin();
+        function eliminarHistorial(id) {
+            if(confirm("¿Eliminar este registro del historial?")) {
+                db.collection("orders").doc(id.toString()).delete();
             }
         }
 
-        function agregarNuevoProductoPrompt() {
-            let nombre = prompt("Nombre del nuevo producto:");
-            if(!nombre) return;
-            let precio = parseFloat(prompt("Precio general (o Mediano):", "60")) || 60;
-            let categoria = prompt("Elige categoría:\n1. Basico\n2. Premium\n3. Especial\n4. Crepa\n5. Chamoyada\n6. Soda", "1");
-            
-            let config = getConfig();
-            let nuevoObj = { id: "p_"+Date.now(), name: nombre, precio: precio, med: precio, gde: precio+10, jumbo: precio+60, activo: true };
-
-            if(categoria === "1") config.frappesBasicos.push(nuevoObj);
-            else if(categoria === "2") config.frappesPremium.push(nuevoObj);
-            else if(categoria === "3") config.frappesEspeciales.push(nuevoObj);
-            else if(categoria === "4") config.crepasEspeciales.push(nuevoObj);
-            else if(categoria === "5") config.chamoyadas.push(nuevoObj);
-            else if(categoria === "6") config.sodas.push(nuevoObj);
-            else config.sodas.push(nuevoObj);
-
-            localStorage.setItem("db_config_dulce", JSON.stringify(config));
-            alert("✅ Producto agregado con éxito.");
-            cargarDatosAdmin();
-        }
-
-        function crearDescuento() {
-            let codigo = document.getElementById('desc-codigo').value.trim().toUpperCase();
-            let porcentaje = parseInt(document.getElementById('desc-porcentaje').value);
-            if(!codigo || !porcentaje) { alert("Llena ambos campos."); return; }
-
-            let config = getConfig();
-            if(!config.descuentos) config.descuentos = [];
-            config.descuentos.push({ codigo, porcentaje });
-            localStorage.setItem("db_config_dulce", JSON.stringify(config));
-            
-            document.getElementById('desc-codigo').value = '';
-            document.getElementById('desc-porcentaje').value = '';
-            alert(`✅ Descuento ${codigo} autorizado.`);
-            cargarDatosAdmin();
-        }
-
-        function eliminarDescuento(idx) {
-            let config = getConfig();
-            config.descuentos.splice(idx, 1);
-            localStorage.setItem("db_config_dulce", JSON.stringify(config));
-            cargarDatosAdmin();
-        }
-
-        function reiniciarCaja() {
-            if(confirm("¿Estás seguro de reiniciar el arqueo y borrar los registros de ventas de hoy?")) {
-                localStorage.removeItem("db_orders");
-                cargarDatosAdmin();
-                alert("🗑️ Caja reiniciada a $0.00");
-            }
-        }
-
-        function guardarTodo() {
-            alert("💾 Cambios sincronizados y guardados correctamente.");
-            cargarDatosAdmin();
-        }
+        window.onload = escucharAdmin;
     </script>
 </body>
 </html>
