@@ -6,7 +6,6 @@
     <title>DULCE BOCADO - POS Nube</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
@@ -55,6 +54,21 @@
     </div>
 
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
+        <!-- VASO COMBO -->
+        <section class="bg-dark-overlay p-3 marco-oferta space-y-2">
+            <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
+                <span class="text-xl">🍨</span>
+                <h2 class="text-sm font-black text-green-400 uppercase tracking-widest">VASO COMBO</h2>
+            </div>
+            <div class="flex items-center justify-between bg-green-950/50 p-2 rounded-xl border border-green-500/40">
+                <div>
+                    <h3 class="text-xs font-black text-white">Vaso Combo Especial</h3>
+                    <p class="text-[9px] text-green-300">Incluye selección</p>
+                </div>
+                <button onclick="abrirModalVasoCombo()" class="bg-green-600 hover:bg-green-500 font-bold px-3 py-1 rounded-lg text-xs shadow text-white">$150 ➔</button>
+            </div>
+        </section>
+
         <!-- OFERTAS (Moy) -->
         <section class="bg-dark-overlay p-3 marco-oferta space-y-2">
             <div class="flex items-center space-x-2 pb-1 border-b border-green-500/30">
@@ -82,7 +96,7 @@
                 <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain">
                 <div>
                     <h2 class="text-xs font-black text-amber-300 uppercase">🥞 Ármala a tu Antojo</h2>
-                    <p class="text-[9px] text-gray-300">Base $50 + $10 c/u ingrediente</p>
+                    <p class="text-[9px] text-gray-300">Base $50 + $10 c/u ingrediente adicional</p>
                 </div>
             </div>
             <div id="box-ingredientes" class="grid grid-cols-2 gap-1.5 text-[11px] bg-purple-950/60 p-2.5 rounded-xl border border-amber-500/20"></div>
@@ -129,6 +143,31 @@
             </section>
         </div>
     </main>
+
+    <!-- MODAL VASO COMBO -->
+    <div id="modal-vaso-combo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
+        <div class="bg-dark-overlay border-2 border-green-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 shadow-2xl">
+            <h3 class="text-sm font-black text-green-300 uppercase">🍨 Personalizar Vaso Combo ($150)</h3>
+            <div class="text-left space-y-2 bg-purple-950/80 p-3 rounded-xl border border-green-500/30 text-xs">
+                <p class="font-bold text-amber-300">Frutas (Elige):</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Fresa" class="combo-fruta accent-green-500"> <span>Fresa</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Platano" class="combo-fruta accent-green-500"> <span>Plátano</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Durazno" class="combo-fruta accent-green-500"> <span>Durazno</span></label>
+                </div>
+                <p class="font-bold text-amber-300 pt-2">Toppings (Elige):</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Nuez" class="combo-topping accent-green-500"> <span>Nuez</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Almendra" class="combo-topping accent-green-500"> <span>Almendra</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" value="Chispas de chocolate" class="combo-topping accent-green-500"> <span class="text-[10px]">Chispas chocolate</span></label>
+                </div>
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="agregarVasoComboOrden()" class="flex-1 bg-green-600 hover:bg-green-500 font-bold py-2 rounded-xl text-xs text-white">Añadir ($150)</button>
+                <button onclick="cerrarModalVasoCombo()" class="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-3 rounded-xl text-xs">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL TAMAÑO -->
     <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
@@ -190,7 +229,6 @@
     </div>
 
     <script>
-        // Configuración Personal de Firebase Cloud Firestore (DulceBocado)
         const firebaseConfig = {
             apiKey: "AIzaSyCwvgekDaMBkfiewGaT1duGmb5iIqSvLLI",
             authDomain: "dulcebocado.firebaseapp.com",
@@ -241,7 +279,8 @@
                     {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png", activo:true},
                     {id:"so3", name:"Cereza", precio:60, img:"Cereza.png", activo:true}
                 ],
-                ingredientes: ["Nutella","Cajeta","Queso Philadelphia","Mermelada Fresa","Lechera","Fresa","Plátano","Nuez","Almendra","Crema Batida"]
+                // Ingredientes completos actualizados con todos los solicitados
+                ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada Fresa", "Lechera", "Fresa", "Plátano", "Durazno", "Nuez", "Almendra", "Chispas de chocolate", "Crema Batida"]
             };
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
         }
@@ -289,7 +328,7 @@
                     b4.innerHTML += `
                         <div class="bg-purple-950/70 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
                             <div class="flex items-center space-x-3">
-                                <img id="img-${i.id}" src="${i.img}" class="w-12 h-12 object-contain drop-shadow-md">
+                                <img id="img-${i.id}" src="${i.img || 'Crepa Basica.png'}" class="w-12 h-12 object-contain drop-shadow-md">
                                 <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-gray-300 w-32 truncate">${i.desc || ''}</p></div>
                             </div>
                             <button onclick="agregarProductoALaOrdenActive('${i.name}', ${i.precio}, 'img-${i.id}')" class="bg-pink-600 text-white font-bold px-3 py-1.5 rounded-xl shadow">$${i.precio} ➔</button>
@@ -302,7 +341,7 @@
                 if(i.activo !== false) {
                     b6.innerHTML += `
                         <div class="bg-purple-950/70 p-2 rounded-2xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Chamoyada)', ${i.precio}, 'img-${i.id}')">
-                            <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
+                            <img id="img-${i.id}" src="${i.img || 'Chamoyada Fresa.png'}" class="w-14 h-14 object-contain">
                             <span class="text-[10px] font-bold text-white">${i.name}</span>
                             <span class="text-amber-300 text-xs font-black">$${i.precio}</span>
                         </div>`;
@@ -314,7 +353,7 @@
                 if(i.activo !== false) {
                     b7.innerHTML += `
                         <div class="bg-purple-950/70 p-2 rounded-2xl border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer neon-aura space-y-1" onclick="agregarProductoALaOrdenActive('${i.name} (Soda)', ${i.precio}, 'img-${i.id}')">
-                            <img id="img-${i.id}" src="${i.img}" class="w-14 h-14 object-contain">
+                            <img id="img-${i.id}" src="${i.img || 'Blu.png'}" class="w-14 h-14 object-contain">
                             <span class="text-[10px] font-bold text-white">${i.name}</span>
                             <span class="text-cyan-300 text-xs font-black">$${i.precio}</span>
                         </div>`;
@@ -343,7 +382,7 @@
                     container.innerHTML += `
                         <div onclick='abrirModalModalFrappe(${JSON.stringify(i)}, "img-${i.id}")' class="bg-purple-950/80 p-2 rounded-2xl border border-pink-500/30 flex items-center justify-between cursor-pointer neon-aura">
                             <div class="flex items-center space-x-3">
-                                <img id="img-${i.id}" src="${i.img}" class="w-10 h-10 object-contain drop-shadow-md">
+                                <img id="img-${i.id}" src="${i.img || 'Capuchino.png'}" class="w-10 h-10 object-contain drop-shadow-md">
                                 <div><h3 class="text-[11px] font-black text-white">${i.name}</h3><p class="text-[9px] text-purple-300">Toca para tamaños</p></div>
                             </div>
                             <span class="bg-pink-600 text-white text-[10px] font-bold px-3 py-1 rounded-xl shadow">+ Ver</span>
@@ -457,11 +496,29 @@
             }
         }
 
+        function abrirModalVasoCombo() {
+            document.querySelectorAll('.combo-fruta, .combo-topping').forEach(c => c.checked = false);
+            document.getElementById('modal-vaso-combo').classList.remove('hidden');
+        }
+        function cerrarModalVasoCombo() {
+            document.getElementById('modal-vaso-combo').classList.add('hidden');
+        }
+        function agregarVasoComboOrden() {
+            let frutas = Array.from(document.querySelectorAll('.combo-fruta:checked')).map(c => c.value);
+            let toppings = Array.from(document.querySelectorAll('.combo-topping:checked')).map(c => c.value);
+            let desc = [];
+            if(frutas.length) desc.push(`Fruta: ${frutas.join(', ')}`);
+            if(toppings.length) desc.push(`Top: ${toppings.join(', ')}`);
+            let detalle = desc.length ? ` (${desc.join(' | ')})` : '';
+            agregarProductoALaOrdenActive(`Vaso Combo${detalle}`, 150, null);
+            cerrarModalVasoCombo();
+        }
+
         function abrirModalModalFrappe(item, imgId) {
             productoSeleccionado = item;
             idAnimacionActual = imgId;
             document.getElementById('modal-titulo-frappe').innerText = item.name;
-            document.getElementById('modal-img-frappe').src = item.img;
+            document.getElementById('modal-img-frappe').src = item.img || 'Capuchino.png';
             document.getElementById('m-precio').innerText = `$${item.med}`;
             document.getElementById('g-precio').innerText = `$${item.gde}`;
             document.getElementById('j-precio').innerText = `$${item.jumbo}`;
