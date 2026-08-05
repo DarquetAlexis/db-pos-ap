@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DULCE BOCADO - POS Nube</title>
+    <title>DULCE BOCADO - POS Nube con Pago y Ticket</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -20,6 +20,13 @@
         }
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
+        
+        /* Estilos específicos para impresión de ticket */
+        @media print {
+            body * { visibility: hidden; }
+            #seccion-ticket-impresion, #seccion-ticket-impresion * { visibility: visible; }
+            #seccion-ticket-impresion { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+        }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col pb-36" style="background-color: #2e0671;">
@@ -33,7 +40,7 @@
             <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-[#F6A9C5] object-contain">
             <div>
                 <h1 class="text-sm font-black text-[#D994F8]">DULCE BOCADO</h1>
-                <p class="text-[9px] text-[#B0D0F8]">Nube en Tiempo Real</p>
+                <p class="text-[9px] text-[#B0D0F8]">iOS & Android Ready</p>
             </div>
         </div>
         <div class="flex space-x-2">
@@ -46,7 +53,7 @@
     <div class="bg-purple-950/90 border-b border-[#D994F8]/40 p-2 text-xs sticky top-[57px] z-30 backdrop-blur-md shadow-lg">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <span id="badge-color-mesa" class="bg-[#D994F8] text-gray-900 px-2 py-0.5 rounded font-black text-[10px]" id="txt-id-orden-actual">Orden #--</span>
+                <span id="badge-color-mesa" class="bg-[#D994F8] text-gray-900 px-2 py-0.5 rounded font-black text-[10px]">Orden #--</span>
                 <input type="text" id="nombre-cliente" placeholder="Nombre / Mesa..." class="bg-[#6C4A8D]/60 border border-[#D994F8]/60 rounded px-2 py-0.5 text-xs text-white w-28 focus:outline-none focus:border-[#F6A9C5]" onchange="actualizarNombreOrdenActiva()">
             </div>
             <button onclick="crearNuevaOrden()" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold px-2.5 py-1 rounded text-[11px] shadow">+ Nueva Cuenta</button>
@@ -54,7 +61,7 @@
     </div>
 
     <main class="p-3 space-y-4 max-w-md mx-auto w-full">
-        <!-- OFERTAS (Frappe Capuchino 10oz integrado) -->
+        <!-- OFERTAS (Frappe Capuchino 10oz) -->
         <section class="bg-dark-overlay p-3 marco-oferta space-y-2" style="border-color: #526DB7;">
             <div class="flex items-center space-x-2 pb-1 border-b border-[#526DB7]/30">
                 <img src="Capuchino.png" alt="Capuchino" class="w-8 h-8 object-contain">
@@ -72,7 +79,7 @@
             </div>
         </section>
 
-        <!-- CREPAS ANTOJO (Todos los ingredientes de la lona + Chocolate Especial) -->
+        <!-- CREPAS ANTOJO -->
         <section class="bg-dark-overlay p-3 border-2 border-[#D994F8] rounded-xl shadow-[0_0_15px_rgba(217,148,248,0.3)] space-y-2">
             <div class="flex items-center space-x-2 pb-1.5 border-b border-[#D994F8]/30">
                 <img src="Dulce.PNG" alt="Dulce" class="w-8 h-8 object-contain">
@@ -88,7 +95,7 @@
             </div>
         </section>
 
-        <!-- FRAPPES (Fran) -->
+        <!-- FRAPPES -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-3">
             <div class="flex items-center space-x-2 pb-2 border-b border-[#D994F8]/30">
                 <img src="fran.png" alt="Fran" class="w-9 h-9 object-contain">
@@ -102,7 +109,7 @@
             <div id="box-frappes-especiales" class="grid grid-cols-1 gap-2 pt-1"></div>
         </section>
 
-        <!-- CREPAS ESPECIALES (Talia - Con opción de modificar ingredientes) -->
+        <!-- CREPAS ESPECIALES -->
         <section class="bg-dark-overlay p-3 marco-lila space-y-2">
             <div class="flex items-center space-x-2 pb-2 border-b border-[#D994F8]/30">
                 <img src="talia.png" alt="Talia" class="w-9 h-9 object-contain">
@@ -114,7 +121,7 @@
             <div id="box-crepas-especiales" class="space-y-2"></div>
         </section>
 
-        <!-- GRID INFERIOR: Chamoyadas, Sodas, Vaso Combo y Maruchan -->
+        <!-- CHAMOYADAS Y SODAS -->
         <div class="grid grid-cols-2 gap-2">
             <section class="bg-dark-overlay p-3 marco-lila space-y-2 flex flex-col justify-between">
                 <div>
@@ -130,11 +137,11 @@
             </section>
         </div>
 
-        <!-- VASO COMBO Y MARUCHAN ARRIBA -->
+        <!-- VASO COMBO Y MARUCHAN -->
         <div class="grid grid-cols-2 gap-2">
             <section class="bg-dark-overlay p-3 marco-oferta space-y-2 flex flex-col justify-between" style="border-color: #F6A9C5;">
                 <div class="text-center space-y-1" onclick="abrirModalVasoCombo()">
-                    <img src="Vaso Combo.png" class="w-14 h-14 mx-auto object-contain cursor-pointer">
+                    <img src="vaso Combo.png" class="w-14 h-14 mx-auto object-contain cursor-pointer">
                     <h3 class="text-xs font-black text-[#F6A9C5]">Vaso Combo</h3>
                     <p class="text-[10px] text-white font-bold">$150</p>
                 </div>
@@ -151,7 +158,7 @@
         </div>
     </main>
 
-    <!-- MODAL PERSONALIZAR FRAPPE (Con pedido especial y opciones) -->
+    <!-- MODAL PERSONALIZAR FRAPPE -->
     <div id="modal-tamano" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="bg-dark-overlay border-2 border-[#D994F8] p-5 rounded-2xl w-full max-w-xs text-center space-y-3 neon-aura shadow-2xl">
             <img id="modal-img-frappe" src="" class="w-16 h-16 mx-auto object-contain drop-shadow-lg">
@@ -206,7 +213,7 @@
     <!-- MODAL VASO COMBO -->
     <div id="modal-vaso-combo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden backdrop-blur-sm">
         <div class="bg-dark-overlay border-2 border-[#F6A9C5] p-5 rounded-2xl w-full max-w-xs text-center space-y-3 shadow-2xl">
-            <h3 class="text-sm font-black text-[#F6A9C5] uppercase"> Vaso Combo ($150)</h3>
+            <h3 class="text-sm font-black text-[#F6A9C5] uppercase">🍨 Vaso Combo ($150)</h3>
             <div class="text-left space-y-2 bg-[#6C4A8D]/40 p-3 rounded-xl border border-[#F6A9C5]/30 text-xs">
                 <p class="font-bold text-[#A3E3F8]">Frutas:</p>
                 <div class="grid grid-cols-2 gap-1">
@@ -240,15 +247,46 @@
         </div>
     </div>
 
-    <!-- MODAL PAGO -->
+    <!-- MODAL PAGO INTELIGENTE (Efectivo con cambio o Tarjeta Point) -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-[#526DB7] p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(82,109,183,0.4)]">
-            <h3 class="text-lg font-black text-[#A3E3F8] uppercase">Total cuenta: <span id="lbl-total-cobro"></span></h3>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="finalizarYCobrarOrden('Efectivo')" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-[#B0D0F8]"><span class="text-2xl mb-1">💵</span> Efectivo</button>
-                <button onclick="finalizarYCobrarOrden('Tarjeta')" class="bg-[#6C4A8D] hover:bg-[#526DB7] text-white font-bold py-4 rounded-xl text-sm flex flex-col items-center justify-center shadow-lg border border-[#D994F8]"><span class="text-2xl mb-1">💳</span> Tarjeta</button>
+            <h3 class="text-sm font-black text-[#A3E3F8] uppercase">Total Cuenta: <span id="lbl-total-cobro" class="text-lg text-[#F6A9C5]"></span></h3>
+            
+            <div class="space-y-3 pt-2">
+                <!-- Botón Pago con Tarjeta Point -->
+                <button onclick="cobrarConTarjetaPoint()" class="w-full bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg border border-[#B0D0F8]">
+                    <span class="text-xl">💳</span> <span>Cobrar con Tarjeta (Point Smart)</span>
+                </button>
+
+                <!-- Sección Efectivo -->
+                <div class="bg-[#6C4A8D]/40 p-3 rounded-xl border border-[#D994F8]/30 text-left space-y-2">
+                    <span class="text-xs font-bold text-[#D994F8]">💵 Pago en Efectivo:</span>
+                    <input type="number" id="input-monto-recibido" placeholder="¿Con cuánto paga? ($)" class="w-full bg-purple-900 border border-[#D994F8] rounded p-2 text-white text-xs" oninput="calcularCambioEfectivo()">
+                    <div class="flex justify-between items-center text-xs pt-1">
+                        <span class="text-gray-300">Cambio a entregar:</span>
+                        <span id="lbl-cambio-efectivo" class="font-black text-green-400 text-sm">$0.00</span>
+                    </div>
+                    <button onclick="cobrarConEfectivo()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-xl text-xs mt-1 shadow">Confirmar Cobro Efectivo</button>
+                </div>
             </div>
-            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-4">Cancelar</button>
+
+            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-2 block mx-auto">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- TICKET DE PAGO (Oculto para pantalla, visible para imprimir con Logo) -->
+    <div id="seccion-ticket-impresion" class="hidden p-6 max-w-xs mx-auto bg-white text-black text-xs font-mono space-y-3">
+        <div class="text-center space-y-1 border-b pb-2">
+            <img src="logo.png" class="w-12 h-12 mx-auto object-contain">
+            <h2 class="font-black text-sm">DULCE BOCADO</h2>
+            <p class="text-[10px]">¡Gracias por tu compra!</p>
+        </div>
+        <div id="ticket-info-cliente" class="space-y-0.5 border-b pb-2"></div>
+        <div id="ticket-lista-items" class="space-y-1 border-b pb-2"></div>
+        <div id="ticket-totales" class="space-y-1"></div>
+        <div class="text-center text-[10px] pt-2 border-t">
+            <p>Ticket fiscal o nota de venta</p>
+            <p>¡Vuelve pronto!</p>
         </div>
     </div>
 
@@ -290,8 +328,6 @@
         let productoSeleccionado = null;
         let idAnimacionActual = null;
         let crepaEspecialSeleccionada = null;
-
-        // Gama de colores oficial para identificar órdenes
         const gamaColores = ["#D994F8", "#6C4A8D", "#B0D0F8", "#526DB7", "#F6A9C5", "#A3E3F8"];
 
         function getConfig() {
@@ -308,7 +344,7 @@
                     {id:"fp4", name:"Bubu Lubu", med:70, gde:75, jumbo:150, img:"Bubulubu.png", activo:true}
                 ],
                 frappesEspeciales: [
-                    {id:"fe1", name:"Mazapan's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png", activo:true},
+                    {id:"fe1", name:"M&M's", med:65, gde:70, jumbo:140, img:"Chocolate Frappe.png", activo:true},
                     {id:"fe2", name:"Oreo", med:65, gde:70, jumbo:140, img:"Oreo.png", activo:true},
                     {id:"fe3", name:"Taro", med:65, gde:70, jumbo:140, img:"Taro.png", activo:true},
                     {id:"fe4", name:"Carlos V", med:65, gde:70, jumbo:140, img:"Carlos V.png", activo:true}
@@ -328,7 +364,6 @@
                     {id:"so2", name:"Green", precio:60, img:"Manzanaverde.png", activo:true},
                     {id:"so3", name:"Cereza", precio:60, img:"Cereza.png", activo:true}
                 ],
-                // Ingredientes exactos de la lona + Chocolate Especial
                 ingredientes: ["Nutella", "Cajeta", "Queso Philadelphia", "Mermelada de Fresa", "Lechera", "Salsa Italiana", "Mermelada de Zarzamora", "Fresa", "Plátano", "Piña", "Durazno", "Nuez", "Almendra", "Jamón", "Manchego", "Peperoni", "Crema Batida", "Chocolate Especial"]
             };
             return JSON.parse(localStorage.getItem("db_config_dulce")) || defaults;
@@ -337,9 +372,7 @@
         function iniciarSincronizacionCloud() {
             db.collection("orders").onSnapshot((snapshot) => {
                 cacheOrders = [];
-                snapshot.forEach((doc) => {
-                    cacheOrders.push({ firestoreId: doc.id, ...doc.data() });
-                });
+                snapshot.forEach((doc) => { cacheOrders.push({ firestoreId: doc.id, ...doc.data() }); });
                 if (!ordenActivaId && cacheOrders.length > 0) {
                     let activas = cacheOrders.filter(o => o.estado !== 'cobrado');
                     if(activas.length > 0) ordenActivaId = activas[0].id;
@@ -570,9 +603,7 @@
             document.querySelectorAll('.combo-fruta, .combo-topping').forEach(c => c.checked = false);
             document.getElementById('modal-vaso-combo').classList.remove('hidden');
         }
-        function cerrarModalVasoCombo() {
-            document.getElementById('modal-vaso-combo').classList.add('hidden');
-        }
+        function cerrarModalVasoCombo() { document.getElementById('modal-vaso-combo').classList.add('hidden'); }
         function agregarVasoComboOrden() {
             let frutas = Array.from(document.querySelectorAll('.combo-fruta:checked')).map(c => c.value);
             let toppings = Array.from(document.querySelectorAll('.combo-topping:checked')).map(c => c.value);
@@ -597,34 +628,28 @@
             document.getElementById('esp-leche').value = 'Entera';
             document.getElementById('modal-tamano').classList.remove('hidden');
         }
-
         function cerrarModal() { document.getElementById('modal-tamano').classList.add('hidden'); productoSeleccionado = null; }
 
         function seleccionarTamano(tamano) {
             if (!productoSeleccionado) return;
             let precio = tamano === 'Mediano' ? productoSeleccionado.med : (tamano === 'Grande' ? productoSeleccionado.gde : productoSeleccionado.jumbo);
-            
             let sinCrema = document.getElementById('esp-sin-crema').checked;
             let azucar = document.getElementById('esp-azucar').value;
             let leche = document.getElementById('esp-leche').value;
-            
             let specs = [];
             if(sinCrema) specs.push("Sin crema");
             if(azucar !== "Normal") specs.push(azucar);
             if(leche !== "Entera") specs.push(`Leche ${leche}`);
-            
             let detalleSpecs = specs.length > 0 ? ` [${specs.join(', ')}]` : '';
             agregarProductoALaOrdenActive(`${productoSeleccionado.name} (${tamano})${detalleSpecs}`, precio, idAnimacionActual);
             cerrarModal();
         }
 
-        // Modificar Crepas Especiales
         function abrirModalCrepaEsp(crepa) {
             crepaEspecialSeleccionada = crepa;
             document.getElementById('modal-esp-titulo').innerText = crepa.name;
             let container = document.getElementById('modal-esp-lista');
             container.innerHTML = '';
-            
             let config = getConfig();
             config.ingredientes.forEach(ing => {
                 let marcada = crepa.ingredientesBase.includes(ing) ? 'checked' : '';
@@ -638,34 +663,25 @@
             if(!crepaEspecialSeleccionada) return 0;
             let chks = document.querySelectorAll('.crepa-esp-chk:checked');
             let seleccionados = Array.from(chks).map(c => c.value);
-            
-            // Diferencia contra base original
             let baseCount = crepaEspecialSeleccionada.ingredientesBase.length;
             let diff = seleccionados.length - baseCount;
             let precioFinal = crepaEspecialSeleccionada.precio + (diff * 10);
-            
-            // Ajuste por Chocolate Especial si aplica
             seleccionados.forEach(ing => {
                 if(ing === "Chocolate Especial" && !crepaEspecialSeleccionada.ingredientesBase.includes("Chocolate Especial")) {
-                    precioFinal += 5; // diferencia adicional si se añade chocolate especial
+                    precioFinal += 5;
                 }
             });
-
             document.getElementById('modal-esp-precio').innerText = `$${precioFinal}`;
             return precioFinal;
         }
 
-        function cerrarModalCrepaEsp() {
-            document.getElementById('modal-crepa-esp').classList.add('hidden');
-            crepaEspecialSeleccionada = null;
-        }
+        function cerrarModalCrepaEsp() { document.getElementById('modal-crepa-esp').classList.add('hidden'); crepaEspecialSeleccionada = null; }
 
         function confirmarCrepaEspecialModificada() {
             if(!crepaEspecialSeleccionada) return;
             let chks = document.querySelectorAll('.crepa-esp-chk:checked');
             let seleccionados = Array.from(chks).map(c => c.value);
             let precioFinal = calcularPrecioCrepaEsp();
-            
             let detalle = seleccionados.length > 0 ? ` (${seleccionados.join(', ')})` : ' (Sencilla)';
             agregarProductoALaOrdenActive(`${crepaEspecialSeleccionada.name}${detalle}`, precioFinal, null);
             cerrarModalCrepaEsp();
@@ -675,11 +691,7 @@
             let chks = document.querySelectorAll('.ing-chk:checked');
             let t = 50;
             chks.forEach(c => {
-                if(c.value === "Chocolate Especial") {
-                    t += 15;
-                } else {
-                    t += 10;
-                }
+                if(c.value === "Chocolate Especial") { t += 15; } else { t += 10; }
             });
             document.getElementById('txt-precio-base').innerText = `Total: $${t}`;
             return t;
@@ -690,11 +702,7 @@
             let extras = Array.from(chks).map(c => c.value);
             let precio = 50;
             chks.forEach(c => {
-                if(c.value === "Chocolate Especial") {
-                    precio += 15;
-                } else {
-                    precio += 10;
-                }
+                if(c.value === "Chocolate Especial") { precio += 15; } else { precio += 10; }
             });
             let desc = extras.length > 0 ? `Base + ${extras.join(', ')}` : `Sencilla`;
             agregarProductoALaOrdenActive(`Crepa (${desc})`, precio, null);
@@ -754,24 +762,99 @@
         function abrirModalPago() {
             let orden = obtenerOrdenActiva();
             if (!orden || orden.items.length === 0) { alert("Vacía."); return; }
-            document.getElementById('lbl-total-cobro').innerText = `$${orden.items.reduce((a, b) => a + b.precio, 0).toFixed(2)}`;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+            document.getElementById('lbl-total-cobro').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('input-monto-recibido').value = '';
+            document.getElementById('lbl-cambio-efectivo').innerText = '$0.00';
             document.getElementById('modal-pago').classList.remove('hidden');
         }
         function cerrarModalPago() { document.getElementById('modal-pago').classList.add('hidden'); }
 
-        function finalizarYCobrarOrden(metodo) {
+        function calcularCambioEfectivo() {
+            let orden = obtenerOrdenActiva();
+            if(!orden) return;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+            let recibido = parseFloat(document.getElementById('input-monto-recibido').value) || 0;
+            let cambio = recibido - total;
+            document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
+        }
+
+        // Cobro con Tarjeta en la Point Smart (API Deep Link / Intent compatible con iOS y Android)
+        function cobrarConTarjetaPoint() {
+            let orden = obtenerOrdenActiva();
+            if(!orden) return;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+
+            // Intento de conexión con la app de Mercado Pago o Point Smart instalada en el dispositivo
+            let externalReference = "ORDER_" + orden.id;
+            let mpDeepLink = `mercadopago://point/integration?amount=${total}&description=Orden_${orden.id}&external_reference=${externalReference}`;
+            
+            // Si abre desde iOS / Android y tiene vinculada la terminal o app MP
+            window.location.href = mpDeepLink;
+
+            // Simulación / Confirmación automática para registrar el cobro y generar el ticket con tarjeta
+            setTimeout(() => {
+                if(confirm(`¿Se aprobó el cobro por $${total.toFixed(2)} en la terminal Point Smart?`)) {
+                    finalizarYCobrarOrden("Tarjeta (Point)");
+                }
+            }, 1000);
+        }
+
+        function cobrarConEfectivo() {
+            let orden = obtenerOrdenActiva();
+            if(!orden) return;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+            let recibido = parseFloat(document.getElementById('input-monto-recibido').value) || 0;
+            
+            if(recibido < total) {
+                alert("⚠️ El monto recibido es menor al total de la cuenta.");
+                return;
+            }
+            let cambio = recibido - total;
+            finalizarYCobrarOrden(`Efectivo (Recibido: $${recibido}, Cambio: $${cambio.toFixed(2)})`);
+        }
+
+        function finalizarYCobrarOrden(metodoPago) {
             let orden = obtenerOrdenActiva();
             if (!orden) return;
             orden.estado = "cobrado";
-            orden.pagoMetodo = metodo;
+            orden.pagoMetodo = metodoPago;
             orden.total = orden.items.reduce((a, b) => a + b.precio, 0);
             guardarOrdenCloud(orden);
-            alert(`✅ ¡Orden #${orden.id} cobrada (${metodo})! Registrada en caja y pantalla limpiada.`);
-            cerrarModalPago();
             
-            // Limpiar orden actual y crear una nueva automáticamente para el siguiente cliente
+            // Generar y desplegar el Ticket de Impresión con el Logo
+            generarEImprimirTicket(orden);
+
+            cerrarModalPago();
             cacheOrders = cacheOrders.filter(o => o.id !== orden.id);
             crearNuevaOrden(false);
+        }
+
+        function generarEImprimirTicket(orden) {
+            let tCliente = document.getElementById('ticket-info-cliente');
+            let tItems = document.getElementById('ticket-lista-items');
+            let tTotales = document.getElementById('ticket-totales');
+
+            tCliente.innerHTML = `
+                <p><b>Fecha:</b> ${orden.fecha} ${orden.tiempo}</p>
+                <p><b>Orden:</b> #${orden.id}</p>
+                <p><b>Cliente/Mesa:</b> ${orden.cliente}</p>
+            `;
+
+            tItems.innerHTML = '<p class="font-bold border-b pb-1">PRODUCTOS:</p>';
+            orden.items.forEach(i => {
+                tItems.innerHTML += `<div class="flex justify-between"><span>${i.name}</span> <span>$${i.precio}</span></div>`;
+            });
+
+            tTotales.innerHTML = `
+                <div class="flex justify-between font-bold pt-1 border-t"><span>TOTAL:</span> <span>$${orden.total.toFixed(2)}</span></div>
+                <p><b>Método de Pago:</b> ${orden.pagoMetodo}</p>
+            `;
+
+            // Imprimir automáticamente (funciona en Safari iOS y Chrome Android)
+            setTimeout(() => {
+                window.print();
+            }, 400);
         }
 
         window.onload = initPOS;
