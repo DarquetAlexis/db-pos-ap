@@ -960,6 +960,7 @@
             crearNuevaOrden(false);
         }
 
+        // <--- PEGA LA NUEVA FUNCIÓN EXACTAMENTE AQUÍ --->
         function generarEImprimirTicket(orden) {
             let tCliente = document.getElementById('ticket-info-cliente');
             let tItems = document.getElementById('ticket-lista-items');
@@ -981,7 +982,9 @@
                 <p class="pt-1"><b>Método de Pago:</b> ${orden.pagoMetodo}</p>
             `;
 
-            setTimeout(() => { window.print(); }, 400);
+            setTimeout(() => {
+                window.print();
+            }, 500);
         }
 
         window.onload = initPOS;
