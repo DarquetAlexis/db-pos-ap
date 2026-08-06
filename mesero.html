@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { background-color: #2e0671; background-image: url('patron.png'); background-repeat: repeat; background-blend-mode: overlay; }
         .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.96); backdrop-filter: blur(8px); }
@@ -254,24 +255,29 @@
         </div>
     </div>
 
-    <!-- MODAL PAGO INTELIGENTE (Efectivo, Point o App Teléfono) -->
+    <!-- MODAL PAGO INTELIGENTE (Efectivo, Point, Tap to Pay o Link QR) -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-[#526DB7] p-6 rounded-2xl w-full max-w-sm text-center space-y-3 shadow-[0_0_30px_rgba(82,109,183,0.4)]">
             <h3 class="text-sm font-black text-[#A3E3F8] uppercase">Total Cuenta: <span id="lbl-total-cobro" class="text-lg text-[#F6A9C5]"></span></h3>
             
-            <div class="space-y-2.5 pt-1">
-                <!-- Opción 1: Cobrar con Terminal Point Smart -->
-                <button onclick="cobrarConTarjetaPoint()" class="w-full bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow border border-[#B0D0F8]">
-                    <span class="text-lg">📡</span> <span>Cobrar con Terminal (Point)</span>
+            <div class="space-y-2 pt-1">
+                <!-- Opción 1: Terminal Point Física -->
+                <button onclick="cobrarConTarjetaPoint()" class="w-full bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 shadow border border-[#B0D0F8]">
+                    <span class="text-base">📡</span> <span>Cobrar con Terminal (Point)</span>
                 </button>
 
-                <!-- Opción 2: Cobrar con la App en el Celular (Tap to Pay / App MP) -->
-                <button onclick="cobrarConAppCelular()" class="w-full bg-[#A3E3F8] hover:bg-[#82c6de] text-gray-900 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
-                    <span class="text-lg">📱</span> <span>Cobrar con App Celular (Tap / MP)</span>
+                <!-- Opción 2: Tap to Pay con el Teléfono (Aproximar tarjeta al cel) -->
+                <button onclick="cobrarConTapToPayApp()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                    <span class="text-base">💳</span> <span>Tap to Pay (Aproximar tarjeta al Cel)</span>
+                </button>
+
+                <!-- Opción 3: Generar Link / QR de cobro web -->
+                <button onclick="generarLinkCobroCelular()" class="w-full bg-[#A3E3F8] hover:bg-[#82c6de] text-gray-900 font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                    <span class="text-base">📱</span> <span>Generar QR / Link de Pago</span>
                 </button>
 
                 <!-- Sección Efectivo -->
-                <div class="bg-[#6C4A8D]/40 p-2.5 rounded-xl border border-[#D994F8]/30 text-left space-y-1.5">
+                <div class="bg-[#6C4A8D]/40 p-2 rounded-xl border border-[#D994F8]/30 text-left space-y-1">
                     <span class="text-xs font-bold text-[#D994F8]">💵 Pago en Efectivo:</span>
                     <input type="number" id="input-monto-recibido" placeholder="¿Con cuánto paga? ($)" class="w-full bg-purple-900 border border-[#D994F8] rounded p-1.5 text-white text-xs" oninput="calcularCambioEfectivo()">
                     <div class="flex justify-between items-center text-xs pt-0.5">
@@ -283,6 +289,20 @@
             </div>
 
             <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-1 block mx-auto">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL MOSTRAR QR DE PAGO AL CLIENTE -->
+    <div id="modal-qr-pago" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
+        <div class="bg-white text-gray-900 p-5 rounded-2xl w-full max-w-xs text-center space-y-3 shadow-2xl">
+            <h3 class="text-sm font-black uppercase text-purple-900">Escanea para pagar</h3>
+            <p class="text-[11px] text-gray-600">Pídele al cliente que escanee el código con cualquier celular</p>
+            <div id="contenedor-codigo-qr" class="bg-white p-3 border-2 border-dashed border-purple-300 rounded-xl flex justify-center"></div>
+            <p id="lbl-monto-qr" class="text-base font-black text-purple-900"></p>
+            <div class="space-y-1 pt-1">
+                <button onclick="confirmarPagoPorQrExitoso()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-xl text-xs shadow">✅ Confirmar que ya pagó</button>
+                <button onclick="cerrarModalQr()" class="w-full bg-gray-300 hover:bg-gray-400 font-bold py-1.5 rounded-xl text-xs text-gray-700">Regresar</button>
+            </div>
         </div>
     </div>
 
@@ -791,7 +811,7 @@
             document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
         }
 
-        // Opción 1: Cobrar con Terminal Point Smart física vía API
+        // Opción 1: Cobrar con Terminal Point Física
         async function cobrarConTarjetaPoint() {
             let orden = obtenerOrdenActiva();
             if (!orden) return;
@@ -803,47 +823,28 @@
             try {
                 let resTerminals = await fetch('https://api.mercadopago.com/terminals/v1/list', {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${ACCESS_TOKEN}`
-                    }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ACCESS_TOKEN}` }
                 });
 
                 let dataTerminals = await resTerminals.json();
                 let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
                 
                 if (!terminalsList || terminalsList.length === 0) {
-                    alert("⚠️ No se encontró ninguna terminal Point activa. Recuerda que puedes usar el botón 'Cobrar con App Celular'.");
+                    alert("⚠️ No se encontró ninguna terminal Point activa.");
                     return;
                 }
 
                 let DEVICE_ID = terminalsList[0].id;
-
                 let respuesta = await fetch(`https://api.mercadopago.com/v1/pos/${DEVICE_ID}/orders`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${ACCESS_TOKEN}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ACCESS_TOKEN}` },
                     body: JSON.stringify({
                         external_reference: "ORDEN_" + orden.id,
-                        items: [
-                            {
-                                title: `Cuenta ${orden.cliente}`,
-                                unit_price: Number(total),
-                                quantity: 1,
-                                unit_measure: "unit"
-                            }
-                        ],
+                        items: [{ title: `Cuenta ${orden.cliente}`, unit_price: Number(total), quantity: 1, unit_measure: "unit" }],
                         total_amount: Number(total),
-                        payment: {
-                            installments: 1,
-                            type: "credit_card"
-                        }
+                        payment: { installments: 1, type: "credit_card" }
                     })
                 });
-
-                let resultado = await respuesta.json();
 
                 if (respuesta.ok) {
                     setTimeout(() => {
@@ -852,32 +853,75 @@
                         }
                     }, 2000);
                 } else {
-                    console.error("Error MP:", resultado);
-                    alert("⚠️ La terminal no respondió. Asegúrate de que esté encendida o usa la opción de App Celular.");
+                    alert("⚠️ La terminal no respondió. Asegúrate de que esté encendida.");
                 }
             } catch (error) {
-                console.error("Error de red:", error);
-                alert("⚠️ Error de conexión. Usa la opción de App Celular si no tienes la terminal a la mano.");
+                alert("⚠️ Error de conexión con la terminal.");
             }
         }
 
-        // Opción 2: Cobrar con el Teléfono (Abre la app de Mercado Pago con el monto listo)
-        function cobrarConAppCelular() {
+        // Opción 2: Tap to Pay (Aproximar tarjeta física directo al celular mediante App MP)
+        function cobrarConTapToPayApp() {
             let orden = obtenerOrdenActiva();
             if(!orden) return;
             let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-            // Abre la app de Mercado Pago directamente en la sección de cobro / Tap to Pay
-            let externalReference = "ORDEN_" + orden.id;
-            let mpDeepLink = `mercadopago://point/integration?amount=${total}&description=Orden_${orden.id}&external_reference=${externalReference}`;
-            
+            // Enlace inteligente para abrir la sección de cobro con tarjeta en la app de Mercado Pago
+            let mpDeepLink = `mercadopago://point/integration?amount=${total}&description=Orden_${orden.id}&external_reference=ORDEN_${orden.id}`;
             window.location.href = mpDeepLink;
 
             setTimeout(() => {
-                if(confirm(`¿Se aprobó el cobro por $${total.toFixed(2)} usando la App del Teléfono?`)) {
-                    finalizarYCobrarOrden("Tarjeta (App Celular)");
+                if(confirm(`¿Se aprobó el cobro de $${total.toFixed(2)} con tarjeta física en tu celular?`)) {
+                    finalizarYCobrarOrden("Tarjeta (Tap to Pay Celular)");
                 }
             }, 1500);
+        }
+
+        // Opción 3: Generar Link / QR de Pago web (Acepta tarjetas de cualquier banco)
+        async function generarLinkCobroCelular() {
+            let orden = obtenerOrdenActiva();
+            if (!orden) return;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+
+            mostrarToast("⏳ Creando link de pago...");
+            const ACCESS_TOKEN = 'APP_USR-1872229132375215-080519-de40675c3d2922719e872aa0fa670427-333295261';
+
+            try {
+                let respuesta = await fetch('https://api.mercadopago.com/checkout/preferences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ACCESS_TOKEN}` },
+                    body: JSON.stringify({
+                        items: [{ title: `Orden #${orden.id} - ${orden.cliente}`, quantity: 1, unit_price: Number(total) }],
+                        external_reference: "ORDEN_" + orden.id
+                    })
+                });
+
+                let resultado = await respuesta.json();
+                let linkPago = resultado.init_point;
+
+                if (linkPago) {
+                    cerrarModalPago();
+                    document.getElementById('modal-qr-pago').classList.remove('hidden');
+                    document.getElementById('lbl-monto-qr').innerText = `Total a pagar: $${total.toFixed(2)}`;
+                    
+                    let contenedorQr = document.getElementById('contenedor-codigo-qr');
+                    contenedorQr.innerHTML = '';
+                    new QRCode(contenedorQr, { text: linkPago, width: 180, height: 180 });
+                } else {
+                    alert("⚠️ No se pudo generar el enlace de pago.");
+                }
+            } catch (error) {
+                alert("⚠️ Error al conectar con Mercado Pago.");
+            }
+        }
+
+        function cerrarModalQr() {
+            document.getElementById('modal-qr-pago').classList.add('hidden');
+        }
+
+        function confirmarPagoPorQrExitoso() {
+            cerrarModalQr();
+            finalizarYCobrarOrden("Tarjeta (Link / QR Web)");
         }
 
         function cobrarConEfectivo() {
@@ -930,9 +974,7 @@
                 <p class="pt-1"><b>Método de Pago:</b> ${orden.pagoMetodo}</p>
             `;
 
-            setTimeout(() => {
-                window.print();
-            }, 400);
+            setTimeout(() => { window.print(); }, 400);
         }
 
         window.onload = initPOS;
