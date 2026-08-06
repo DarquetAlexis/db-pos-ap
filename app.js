@@ -63,7 +63,7 @@ async function cobrarConTarjetaPoint() {
     if (!orden) return;
     let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-    // Reemplaza esto con el ID o Serial exacto de tu Point Smart (ej: el ID de tu dispositivo)
+    // Identificador de tu terminal Point Smart (número de serie terminado en 2330)
     const DEVICE_ID = "PROVOX_..._2330"; 
 
     mostrarToast("⏳ Conectando con tu Point Smart...");
@@ -73,7 +73,7 @@ async function cobrarConTarjetaPoint() {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer APP_USR-151979fa-fdd2-4f58-a6e0-6729ef6b376b'
+                'Authorization': 'Bearer APP_USR-1872229132375215-080519-de40675c3d2922719e872aa0fa670427-333295261'
             },
             body: JSON.stringify({
                 external_reference: "ORDEN_" + orden.id,
