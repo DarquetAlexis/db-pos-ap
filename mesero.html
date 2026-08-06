@@ -21,11 +21,19 @@
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
         
-        /* Estilos específicos para impresión de ticket */
+        /* Estilos específicos para impresión de ticket con Logo y Marca */
         @media print {
             body * { visibility: hidden; }
             #seccion-ticket-impresion, #seccion-ticket-impresion * { visibility: visible; }
-            #seccion-ticket-impresion { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+            #seccion-ticket-impresion { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                background: white !important; 
+                color: black !important; 
+                font-family: 'Courier New', Courier, monospace;
+            }
         }
     </style>
 </head>
@@ -274,18 +282,18 @@
         </div>
     </div>
 
-    <!-- TICKET DE PAGO (Oculto para pantalla, visible para imprimir con Logo) -->
+    <!-- TICKET DE PAGO (Oculto para pantalla, visible para imprimir con Logo y Marca) -->
     <div id="seccion-ticket-impresion" class="hidden p-6 max-w-xs mx-auto bg-white text-black text-xs font-mono space-y-3">
         <div class="text-center space-y-1 border-b pb-2">
             <img src="logo.png" class="w-12 h-12 mx-auto object-contain">
-            <h2 class="font-black text-sm">DULCE BOCADO</h2>
+            <h2 class="font-black text-sm uppercase">DULCE BOCADO</h2>
             <p class="text-[10px]">¡Gracias por tu compra!</p>
         </div>
-        <div id="ticket-info-cliente" class="space-y-0.5 border-b pb-2"></div>
-        <div id="ticket-lista-items" class="space-y-1 border-b pb-2"></div>
-        <div id="ticket-totales" class="space-y-1"></div>
+        <div id="ticket-info-cliente" class="space-y-0.5 border-b pb-2 text-[11px]"></div>
+        <div id="ticket-lista-items" class="space-y-1 border-b pb-2 text-[11px]"></div>
+        <div id="ticket-totales" class="space-y-1 text-[11px]"></div>
         <div class="text-center text-[10px] pt-2 border-t">
-            <p>Ticket fiscal o nota de venta</p>
+            <p>Nota de Venta / Consumo Local</p>
             <p>¡Vuelve pronto!</p>
         </div>
     </div>
@@ -779,25 +787,74 @@
             document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
         }
 
-        // Cobro con Tarjeta en la Point Smart (API Deep Link / Intent compatible con iOS y Android)
-        function cobrarConTarjetaPoint() {
+        // Cobro con Tarjeta Point Automático vía API (Conectado a tu Terminal Point Smart física)
+        async function cobrarConTarjetaPoint() {
             let orden = obtenerOrdenActiva();
-            if(!orden) return;
+            if (!orden) return;
             let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-            // Intento de conexión con la app de Mercado Pago o Point Smart instalada en el dispositivo
-            let externalReference = "ORDER_" + orden.id;
-            let mpDeepLink = `mercadopago://point/integration?amount=${total}&description=Orden_${orden.id}&external_reference=${externalReference}`;
-            
-            // Si abre desde iOS / Android y tiene vinculada la terminal o app MP
-            window.location.href = mpDeepLink;
+            mostrarToast("⏳ Conectando con tu Point Smart...");
+            const ACCESS_TOKEN = 'APP_USR-1872229132375215-080519-de40675c3d2922719e872aa0fa670427-333295261';
 
-            // Simulación / Confirmación automática para registrar el cobro y generar el ticket con tarjeta
-            setTimeout(() => {
-                if(confirm(`¿Se aprobó el cobro por $${total.toFixed(2)} en la terminal Point Smart?`)) {
-                    finalizarYCobrarOrden("Tarjeta (Point)");
+            try {
+                let resTerminals = await fetch('https://api.mercadopago.com/terminals/v1/list', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`
+                    }
+                });
+
+                let dataTerminals = await resTerminals.json();
+                let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
+                
+                if (!terminalsList || terminalsList.length === 0) {
+                    alert("⚠️ No se encontró ninguna terminal Point activa asociada a tu cuenta.");
+                    return;
                 }
-            }, 1000);
+
+                let DEVICE_ID = terminalsList[0].id;
+
+                let respuesta = await fetch(`https://api.mercadopago.com/v1/pos/${DEVICE_ID}/orders`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`
+                    },
+                    body: JSON.stringify({
+                        external_reference: "ORDEN_" + orden.id,
+                        items: [
+                            {
+                                title: `Cuenta ${orden.cliente}`,
+                                unit_price: Number(total),
+                                quantity: 1,
+                                unit_measure: "unit"
+                            }
+                        ],
+                        total_amount: Number(total),
+                        payment: {
+                            installments: 1,
+                            type: "credit_card"
+                        }
+                    })
+                });
+
+                let resultado = await respuesta.json();
+
+                if (respuesta.ok) {
+                    setTimeout(() => {
+                        if (confirm(`✨ ¿Se aprobó el cobro por $${total.toFixed(2)} en la terminal Point Smart?`)) {
+                            finalizarYCobrarOrden("Tarjeta (Point Smart)");
+                        }
+                    }, 2000);
+                } else {
+                    console.error("Error MP:", resultado);
+                    alert("⚠️ La terminal no respondió a la orden. Verifica que tenga conexión a internet.");
+                }
+            } catch (error) {
+                console.error("Error de red:", error);
+                alert("⚠️ Error de conexión al comunicarse con Mercado Pago.");
+            }
         }
 
         function cobrarConEfectivo() {
@@ -822,7 +879,6 @@
             orden.total = orden.items.reduce((a, b) => a + b.precio, 0);
             guardarOrdenCloud(orden);
             
-            // Generar y desplegar el Ticket de Impresión con el Logo
             generarEImprimirTicket(orden);
 
             cerrarModalPago();
@@ -836,22 +892,21 @@
             let tTotales = document.getElementById('ticket-totales');
 
             tCliente.innerHTML = `
-                <p><b>Fecha:</b> ${orden.fecha} ${orden.tiempo}</p>
+                <p><b>Fecha:</b> ${orden.fecha} - ${orden.tiempo}</p>
                 <p><b>Orden:</b> #${orden.id}</p>
                 <p><b>Cliente/Mesa:</b> ${orden.cliente}</p>
             `;
 
-            tItems.innerHTML = '<p class="font-bold border-b pb-1">PRODUCTOS:</p>';
+            tItems.innerHTML = '<p class="font-bold border-b pb-1 mb-1">CANT  PRODUCTO          PRECIO</p>';
             orden.items.forEach(i => {
-                tItems.innerHTML += `<div class="flex justify-between"><span>${i.name}</span> <span>$${i.precio}</span></div>`;
+                tItems.innerHTML += `<div class="flex justify-between"><span>1x ${i.name}</span> <span>$${i.precio.toFixed(2)}</span></div>`;
             });
 
             tTotales.innerHTML = `
-                <div class="flex justify-between font-bold pt-1 border-t"><span>TOTAL:</span> <span>$${orden.total.toFixed(2)}</span></div>
-                <p><b>Método de Pago:</b> ${orden.pagoMetodo}</p>
+                <div class="flex justify-between font-bold pt-1 border-t text-sm"><span>TOTAL:</span> <span>$${orden.total.toFixed(2)}</span></div>
+                <p class="pt-1"><b>Método de Pago:</b> ${orden.pagoMetodo}</p>
             `;
 
-            // Imprimir automáticamente (funciona en Safari iOS y Chrome Android)
             setTimeout(() => {
                 window.print();
             }, 400);
