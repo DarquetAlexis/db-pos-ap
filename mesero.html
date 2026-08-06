@@ -21,7 +21,6 @@
         .neon-aura { animation: neonGlow 2.5s infinite alternate; transition: all 0.3s ease; }
         #toast-exito { transition: opacity 0.3s ease, transform 0.3s ease; z-index: 100; }
         
-        /* Estilos específicos para impresión de ticket con Logo y Marca */
         @media print {
             body * { visibility: hidden; }
             #seccion-ticket-impresion, #seccion-ticket-impresion * { visibility: visible; }
@@ -255,34 +254,39 @@
         </div>
     </div>
 
-    <!-- MODAL PAGO INTELIGENTE (Efectivo con cambio o Tarjeta Point) -->
+    <!-- MODAL PAGO INTELIGENTE (Efectivo, Point o App Teléfono) -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
-        <div class="bg-dark-overlay border-2 border-[#526DB7] p-6 rounded-2xl w-full max-w-sm text-center space-y-4 shadow-[0_0_30px_rgba(82,109,183,0.4)]">
+        <div class="bg-dark-overlay border-2 border-[#526DB7] p-6 rounded-2xl w-full max-w-sm text-center space-y-3 shadow-[0_0_30px_rgba(82,109,183,0.4)]">
             <h3 class="text-sm font-black text-[#A3E3F8] uppercase">Total Cuenta: <span id="lbl-total-cobro" class="text-lg text-[#F6A9C5]"></span></h3>
             
-            <div class="space-y-3 pt-2">
-                <!-- Botón Pago con Tarjeta Point -->
-                <button onclick="cobrarConTarjetaPoint()" class="w-full bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg border border-[#B0D0F8]">
-                    <span class="text-xl">💳</span> <span>Cobrar con Tarjeta (Point Smart)</span>
+            <div class="space-y-2.5 pt-1">
+                <!-- Opción 1: Cobrar con Terminal Point Smart -->
+                <button onclick="cobrarConTarjetaPoint()" class="w-full bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow border border-[#B0D0F8]">
+                    <span class="text-lg">📡</span> <span>Cobrar con Terminal (Point)</span>
+                </button>
+
+                <!-- Opción 2: Cobrar con la App en el Celular (Tap to Pay / App MP) -->
+                <button onclick="cobrarConAppCelular()" class="w-full bg-[#A3E3F8] hover:bg-[#82c6de] text-gray-900 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                    <span class="text-lg">📱</span> <span>Cobrar con App Celular (Tap / MP)</span>
                 </button>
 
                 <!-- Sección Efectivo -->
-                <div class="bg-[#6C4A8D]/40 p-3 rounded-xl border border-[#D994F8]/30 text-left space-y-2">
+                <div class="bg-[#6C4A8D]/40 p-2.5 rounded-xl border border-[#D994F8]/30 text-left space-y-1.5">
                     <span class="text-xs font-bold text-[#D994F8]">💵 Pago en Efectivo:</span>
-                    <input type="number" id="input-monto-recibido" placeholder="¿Con cuánto paga? ($)" class="w-full bg-purple-900 border border-[#D994F8] rounded p-2 text-white text-xs" oninput="calcularCambioEfectivo()">
-                    <div class="flex justify-between items-center text-xs pt-1">
-                        <span class="text-gray-300">Cambio a entregar:</span>
+                    <input type="number" id="input-monto-recibido" placeholder="¿Con cuánto paga? ($)" class="w-full bg-purple-900 border border-[#D994F8] rounded p-1.5 text-white text-xs" oninput="calcularCambioEfectivo()">
+                    <div class="flex justify-between items-center text-xs pt-0.5">
+                        <span class="text-gray-300">Cambio:</span>
                         <span id="lbl-cambio-efectivo" class="font-black text-green-400 text-sm">$0.00</span>
                     </div>
-                    <button onclick="cobrarConEfectivo()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-xl text-xs mt-1 shadow">Confirmar Cobro Efectivo</button>
+                    <button onclick="cobrarConEfectivo()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-1.5 rounded-xl text-xs mt-1 shadow">Confirmar Efectivo</button>
                 </div>
             </div>
 
-            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-2 block mx-auto">Cancelar</button>
+            <button onclick="cerrarModalPago()" class="text-xs text-red-400 hover:text-red-300 underline mt-1 block mx-auto">Cancelar</button>
         </div>
     </div>
 
-    <!-- TICKET DE PAGO (Oculto para pantalla, visible para imprimir con Logo y Marca) -->
+    <!-- TICKET DE PAGO -->
     <div id="seccion-ticket-impresion" class="hidden p-6 max-w-xs mx-auto bg-white text-black text-xs font-mono space-y-3">
         <div class="text-center space-y-1 border-b pb-2">
             <img src="logo.png" class="w-12 h-12 mx-auto object-contain">
@@ -787,7 +791,7 @@
             document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
         }
 
-        // Cobro con Tarjeta Point Automático vía API (Conectado a tu Terminal Point Smart física)
+        // Opción 1: Cobrar con Terminal Point Smart física vía API
         async function cobrarConTarjetaPoint() {
             let orden = obtenerOrdenActiva();
             if (!orden) return;
@@ -809,7 +813,7 @@
                 let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
                 
                 if (!terminalsList || terminalsList.length === 0) {
-                    alert("⚠️ No se encontró ninguna terminal Point activa asociada a tu cuenta.");
+                    alert("⚠️ No se encontró ninguna terminal Point activa. Recuerda que puedes usar el botón 'Cobrar con App Celular'.");
                     return;
                 }
 
@@ -849,12 +853,31 @@
                     }, 2000);
                 } else {
                     console.error("Error MP:", resultado);
-                    alert("⚠️ La terminal no respondió a la orden. Verifica que tenga conexión a internet.");
+                    alert("⚠️ La terminal no respondió. Asegúrate de que esté encendida o usa la opción de App Celular.");
                 }
             } catch (error) {
                 console.error("Error de red:", error);
-                alert("⚠️ Error de conexión al comunicarse con Mercado Pago.");
+                alert("⚠️ Error de conexión. Usa la opción de App Celular si no tienes la terminal a la mano.");
             }
+        }
+
+        // Opción 2: Cobrar con el Teléfono (Abre la app de Mercado Pago con el monto listo)
+        function cobrarConAppCelular() {
+            let orden = obtenerOrdenActiva();
+            if(!orden) return;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+
+            // Abre la app de Mercado Pago directamente en la sección de cobro / Tap to Pay
+            let externalReference = "ORDEN_" + orden.id;
+            let mpDeepLink = `mercadopago://point/integration?amount=${total}&description=Orden_${orden.id}&external_reference=${externalReference}`;
+            
+            window.location.href = mpDeepLink;
+
+            setTimeout(() => {
+                if(confirm(`¿Se aprobó el cobro por $${total.toFixed(2)} usando la App del Teléfono?`)) {
+                    finalizarYCobrarOrden("Tarjeta (App Celular)");
+                }
+            }, 1500);
         }
 
         function cobrarConEfectivo() {
