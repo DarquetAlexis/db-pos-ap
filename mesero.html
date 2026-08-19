@@ -262,28 +262,24 @@
         </div>
     </div>
 
-    <!-- MODAL PAGO INTELIGENTE (Efectivo, Point, Tap to Pay o Link QR) -->
+    <!-- MODAL PAGO INTELIGENTE -->
     <div id="modal-pago" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 hidden backdrop-blur-md">
         <div class="bg-dark-overlay border-2 border-[#526DB7] p-6 rounded-2xl w-full max-w-sm text-center space-y-3 shadow-[0_0_30px_rgba(82,109,183,0.4)]">
             <h3 class="text-sm font-black text-[#A3E3F8] uppercase">Total Cuenta: <span id="lbl-total-cobro" class="text-lg text-[#F6A9C5]"></span></h3>
             
             <div class="space-y-2 pt-1">
-                <!-- Opción 1: Terminal Point Física -->
                 <button onclick="cobrarConTarjetaPoint()" class="w-full bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 shadow border border-[#B0D0F8]">
                     <span class="text-base">📡</span> <span>Cobrar con Terminal (Point)</span>
                 </button>
 
-                <!-- Opción 2: Tap to Pay con el Teléfono (Aproximar tarjeta al cel) -->
                 <button onclick="cobrarConTapToPayApp()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
                     <span class="text-base">💳</span> <span>Tap to Pay (Aproximar tarjeta al Cel)</span>
                 </button>
 
-                <!-- Opción 3: Generar Link / QR de cobro web -->
                 <button onclick="generarLinkCobroCelular()" class="w-full bg-[#A3E3F8] hover:bg-[#82c6de] text-gray-900 font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
                     <span class="text-base">📱</span> <span>Generar QR / Link de Pago</span>
                 </button>
 
-                <!-- Sección Efectivo -->
                 <div class="bg-[#6C4A8D]/40 p-2 rounded-xl border border-[#D994F8]/30 text-left space-y-1">
                     <span class="text-xs font-bold text-[#D994F8]">💵 Pago en Efectivo:</span>
                     <input type="number" id="input-monto-recibido" placeholder="¿Con cuánto paga? ($)" class="w-full bg-purple-900 border border-[#D994F8] rounded p-1.5 text-white text-xs" oninput="calcularCambioEfectivo()">
@@ -818,80 +814,57 @@
             document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
         }
 
-        // Opción 1: Cobrar con Terminal Point Física
-async function cobrarConTarjetaPoint() {
-  let orden = obtenerOrdenActiva();
-  if (!orden) return;
-  let total = orden.items.reduce((a, b) => a + b.precio, 0);
+        // Opción 1: Cobrar con Terminal Point Física (vía API Vercel)
+        async function cobrarConTarjetaPoint() {
+            let orden = obtenerOrdenActiva();
+            if (!orden) return;
+            let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-  mostrarToast("⏳ Conectando con tu Point Smart...");
+            mostrarToast("⏳ Conectando con tu Point Smart...");
 
-  try {
-    // 1. Consultamos las terminales a través de nuestra API interna en Vercel
-    let resTerminals = await fetch('/api/terminal');
-    let dataTerminals = await resTerminals.json();
+            try {
+                let resTerminals = await fetch('/api/terminal');
+                let dataTerminals = await resTerminals.json();
+                let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
+                
+                if (!terminalsList || terminalsList.length === 0) {
+                    alert("⚠️ No se encontró ninguna terminal Point activa.");
+                    return;
+                }
 
-    let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
-    if (!terminalsList || terminalsList.length === 0) {
-      alert("⚠️ No se encontró ninguna terminal Point activa asociada a tu cuenta.");
-      return;
-    }
+                let DEVICE_ID = terminalsList[0].id;
 
-    let DEVICE_ID = terminalsList[0].id;
+                let cobroRes = await fetch('/api/terminal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        device_id: DEVICE_ID, 
+                        amount: total,
+                        description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
+                    })
+                });
 
-    // 2. Enviamos la orden de pago a la terminal mediante el puente
-    let cobroRes = await fetch('/api/terminal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        device_id: DEVICE_ID, 
-        amount: total,
-        description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
-      })
-    });
-
-    let resultado = await cobroRes.json();
-
-    if (cobroRes.ok) {
-      alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart para deslizar o acercar la tarjeta.");
-      
-      setTimeout(() => {
-        if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
-          finalizarYCobrarOrden("Tarjeta (Point Smart)");
-        }
-      }, 3000);
-    } else {
-      console.error("Error MP:", resultado);
-      alert("⚠️ La terminal no respondió a la orden. Verifica que tenga conexión a internet.");
-    }
-
-  } catch (error) {
-    console.error("Error de red:", error);
-    alert("⚠️ Error de conexión al comunicarse con el servidor.");
-  }
-}
-
-                if (respuesta.ok) {
+                if (cobroRes.ok) {
+                    alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart.");
                     setTimeout(() => {
-                        if (confirm(`✨ ¿Se aprobó el cobro por $${total.toFixed(2)} en la terminal Point Smart?`)) {
+                        if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
                             finalizarYCobrarOrden("Tarjeta (Point Smart)");
                         }
-                    }, 2000);
+                    }, 3000);
                 } else {
-                    alert("⚠️ La terminal no respondió. Asegúrate de que esté encendida.");
+                    alert("⚠️ La terminal no respondió a la orden. Verifica conexión.");
                 }
             } catch (error) {
-                alert("⚠️ Error de conexión con la terminal.");
+                console.error("Error:", error);
+                alert("⚠️ Error de conexión al comunicarse con el servidor.");
             }
         }
 
-        // Opción 2: Tap to Pay (Aproximar tarjeta física directo al celular mediante App MP)
+        // Opción 2: Tap to Pay (Aproximar tarjeta directo al celular)
         function cobrarConTapToPayApp() {
             let orden = obtenerOrdenActiva();
             if(!orden) return;
             let total = orden.items.reduce((a, b) => a + b.precio, 0);
-
-            // Enlace inteligente para abrir la sección de cobro con tarjeta en la app de Mercado Pago
             let mpDeepLink = `mercadopago://point/integration?amount=${total}&description=Orden_${orden.id}&external_reference=ORDEN_${orden.id}`;
             window.location.href = mpDeepLink;
 
@@ -902,7 +875,7 @@ async function cobrarConTarjetaPoint() {
             }, 1500);
         }
 
-        // Opción 3: Generar Link / QR de Pago web (Acepta tarjetas de cualquier banco)
+        // Opción 3: Generar Link / QR de Pago web
         async function generarLinkCobroCelular() {
             let orden = obtenerOrdenActiva();
             if (!orden) return;
@@ -978,7 +951,6 @@ async function cobrarConTarjetaPoint() {
             crearNuevaOrden(false);
         }
 
-      
         function generarEImprimirTicket(orden) {
             let tCliente = document.getElementById('ticket-info-cliente');
             let tItems = document.getElementById('ticket-lista-items');
