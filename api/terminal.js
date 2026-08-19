@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || 'APP_USR-1872229132375215-081916-289bce93650f1f5dd7ddcc95809aa5ba-333295261';
+  const ACCESS_TOKEN = 'APP_USR-1872229132375215-080519-de40675d32922719e872aa670427-333295261';
 
   try {
     // 1. Obtener la lista de terminales desde los servidores de Mercado Pago
@@ -32,17 +32,17 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const { device_id, amount, description } = req.body;
       
-      const paymentResponse = await fetch(`https://api.mercadopago.com/point/v1/terminals/${device_id}/payment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ACCESS_TOKEN}`
-        },
-        body: JSON.stringify({
-          amount: amount,
-          description: description || "Consumo en Dulce Bocado"
-        })
-      });
+ const paymentResponse = await fetch(`https://api.mercadopago.com/point/v1/terminals/${device_id}/payment`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${ACCESS_TOKEN}`
+  },
+  body: JSON.stringify({
+    amount: amount,
+    description: description || "Dulce Bocado"
+  })
+});
 
       const paymentData = await paymentResponse.json();
       return res.status(paymentResponse.status).json(paymentData);
