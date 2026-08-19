@@ -59,78 +59,53 @@ function getMenu() {
 initDatabase();
 
 async function cobrarConTarjetaPoint() {
-    let orden = obtenerOrdenActiva();
-    if (!orden) return;
-    let total = orden.items.reduce((a, b) => a + b.precio, 0);
+  let orden = obtenerOrdenActiva();
+  if (!orden) return;
+  let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-    mostrarToast("⏳ Buscando tu terminal Point...");
+  mostrarToast("⏳ Conectando con tu Point Smart...");
 
-    const ACCESS_TOKEN = 'APP_USR-1872229132375215-081916-289bce93650f1f5dd7ddcc95809aa5ba-333295261';
+  try {
+    // 1. Consultamos las terminales a través de nuestra API interna en Vercel
+    let resTerminals = await fetch('/api/terminal');
+    let dataTerminals = await resTerminals.json();
 
-    try {
-        // 1. Obtenemos automáticamente el ID de la terminal activa usando el endpoint que consultaste
-        let resTerminals = await fetch('https://api.mercadopago.com/terminals/v1/list', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ACCESS_TOKEN}`
-            }
-        });
-
-        let dataTerminals = await resTerminals.json();
-        
-        // Verificamos si hay terminales registradas
-        let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
-        if (!terminalsList || terminalsList.length === 0) {
-            alert("⚠️ No se encontró ninguna terminal Point activa asociada a tu cuenta.");
-            return;
-        }
-
-        // Tomamos la primera terminal activa de la lista (ej. tu Point Smart 2)
-        let DEVICE_ID = terminalsList[0].id;
-        mostrarToast(`✨ Conectando con terminal: ${DEVICE_ID}`);
-
-        // 2. Enviamos la orden de cobro directamente a ese dispositivo
-        let respuesta = await fetch(`https://api.mercadopago.com/v1/pos/${DEVICE_ID}/orders`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ACCESS_TOKEN}`
-            },
-            body: JSON.stringify({
-                external_reference: "ORDEN_" + orden.id,
-                items: [
-                    {
-                        title: `Cuenta ${orden.cliente}`,
-                        unit_price: Number(total),
-                        quantity: 1,
-                        unit_measure: "unit"
-                    }
-                ],
-                total_amount: Number(total),
-                payment: {
-                    installments: 1,
-                    type: "credit_card"
-                }
-            })
-        });
-
-        let resultado = await respuesta.json();
-
-        if (respuesta.ok) {
-            alert("✨ ¡Orden enviada con éxito! Revisa tu Point Smart para deslizar o acercar la tarjeta.");
-            
-            setTimeout(() => {
-                if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
-                    finalizarYCobrarOrden("Tarjeta (Point Smart)");
-                }
-            }, 3000);
-        } else {
-            console.error("Error MP:", resultado);
-            alert("⚠️ La terminal no respondió a la orden. Verifica que tenga conexión a internet.");
-        }
-    } catch (error) {
-        console.error("Error de red:", error);
-        alert("⚠️ Error de conexión al comunicarse con Mercado Pago.");
+    let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
+    if (!terminalsList || terminalsList.length === 0) {
+      alert("⚠️ No se encontró ninguna terminal Point activa asociada a tu cuenta.");
+      return;
     }
+
+    let DEVICE_ID = terminalsList[0].id;
+
+    // 2. Enviamos la orden de pago a la terminal mediante el puente
+    let cobroRes = await fetch('/api/terminal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        device_id: DEVICE_ID, 
+        amount: total,
+        description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
+      })
+    });
+
+    let resultado = await cobroRes.json();
+
+    if (cobroRes.ok) {
+      alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart para deslizar o acercar la tarjeta.");
+      
+      setTimeout(() => {
+        if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
+          finalizaryCobrarOrden("Tarjeta (Point Smart)");
+        }
+      }, 3000);
+    } else {
+      console.error("Error MP:", resultado);
+      alert("⚠️ La terminal no respondió a la orden. Verifica que tenga conexión a internet.");
+    }
+
+  } catch (error) {
+    console.error("Error de red:", error);
+    alert("⚠️ Error de conexión al comunicarse con el servidor.");
+  }
 }
