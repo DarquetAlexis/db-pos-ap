@@ -65,7 +65,7 @@ async function cobrarConTarjetaPoint() {
 
     mostrarToast("⏳ Buscando tu terminal Point...");
 
-    const ACCESS_TOKEN = 'APP_USR-1872229132375215-080519-de40675c3d2922719e872aa0fa670427-333295261';
+    const ACCESS_TOKEN = 'APP_USR-1872229132375215-081916-289bce93650f1f5dd7ddcc95809aa5ba-333295261';
 
     try {
         // 1. Obtenemos automáticamente el ID de la terminal activa usando el endpoint que consultaste
