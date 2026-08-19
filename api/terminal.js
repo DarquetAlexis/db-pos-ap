@@ -10,8 +10,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const ACCESS_TOKEN = 'APP_USR-1872229132375215-080519-de40675d32922719e872aa670427-333295261';
-
+  const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
   try {
     // 1. Obtener la lista de terminales desde los servidores de Mercado Pago
     const response = await fetch('https://api.mercadopago.com/terminals/v1/list', {
