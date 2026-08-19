@@ -70,7 +70,7 @@ async function cobrarConTarjetaPoint() {
     let resTerminals = await fetch('/api/terminal');
     let dataTerminals = await resTerminals.json();
 
-    let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
+    let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals || (Array.isArray(dataTerminals) ? dataTerminals : dataTerminals.data);
     if (!terminalsList || terminalsList.length === 0) {
       alert("⚠️ No se encontró ninguna terminal Point activa asociada a tu cuenta.");
       return;
