@@ -31,16 +31,16 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const { device_id, amount, description } = req.body;
       
- const paymentResponse = await fetch(`https://api.mercadopago.com/point/v1/terminals/${device_id}/payment`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${ACCESS_TOKEN}`
-  },
-  body: JSON.stringify({
-    amount: amount,
-    description: description || "Dulce Bocado"
-  })
+ const paymentResponse = await fetch(`https://api.mercadopago.com/point/integration-devices/${device_id}/payment-intents`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ACCESS_TOKEN}`
+    },
+    body: JSON.stringify({
+        amount: Number(amount),
+        description: description || "Dulce Bocado"
+    })
 });
 
       const paymentData = await paymentResponse.json();
