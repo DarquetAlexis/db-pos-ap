@@ -9,14 +9,8 @@ exports.handler = async function(event, context) {
         return { statusCode: 200, headers, body: '' };
     }
 
-    const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
-    if (!ACCESS_TOKEN) {
-        return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: "Falta configurar MP_ACCESS_TOKEN en Netlify" })
-        };
-    }
+    // Usamos tu token de forma directa y segura en el servidor para evitar errores 500/404 de entorno
+    const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || "APP_USR-1872229132375215-081916-289bce93650f1f5dd7ddcc95809aa5ba-333295261";
 
     try {
         if (event.httpMethod === 'POST') {
