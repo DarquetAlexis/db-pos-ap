@@ -882,19 +882,18 @@
             let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
             mostrarToast("⏳ Creando link de pago...");
-            const ACCESS_TOKEN = 'APP_USR-1872229132375215-080519-de40675c3d2922719e872aa0fa670427-333295261';
+try {
+            let respuesta = await fetch('/api/terminal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    device_id: "N950NCC303052330", // Cambia esto por el ID de tu terminal Point Smart
+                    amount: Number(total),
+                    description: `Orden #${orden.id}`
+                })
+            });
 
-            try {
-                let respuesta = await fetch('https://api.mercadopago.com/checkout/preferences', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ACCESS_TOKEN}` },
-                    body: JSON.stringify({
-                        items: [{ title: `Orden #${orden.id} - ${orden.cliente}`, quantity: 1, unit_price: Number(total) }],
-                        external_reference: "ORDEN_" + orden.id
-                    })
-                });
-
-                let resultado = await respuesta.json();
+            let resultado = await respuesta.json();
                 let linkPago = resultado.init_point;
 
                 if (linkPago) {
