@@ -1,56 +1,57 @@
 export default async function handler(req, res) {
-    // Permitir CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
-  const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
-  try {
-    // 1. Obtener la lista de terminales desde los servidores de Mercado Pago
-    const response = await fetch('https://api.mercadopago.com/terminals/v1/list', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ACCESS_TOKEN}`
-      }
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      return res.status(response.status).json(data);
+    const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+    if (!ACCESS_TOKEN) {
+        return res.status(500).json({ error: "Falta configurar MP_ACCESS_TOKEN en las variables de entorno de Vercel" });
     }
 
-    // 2. Si piden crear un pago/orden en la terminal (POST)
-    if (req.method === 'POST') {
-      const { device_id, amount, description } = req.body;
-      
- const paymentResponse = await fetch(`https://api.mercadopago.com/point/integration-devices/${device_id}/payment-intents`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ACCESS_TOKEN}`
-    },
-    body: JSON.stringify({
-        amount: Number(amount),
-        description: description || "Dulce Bocado"
-    })
-});
+    try {
+        if (req.method === 'GET') {
+            const response = await fetch('https://api.mercadopago.com/terminals/v1/list', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                return res.status(response.status).json(data);
+            }
+            return res.status(200).json(data);
+        }
 
-      const paymentData = await paymentResponse.json();
-      return res.status(paymentResponse.status).json(paymentData);
+        if (req.method === 'POST') {
+            const { device_id, amount, description } = req.body;
+            const paymentResponse = await fetch(`https://api.mercadopago.com/point/integration-devices/${device_id}/payment-intents`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`
+                },
+                body: JSON.stringify({
+                    amount: Number(amount),
+                    description: description || "Dulce Bocado",
+                    payment: {
+                        installments: 1,
+                        type: "credit_card"
+                    }
+                })
+            });
+            const paymentData = await paymentResponse.json();
+            if (!paymentResponse.ok) {
+                return res.status(paymentResponse.status).json(paymentData);
+            }
+            return res.status(200).json(paymentData);
+        }
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
-
-    // Por defecto devuelve las terminales encontradas
-    return res.status(200).json(data);
-
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
 }
