@@ -1,9 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/terminal.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/terminal", "dest": "/api/terminal.js" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
