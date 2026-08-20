@@ -823,7 +823,11 @@
             mostrarToast("⏳ Conectando con tu Point Smart...");
 
             try {
-                let resTerminals = await fetch('/api/terminal');
+                let resTerminals = await fetch('/.netlify/functions/terminal', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: "list_devices" }) // O la estructura que use para listar, o bien puedes pasar directamente tu device_id fijo si prefieres ir a la segura
+});
                 let dataTerminals = await resTerminals.json();
                 let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
                 
@@ -834,7 +838,7 @@
 
                 let DEVICE_ID = terminalsList[0].id;
 
-                let cobroRes = await fetch('/api/terminal', {
+                let cobroRes = await fetch('/.netlify/functions/terminal', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
