@@ -883,7 +883,7 @@
 
             mostrarToast("⏳ Creando link de pago...");
 try {
-            let respuesta = await fetch('/api/terminal', {
+            let respuesta = await fetch('/.netlify/functions/terminal', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
