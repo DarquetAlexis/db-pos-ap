@@ -869,42 +869,43 @@ async function cobrarConTarjetaPoint() {
             }, 1500);
         }
 
-        // Opción 3: Generar Link / QR de Pago web
-        async function generarLinkCobroCelular() {
-            let orden = obtenerOrdenActiva();
-            if (!orden) return;
-            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+   // Opción 3: Generar Link / QR de Pago web
+async function generarLinkCobroCelular() {
+    let orden = obtenerOrdenActiva();
+    if (!orden) return;
+    let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-            mostrarToast("⏳ Creando link de pago...");
-try {
-            let respuesta = await fetch('/.netlify/functions/terminal', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    device_id: "N950NCC303052330", // Cambia esto por el ID de tu terminal Point Smart
-                    amount: Number(total),
-                    description: `Orden #${orden.id}`
-                })
-            });
+    mostrarToast("⏳ Creando link de pago...");
 
-            let resultado = await respuesta.json();
-                let linkPago = resultado.init_point;
+    try {
+        let respuesta = await fetch('/.netlify/functions/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: Number(total),
+                description: `Orden #${orden.id} - Dulce Bocado`
+            })
+        });
 
-                if (linkPago) {
-                    cerrarModalPago();
-                    document.getElementById('modal-qr-pago').classList.remove('hidden');
-                    document.getElementById('lbl-monto-qr').innerText = `Total a pagar: $${total.toFixed(2)}`;
-                    
-                    let contenedorQr = document.getElementById('contenedor-codigo-qr');
-                    contenedorQr.innerHTML = '';
-                    new QRCode(contenedorQr, { text: linkPago, width: 180, height: 180 });
-                } else {
-                    alert("⚠️ No se pudo generar el enlace de pago.");
-                }
-            } catch (error) {
-                alert("⚠️ Error al conectar con Mercado Pago.");
-            }
+        let resultado = await respuesta.json();
+        let linkPago = resultado.init_point;
+
+        if (linkPago) {
+            cerrarModalPago();
+            document.getElementById('nodal-qr-pago').classList.remove('hidden');
+            document.getElementById('lbl-monto-qr').innerText = `Total a pagar: $${total.toFixed(2)}`;
+
+            let contenedorQr = document.getElementById('contenedor-codigo-qr');
+            contenedorQr.innerHTML = '';
+            new QRCode(contenedorQr, { text: linkPago, width: 180, height: 180 });
+        } else {
+            alert("⚠️ No se pudo generar el enlace de pago.");
         }
+    } catch (error) {
+        alert("⚠️ Error de red al generar el QR.");
+        console.error(error);
+    }
+}
 
         function cerrarModalQr() {
             document.getElementById('modal-qr-pago').classList.add('hidden');
