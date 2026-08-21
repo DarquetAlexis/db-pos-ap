@@ -814,55 +814,45 @@
             document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
         }
 
-        // Opción 1: Cobrar con Terminal Point Física (vía API Vercel)
-        async function cobrarConTarjetaPoint() {
-            let orden = obtenerOrdenActiva();
-            if (!orden) return;
-            let total = orden.items.reduce((a, b) => a + b.precio, 0);
+// Cobrar con Terminal Point de forma directa
+async function cobrarConTarjetaPoint() {
+    let orden = obtenerOrdenActiva();
+    if (!orden) return;
+    let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
-            mostrarToast("⏳ Conectando con tu Point Smart...");
+    mostrarToast("⏳ Conectando con tu Point Smart...");
 
-            try {
-                let resTerminals = await fetch('/.netlify/functions/terminal', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: "list_devices" }) // O la estructura que use para listar, o bien puedes pasar directamente tu device_id fijo si prefieres ir a la segura
-});
-                let dataTerminals = await resTerminals.json();
-                let terminalsList = dataTerminals.data?.terminals || dataTerminals.terminals;
-                
-                if (!terminalsList || terminalsList.length === 0) {
-                    alert("⚠️ No se encontró ninguna terminal Point activa.");
-                    return;
+    try {
+        // Hacemos el POST directo usando tu device_id fijo
+        let cobroRes = await fetch('/.netlify/functions/terminal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                device_id: "N950NCC303052330",
+                amount: total,
+                description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
+            })
+        });
+
+        let data = await cobroRes.json();
+
+        if (cobroRes.ok) {
+            alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart.");
+            setTimeout(() => {
+                if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
+                    finalizarYCobrarOrden("Tarjeta (Point Smart)");
                 }
-
-                let DEVICE_ID = terminalsList[0].id;
-
-                let cobroRes = await fetch('/.netlify/functions/terminal', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        device_id: DEVICE_ID, 
-                        amount: total,
-                        description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
-                    })
-                });
-
-                if (cobroRes.ok) {
-                    alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart.");
-                    setTimeout(() => {
-                        if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
-                            finalizarYCobrarOrden("Tarjeta (Point Smart)");
-                        }
-                    }, 3000);
-                } else {
-                    alert("⚠️ La terminal no respondió a la orden. Verifica conexión.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("⚠️ Error de conexión al comunicarse con el servidor.");
-            }
+            }, 500);
+        } else {
+            alert(`⚠️ Error al enviar a la terminal: ${data.error || JSON.stringify(data)}`);
         }
+    } catch (error) {
+        alert("⚠️ Error de red al conectar con la función de cobro.");
+        console.error(error);
+    }
+}
+
+
 
         // Opción 2: Tap to Pay (Aproximar tarjeta directo al celular)
         function cobrarConTapToPayApp() {
