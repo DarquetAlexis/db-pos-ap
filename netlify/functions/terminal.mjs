@@ -1,4 +1,4 @@
-import { getUser } from '@netlify/identity';
+import { staffSession, sameOrigin } from './_shared/staff-session.mts';
 
 const json = (body, status = 200) => Response.json(body, { status });
 
@@ -20,9 +20,10 @@ async function mercadoPago(url, accessToken, options = {}) {
 export default async (request) => {
     if (!['GET', 'POST'].includes(request.method)) return json({ error: 'Método no permitido' }, 405);
 
-    const staffUser = await getUser();
+    const staffUser = staffSession(request);
     if (!staffUser) return json({ error: 'Acceso exclusivo para personal autorizado' }, 401);
 
+    if (request.method === 'POST' && !sameOrigin(request)) return json({error:'Origen no permitido'},403);
     const accessToken = Netlify.env.get('MP_ACCESS_TOKEN');
     if (!accessToken) return json({ error: 'Falta configurar MP_ACCESS_TOKEN en Netlify' }, 500);
 

@@ -1,1 +1,1 @@
-{"private":true,"scripts":{"build:auth":"esbuild staff-auth-src.js --bundle --format=iife --outfile=staff-auth.bundle.js --minify"},"dependencies":{"@netlify/identity":"latest"},"devDependencies":{"esbuild":"latest"}}
+{"private":true,"scripts":{"build:auth":"esbuild staff-auth-src.js --bundle --format=iife --outfile=staff-auth.bundle.js --minify"},"dependencies":{"@netlify/blobs":"^11.0.3","@netlify/functions":"^6.0.0","@netlify/identity":"latest","web-push":"^3.6.7"},"devDependencies":{"esbuild":"latest"}}
