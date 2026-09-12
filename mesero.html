@@ -43,8 +43,10 @@
             }
         }
     </style>
+    <style id="staff-lock">body{visibility:hidden}</style>
+    <script src="staff-orders.js"></script><script src="staff-push.js" defer></script><script src="staff-auth.bundle.js" defer></script><link rel="manifest" href="/manifest.json"><link rel="apple-touch-icon" href="/logo.png">
 </head>
-<body class="text-white min-h-screen flex flex-col pb-36" style="background-color: #2e0671;">
+<body data-protected="true" class="text-white min-h-screen flex flex-col pb-36" style="background-color: #2e0671;">
 
     <div id="toast-exito" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-[#526DB7] text-white px-4 py-2 rounded-full font-bold shadow-2xl opacity-0 pointer-events-none scale-90">
         ✨ ¡Sincronizado!
@@ -356,7 +358,13 @@
             appId: "1:1086223287499:web:4f9fd420e53a1eb3f4474e"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.firestore();
+        const legacyDB = firebase.firestore();
+        const db = { collection: name => name === "orders" ? customerOrders : legacyDB.collection(name) };
+        const customerOrders = window.posOrdersCollection(legacyDB.collection("orders"));
+        const safeText = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const customerDetails = item => item.details?.length ? `<small class="block whitespace-normal text-pink-200">${safeText(item.details.join(' · '))}</small>` : '';
+        const customerPayment = orden => orden.origen === 'Cliente web' ? `<p class="text-xs text-pink-200 whitespace-normal">${safeText(orden.pago)}${orden.efectivo != null ? ` · Efectivo $${Number(orden.efectivo)} · Cambio $${Number(orden.cambio)} ${safeText(orden.denominacion)}` : ''}${orden.nota ? '<br>Instrucciones: '+safeText(orden.nota) : ''}</p>` : '';
+
 
         let cacheOrders = [];
         let ordenActivaId = null;
@@ -575,6 +583,7 @@
                 return;
             }
 
+            miniList.innerHTML += customerPayment(orden);
             let bloqueadoPorCocina = (orden.estado === 'en_preparacion' || orden.estado === 'listo');
 
             orden.items.forEach((item, idx) => {
@@ -585,7 +594,7 @@
 
                 miniList.innerHTML += `
                     <div class="flex justify-between items-center bg-[#6C4A8D]/40 px-2 py-1 rounded border border-[#D994F8]/20">
-                        <span class="truncate w-44">${item.name} ${etiquetaNuevo}</span>
+                        <span class="w-44">${safeText(item.name)} ${etiquetaNuevo}${customerDetails(item)}</span>
                         <div class="flex items-center space-x-1">
                             <span class="font-bold text-[#F6A9C5]">$${item.precio}</span>
                             ${botonBorrar}
@@ -765,7 +774,7 @@
                     contenedor.innerHTML += `
                         <div class="p-2.5 rounded-xl border border-[#526DB7]/50 bg-[#6C4A8D]/40 flex justify-between items-center">
                             <div>
-                                <span class="text-xs font-black text-[#A3E3F8]" style="color: ${ord.color || '#A3E3F8'}">Orden #${ord.id} - ${ord.cliente}</span>
+                                <span class="text-xs font-black text-[#A3E3F8]" style="color: ${ord.color || '#A3E3F8'}">Orden #${ord.id} - ${safeText(ord.cliente)}</span>
                                 <p class="text-[9px] text-gray-300">${ord.items.length} productos | <b>$${totalOrd.toFixed(2)}</b></p>
                                 <span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-[#6C4A8D] text-white uppercase">${ord.estado}</span>
                             </div>
@@ -811,7 +820,7 @@
             let total = orden.items.reduce((a, b) => a + b.precio, 0);
             let recibido = parseFloat(document.getElementById('input-monto-recibido').value) || 0;
             let cambio = recibido - total;
-            document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Faltan dinero';
+            document.getElementById('lbl-cambio-efectivo').innerText = cambio >= 0 ? `$${cambio.toFixed(2)}` : 'Falta dinero';
         }
 
 // Cobrar con Terminal Point de forma directa
@@ -823,18 +832,22 @@ async function cobrarConTarjetaPoint() {
     mostrarToast("⏳ Conectando con tu Point Smart...");
 
     try {
-        // Hacemos el POST directo usando tu device_id fijo
+        // El servidor detecta la terminal activa asociada a la cuenta de Mercado Pago.
         let cobroRes = await fetch('/.netlify/functions/terminal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                device_id: "N950NCC303052330",
                 amount: total,
                 description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
             })
         });
 
-        let data = await cobroRes.json();
+        let data;
+        try {
+            data = await cobroRes.json();
+        } catch (_) {
+            throw new Error(`La función de Netlify respondió con estado ${cobroRes.status}`);
+        }
 
         if (cobroRes.ok) {
             alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart.");
@@ -887,22 +900,27 @@ async function generarLinkCobroCelular() {
             })
         });
 
-        let resultado = await respuesta.json();
+        let resultado;
+        try {
+            resultado = await respuesta.json();
+        } catch (_) {
+            throw new Error(`La función de Netlify respondió con estado ${respuesta.status}`);
+        }
         let linkPago = resultado.init_point;
 
         if (linkPago) {
             cerrarModalPago();
-            document.getElementById('nodal-qr-pago').classList.remove('hidden');
+            document.getElementById('modal-qr-pago').classList.remove('hidden');
             document.getElementById('lbl-monto-qr').innerText = `Total a pagar: $${total.toFixed(2)}`;
 
             let contenedorQr = document.getElementById('contenedor-codigo-qr');
             contenedorQr.innerHTML = '';
             new QRCode(contenedorQr, { text: linkPago, width: 180, height: 180 });
         } else {
-            alert("⚠️ No se pudo generar el enlace de pago.");
+            alert(`⚠️ ${resultado.error || 'No se pudo generar el enlace de pago.'}`);
         }
     } catch (error) {
-        alert("⚠️ Error de red al generar el QR.");
+        alert(`⚠️ Error al generar el QR: ${error.message}`);
         console.error(error);
     }
 }
@@ -953,7 +971,7 @@ async function generarLinkCobroCelular() {
             tCliente.innerHTML = `
                 <p><b>Fecha:</b> ${orden.fecha} - ${orden.tiempo}</p>
                 <p><b>Orden:</b> #${orden.id}</p>
-                <p><b>Cliente/Mesa:</b> ${orden.cliente}</p>
+                <p><b>Cliente/Mesa:</b> ${safeText(orden.cliente)}</p>
             `;
 
             tItems.innerHTML = '<p class="font-bold border-b pb-1 mb-1">CANT  PRODUCTO          PRECIO</p>';
@@ -971,7 +989,7 @@ async function generarLinkCobroCelular() {
             }, 500);
         }
 
-        window.onload = initPOS;
+        window.onload = async () => { if(await window.staffReady) initPOS(); };
     </script>
 </body>
 </html>

@@ -1,0 +1,482 @@
+{
+  "products": [
+    {
+      "name": "Crepa a tu antojo",
+      "price": 50,
+      "img": "Crepa Basica.png",
+      "type": "crepe",
+      "included": []
+    },
+    {
+      "name": "Crepa Nutella + Fresa",
+      "price": 70,
+      "img": "Crepa Basica.png",
+      "type": "crepe",
+      "included": [
+        "Nutella",
+        "Fresa"
+      ]
+    },
+    {
+      "name": "Crepa Nutella + Durazno",
+      "price": 70,
+      "img": "Crepa Basica.png",
+      "type": "crepe",
+      "included": [
+        "Nutella",
+        "Durazno"
+      ]
+    },
+    {
+      "id": "ce1",
+      "name": "Crepa Ferrero",
+      "desc": "Nutella, Nuez, Almendra, Ferrero",
+      "ingredientesBase": [
+        "Nutella",
+        "Nuez",
+        "Almendra"
+      ],
+      "precio": 90,
+      "img": "Crepa Fererro.png",
+      "activo": true,
+      "price": 90,
+      "type": "crepe",
+      "included": [
+        "Nutella",
+        "Nuez",
+        "Almendra",
+        "Ferrero Rocher"
+      ]
+    },
+    {
+      "id": "ce2",
+      "name": "Crepa Gansito",
+      "desc": "Nutella, Queso Philadelphia, Fresa, Gansito",
+      "ingredientesBase": [
+        "Nutella",
+        "Queso Philadelphia",
+        "Fresa"
+      ],
+      "precio": 90,
+      "img": "Crepa Gansito.png",
+      "activo": true,
+      "price": 90,
+      "type": "crepe",
+      "included": [
+        "Nutella",
+        "Queso Philadelphia",
+        "Fresa",
+        "Gansito"
+      ]
+    },
+    {
+      "id": "ce3",
+      "name": "Crepa Kinder",
+      "desc": "Nutella, Queso Philadelphia, Kinder Délice",
+      "ingredientesBase": [
+        "Nutella",
+        "Queso Philadelphia"
+      ],
+      "precio": 95,
+      "img": "Crepa Basica.png",
+      "activo": true,
+      "price": 95,
+      "type": "crepe",
+      "included": [
+        "Nutella",
+        "Queso Philadelphia",
+        "Kinder Délice"
+      ]
+    },
+    {
+      "id": "ce4",
+      "name": "Crepa Oreo",
+      "desc": "Nutella, Lechera, Oreo",
+      "ingredientesBase": [
+        "Nutella",
+        "Lechera"
+      ],
+      "precio": 85,
+      "img": "Crepa Oreo.png",
+      "activo": true,
+      "price": 85,
+      "type": "crepe",
+      "included": [
+        "Nutella",
+        "Lechera",
+        "Oreo"
+      ]
+    },
+    {
+      "id": "fb1",
+      "name": "Frappé Moka",
+      "med": 50,
+      "gde": 60,
+      "jumbo": 120,
+      "img": "Capuchino.png",
+      "activo": true,
+      "price": 50,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          50
+        ],
+        [
+          "Grande",
+          60
+        ],
+        [
+          "Jumbo",
+          120
+        ]
+      ]
+    },
+    {
+      "id": "fb2",
+      "name": "Frappé Capuchino",
+      "med": 50,
+      "gde": 60,
+      "jumbo": 120,
+      "img": "Capuchino.png",
+      "activo": true,
+      "price": 50,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          50
+        ],
+        [
+          "Grande",
+          60
+        ],
+        [
+          "Jumbo",
+          120
+        ]
+      ]
+    },
+    {
+      "id": "fb3",
+      "name": "Frappé Fresa",
+      "med": 50,
+      "gde": 60,
+      "jumbo": 120,
+      "img": "Fresa Frappe.png",
+      "activo": true,
+      "price": 50,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          50
+        ],
+        [
+          "Grande",
+          60
+        ],
+        [
+          "Jumbo",
+          120
+        ]
+      ]
+    },
+    {
+      "id": "fp1",
+      "name": "Frappé Ferrero Rocher",
+      "med": 70,
+      "gde": 75,
+      "jumbo": 150,
+      "img": "Ferrero rocher.png",
+      "activo": true,
+      "price": 70,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          70
+        ],
+        [
+          "Grande",
+          75
+        ],
+        [
+          "Jumbo",
+          150
+        ]
+      ]
+    },
+    {
+      "id": "fp2",
+      "name": "Frappé Kinder Délice",
+      "med": 70,
+      "gde": 75,
+      "jumbo": 150,
+      "img": "Quinder delice.png",
+      "activo": true,
+      "price": 70,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          70
+        ],
+        [
+          "Grande",
+          75
+        ],
+        [
+          "Jumbo",
+          150
+        ]
+      ]
+    },
+    {
+      "id": "fp3",
+      "name": "Frappé Gansito",
+      "med": 70,
+      "gde": 75,
+      "jumbo": 150,
+      "img": "Gansito.png",
+      "activo": true,
+      "price": 70,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          70
+        ],
+        [
+          "Grande",
+          75
+        ],
+        [
+          "Jumbo",
+          150
+        ]
+      ]
+    },
+    {
+      "id": "fp4",
+      "name": "Frappé Bubu Lubu",
+      "med": 70,
+      "gde": 75,
+      "jumbo": 150,
+      "img": "Bubulubu.png",
+      "activo": true,
+      "price": 70,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          70
+        ],
+        [
+          "Grande",
+          75
+        ],
+        [
+          "Jumbo",
+          150
+        ]
+      ]
+    },
+    {
+      "id": "fe1",
+      "name": "Frappé M&M's",
+      "med": 65,
+      "gde": 70,
+      "jumbo": 140,
+      "img": "Chocolate Frappe.png",
+      "activo": true,
+      "price": 65,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          65
+        ],
+        [
+          "Grande",
+          70
+        ],
+        [
+          "Jumbo",
+          140
+        ]
+      ]
+    },
+    {
+      "id": "fe2",
+      "name": "Frappé Oreo",
+      "med": 65,
+      "gde": 70,
+      "jumbo": 140,
+      "img": "Oreo.png",
+      "activo": true,
+      "price": 65,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          65
+        ],
+        [
+          "Grande",
+          70
+        ],
+        [
+          "Jumbo",
+          140
+        ]
+      ]
+    },
+    {
+      "id": "fe3",
+      "name": "Frappé Taro",
+      "med": 65,
+      "gde": 70,
+      "jumbo": 140,
+      "img": "Taro.png",
+      "activo": true,
+      "price": 65,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          65
+        ],
+        [
+          "Grande",
+          70
+        ],
+        [
+          "Jumbo",
+          140
+        ]
+      ]
+    },
+    {
+      "id": "fe4",
+      "name": "Frappé Carlos V",
+      "med": 65,
+      "gde": 70,
+      "jumbo": 140,
+      "img": "Carlos V.png",
+      "activo": true,
+      "price": 65,
+      "type": "frappe",
+      "sizes": [
+        [
+          "Mediano",
+          65
+        ],
+        [
+          "Grande",
+          70
+        ],
+        [
+          "Jumbo",
+          140
+        ]
+      ]
+    },
+    {
+      "name": "Capuchino 10 oz · 1 por $30",
+      "price": 30,
+      "quantity": 1,
+      "type": "frappe",
+      "img": "Capuchino.png"
+    },
+    {
+      "name": "Capuchino 10 oz · 2 por $50",
+      "price": 50,
+      "quantity": 2,
+      "type": "frappe",
+      "img": "Capuchino.png"
+    },
+    {
+      "id": "ch1",
+      "name": "Chamoyada PicaFresa",
+      "precio": 60,
+      "img": "Chamoyada Fresa.png",
+      "activo": true,
+      "price": 60
+    },
+    {
+      "id": "ch2",
+      "name": "Chamoyada Mango",
+      "precio": 60,
+      "img": "Chamoyada Mango.png",
+      "activo": true,
+      "price": 60
+    },
+    {
+      "id": "so1",
+      "name": "Soda italiana Blue",
+      "precio": 60,
+      "img": "Blu.png",
+      "activo": true,
+      "price": 60
+    },
+    {
+      "id": "so2",
+      "name": "Soda italiana Green",
+      "precio": 60,
+      "img": "Manzanaverde.png",
+      "activo": true,
+      "price": 60
+    },
+    {
+      "id": "so3",
+      "name": "Soda italiana Cereza",
+      "precio": 60,
+      "img": "Cereza.png",
+      "activo": true,
+      "price": 60
+    },
+    {
+      "name": "Vaso Combo",
+      "price": 150,
+      "img": "vaso Combo.png",
+      "type": "combo"
+    },
+    {
+      "name": "Sopa Maruchan",
+      "price": 35,
+      "img": "Maruchan.png"
+    }
+  ],
+  "ingredients": [
+    "Nutella",
+    "Cajeta",
+    "Queso Philadelphia",
+    "Mermelada de Fresa",
+    "Lechera",
+    "Salsa Italiana",
+    "Mermelada de Zarzamora",
+    "Fresa",
+    "Plátano",
+    "Piña",
+    "Durazno",
+    "Nuez",
+    "Almendra",
+    "Jamón",
+    "Manchego",
+    "Peperoni",
+    "Crema Batida",
+    "Ferrero Rocher",
+    "Gansito",
+    "Kinder Délice",
+    "Oreo",
+    "Chocolate Especial"
+  ],
+  "premiumExtras": [
+    "Ferrero Rocher",
+    "Gansito",
+    "Kinder Délice",
+    "Oreo",
+    "Chocolate Especial"
+  ]
+}
