@@ -429,7 +429,7 @@
 
         function guardarOrdenCloud(orden) {
             localStorage.setItem("db_orders_fallback", JSON.stringify(cacheOrders));
-            db.collection("orders").doc(orden.id.toString()).set(orden).catch((err) => {});
+            return db.collection("orders").doc(orden.id.toString()).set(orden);
         }
 
         function eliminarOrdenCloud(id) {
@@ -540,7 +540,7 @@
         function crearNuevaOrden(notificar = true) {
             let colorIndex = cacheOrders.length % gamaColores.length;
             let nueva = {
-                id: Date.now().toString().slice(-4),
+                id: crypto.randomUUID(),
                 cliente: `Mesa/Cliente ${cacheOrders.length + 1}`,
                 color: gamaColores[colorIndex],
                 items: [],
@@ -754,11 +754,11 @@
             calcCustom();
         }
 
-        function enviarOrdenACocina() {
+        async function enviarOrdenACocina() {
             let orden = obtenerOrdenActiva();
             if (!orden || orden.items.length === 0) { alert("Orden vacía."); return; }
             orden.estado = "pendiente";
-            guardarOrdenCloud(orden);
+            try { await guardarOrdenCloud(orden); } catch (e) { alert(e.message); return; }
             alert(`🚀 Orden #${orden.id} enviada a Cocina en la nube.`);
         }
 
@@ -803,10 +803,12 @@
             }
         }
 
+        let pagoOrdenId = null, guardandoCobro = false, enviandoPoint = false;
         function abrirModalPago() {
             let orden = obtenerOrdenActiva();
             if (!orden || orden.items.length === 0) { alert("Vacía."); return; }
             let total = orden.items.reduce((a, b) => a + b.precio, 0);
+            pagoOrdenId = orden.id;
             document.getElementById('lbl-total-cobro').innerText = `$${total.toFixed(2)}`;
             document.getElementById('input-monto-recibido').value = '';
             document.getElementById('lbl-cambio-efectivo').innerText = '$0.00';
@@ -825,19 +827,24 @@
 
 // Cobrar con Terminal Point de forma directa
 async function cobrarConTarjetaPoint() {
-    let orden = obtenerOrdenActiva();
+    if (enviandoPoint) return;
+    let orden = cacheOrders.find(o => o.id === pagoOrdenId);
     if (!orden) return;
     let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
+    enviandoPoint = true;
     mostrarToast("⏳ Conectando con tu Point Smart...");
 
     try {
+        await guardarOrdenCloud(orden);
         // El servidor detecta la terminal activa asociada a la cuenta de Mercado Pago.
         let cobroRes = await fetch('/.netlify/functions/terminal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 amount: total,
+                orderId: orden.id,
+                idempotencyKey: "point-" + orden.id + "-" + total,
                 description: `Cuenta ${orden.cliente || 'Dulce Bocado'}`
             })
         });
@@ -853,16 +860,16 @@ async function cobrarConTarjetaPoint() {
             alert("✅ ¡Orden enviada con éxito! Revisa tu Point Smart.");
             setTimeout(() => {
                 if (confirm("¿El pago fue aprobado exitosamente en la terminal?")) {
-                    finalizarYCobrarOrden("Tarjeta (Point Smart)");
+                    finalizarYCobrarOrden("Tarjeta (Point Smart)", orden.id);
                 }
             }, 500);
         } else {
             alert(`⚠️ Error al enviar a la terminal: ${data.error || JSON.stringify(data)}`);
         }
     } catch (error) {
-        alert("⚠️ Error de red al conectar con la función de cobro.");
+        alert("⚠️ " + error.message);
         console.error(error);
-    }
+    } finally { enviandoPoint = false; }
 }
 
 
@@ -884,18 +891,20 @@ async function cobrarConTarjetaPoint() {
 
    // Opción 3: Generar Link / QR de Pago web
 async function generarLinkCobroCelular() {
-    let orden = obtenerOrdenActiva();
+    let orden = cacheOrders.find(o => o.id === pagoOrdenId);
     if (!orden) return;
     let total = orden.items.reduce((a, b) => a + b.precio, 0);
 
     mostrarToast("⏳ Creando link de pago...");
 
     try {
+        await guardarOrdenCloud(orden);
         let respuesta = await fetch('/.netlify/functions/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 amount: Number(total),
+                orderId: orden.id,
                 description: `Orden #${orden.id} - Dulce Bocado`
             })
         });
@@ -915,7 +924,8 @@ async function generarLinkCobroCelular() {
 
             let contenedorQr = document.getElementById('contenedor-codigo-qr');
             contenedorQr.innerHTML = '';
-            new QRCode(contenedorQr, { text: linkPago, width: 180, height: 180 });
+            if (typeof QRCode !== 'undefined') new QRCode(contenedorQr, { text: linkPago, width: 180, height: 180 });
+            const enlace = document.createElement('a'); enlace.href = linkPago; enlace.target = '_blank'; enlace.rel = 'noopener'; enlace.textContent = 'Abrir enlace de pago'; enlace.className = 'block underline text-blue-800 mt-3'; contenedorQr.appendChild(enlace);
         } else {
             alert(`⚠️ ${resultado.error || 'No se pudo generar el enlace de pago.'}`);
         }
@@ -948,14 +958,19 @@ async function generarLinkCobroCelular() {
             finalizarYCobrarOrden(`Efectivo (Recibido: $${recibido}, Cambio: $${cambio.toFixed(2)})`);
         }
 
-        function finalizarYCobrarOrden(metodoPago) {
+        async function finalizarYCobrarOrden(metodoPago, orderId = pagoOrdenId) {
             let orden = obtenerOrdenActiva();
             if (!orden) return;
+            if (orderId) orden = cacheOrders.find(o => o.id === orderId);
+            if (!orden || orden.estado === "cobrado" || guardandoCobro) return;
+            guardandoCobro = true;
+            orden = structuredClone(orden);
+            orden.kitchenEstado = orden.kitchenEstado || orden.estado;
             orden.estado = "cobrado";
             orden.pagoMetodo = metodoPago;
             orden.total = orden.items.reduce((a, b) => a + b.precio, 0);
-            guardarOrdenCloud(orden);
-            
+            try { await guardarOrdenCloud(orden); } catch (e) { alert("No se guardó el cobro: " + e.message); guardandoCobro = false; return; }
+            guardandoCobro = false;
             generarEImprimirTicket(orden);
 
             cerrarModalPago();

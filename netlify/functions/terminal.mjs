@@ -45,19 +45,19 @@ export default async (request) => {
             return json({ connected: true, terminal_count: terminals.length });
         }
 
-        const { amount, description } = await request.json();
+        const { amount, description, orderId, idempotencyKey: suppliedKey } = await request.json();
         const parsedAmount = Number(amount);
         if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
             return json({ error: 'El monto del cobro no es válido' }, 400);
         }
 
-        const idempotencyKey = crypto.randomUUID();
+        const idempotencyKey = typeof suppliedKey === 'string' && /^[a-zA-Z0-9.-]{1,100}$/.test(suppliedKey) ? suppliedKey : crypto.randomUUID();
         const orderResult = await mercadoPago('https://api.mercadopago.com/v1/orders', accessToken, {
             method: 'POST',
             headers: { 'X-Idempotency-Key': idempotencyKey },
             body: JSON.stringify({
                 type: 'point',
-                external_reference: `dulce-bocado-${Date.now()}`,
+                external_reference: orderId || `dulce-bocado-${Date.now()}`,
                 expiration_time: 'PT16M',
                 transactions: { payments: [{ amount: parsedAmount.toFixed(2) }] },
                 config: {

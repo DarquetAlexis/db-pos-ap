@@ -1,13 +1,16 @@
+import {staffSession,sameOrigin} from './_shared/staff-session.mts';
 const json = (body, status = 200) => Response.json(body, { status });
 
 export default async (request) => {
     if (request.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
+    if(!staffSession(request))return json({error:'Inicia sesión con tu NIP.'},401);
+    if(!sameOrigin(request))return json({error:'Origen no permitido'},403);
     const accessToken = Netlify.env.get('MP_ACCESS_TOKEN');
     if (!accessToken) return json({ error: 'Falta configurar MP_ACCESS_TOKEN en Netlify' }, 500);
 
     try {
-        const { amount, description } = await request.json();
+        const { amount, description, orderId } = await request.json();
         const parsedAmount = Number(amount);
         if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
             return json({ error: 'El monto del cobro no es válido' }, 400);
@@ -20,6 +23,7 @@ export default async (request) => {
                 Authorization: `Bearer ${accessToken}`
             },
             body: JSON.stringify({
+                external_reference: orderId || undefined,
                 items: [{ title: description || 'Dulce Bocado', unit_price: parsedAmount, quantity: 1 }],
                 back_urls: {
                     success: 'https://dulcebocadopos.netlify.app',

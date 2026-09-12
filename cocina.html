@@ -64,7 +64,7 @@
         function renderComandas(orders) {
             let contenedor = document.getElementById('contenedor-comandas-cocina');
             contenedor.innerHTML = '';
-            let activas = orders.filter(o => o.estado !== 'cobrado');
+            let activas = orders.filter(o => o.items?.length && (o.estado !== 'cobrado' || (o.kitchenEstado && o.kitchenEstado !== 'listo'))).map(o => ({...o,estado:o.kitchenEstado||o.estado}));
 
             if (activas.length === 0) {
                 contenedor.innerHTML = `<p class="text-xs text-gray-400 italic col-span-2 text-center py-6">No hay pedidos pendientes en la cocina.</p>`;
@@ -109,10 +109,11 @@
                     if (nuevoEstado === 'listo') {
                         data.items.forEach(i => i.nuevo = false);
                     }
-                    data.estado = nuevoEstado;
-                    db.collection("orders").doc(id.toString()).set(data);
+                    if(data.estado === 'cobrado') data.kitchenEstado = nuevoEstado;
+                    else { data.estado = nuevoEstado; if(data.kitchenEstado)data.kitchenEstado=nuevoEstado; }
+                    return db.collection("orders").doc(id.toString()).set(data);
                 }
-            });
+            }).catch(e=>alert("No se guardó el estado: " + e.message));
         }
 
         window.onload = async () => { if(await window.staffReady) escucharCocina(); };
