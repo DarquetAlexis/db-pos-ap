@@ -8,6 +8,7 @@ export default async(req,context)=>{
  if(!sameOrigin(req))return json({error:'Origen no permitido'},403);
  let input;try{const body=await req.text();if(body.length>50000)throw Error();input=JSON.parse(body);}catch{return json({error:'Pedido no válido.'},400);}
  let order;try{order=validateOrder(input);}catch(e){return json({error:e.message},400);}
+ if(!Netlify.env.get('STAFF_PIN')||!Netlify.env.get('STAFF_SESSION_SECRET'))return json({error:'Estamos activando los pedidos en línea. Tu carrito se conserva; por favor contacta al negocio.'},503);
  const hash=createHash('sha256').update(JSON.stringify(input)).digest('hex'),orders=store('customer-orders',context),key=order.id;
  try{
  const existing=await orders.getWithMetadata(key,{type:'json'});
