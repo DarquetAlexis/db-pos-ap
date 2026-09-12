@@ -1,0 +1,1 @@
+{"private":true,"scripts":{"build:auth":"esbuild staff-auth-src.js --bundle --format=iife --outfile=staff-auth.bundle.js --minify"},"dependencies":{"@netlify/identity":"latest"},"devDependencies":{"esbuild":"latest"}}

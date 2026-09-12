@@ -12,8 +12,10 @@
         .bg-dark-overlay { background-color: rgba(41, 13, 47, 0.96); backdrop-filter: blur(6px); }
         .marco-admin { border: 2px solid #6C4A8D; border-radius: 1rem; box-shadow: 0 4px 20px rgba(108,74,141,0.3); }
     </style>
+    <style id="staff-lock">body{visibility:hidden}</style>
+    <script src="staff-auth.bundle.js" defer></script>
 </head>
-<body class="text-white min-h-screen p-3 md:p-6 pb-20" style="background-color: #2e0671;">
+<body data-protected="true" class="text-white min-h-screen p-3 md:p-6 pb-20" style="background-color: #2e0671;">
 
     <header class="flex justify-between items-center bg-dark-overlay p-4 marco-admin mb-4">
         <div>
