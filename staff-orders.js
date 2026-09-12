@@ -13,9 +13,9 @@ window.posOrdersCollection=function(legacy){
  async get(){if(writes.has(id))await writes.get(id);const data=await api(id);versions.set(id,data.version);return docObject({...data.order,_version:data.version});},
  set(order){const snapshot=structuredClone(order),prior=writes.get(id),expected=versions.get(id)||snapshot._version;
  const action=(prior||Promise.resolve()).then(async()=>{let version=prior?versions.get(id):expected;if(!version){try{const d=await api(id);version=d.version;/* An existing unseen order must be reviewed before replacing it. */throw Object.assign(Error('El pedido ya existe. Actualiza antes de editarlo.'),{status:409});}catch(e){if(e.status!==404)throw e;}}
- const data=await api(id,{method:'PUT',headers:{'Content-Type':'application/json',...(version?{'If-Match':version}:{'If-None-Match':'*'})},body:JSON.stringify(snapshot)});versions.set(id,data.version);});writes.set(id,action);
+ const data=await api(id,{method:'PUT',headers:{'Content-Type':'application/json',...(version?{'X-Order-Version':version}:{'X-Order-Create':'*'})},body:JSON.stringify(snapshot)});versions.set(id,data.version);});writes.set(id,action);
  action.then(()=>{if(writes.get(id)===action){writes.delete(id);refresh();}},e=>{if(writes.get(id)===action){writes.delete(id);refresh().then(()=>report(e));}report(e);});return action;},
- async delete(){try{if(writes.has(id))await writes.get(id);if(!versions.has(id)){const d=await api(id);versions.set(id,d.version);}await api(id,{method:'DELETE',headers:{'If-Match':versions.get(id)}});await refresh();}catch(e){report(e);throw e;}}
+ async delete(){try{if(writes.has(id))await writes.get(id);if(!versions.has(id)){const d=await api(id);versions.set(id,d.version);}await api(id,{method:'DELETE',headers:{'X-Order-Version':versions.get(id)}});await refresh();}catch(e){report(e);throw e;}}
  };}
  };
 };

@@ -12,8 +12,8 @@ export default async(req,context)=>{
  if(!['PUT','DELETE'].includes(req.method)||!id)return json({error:'Método no permitido'},405);
  if(!sameOrigin(req))return json({error:'Origen no permitido'},403);
  const current=await s.getWithMetadata(id,{type:'json'});if((!current&&req.method==='DELETE')||(current&&current.data.status!=='done'))return json({error:'Pedido no encontrado'},404);
- if(!current&&req.headers.get('if-none-match')!=='*')return json({error:'Confirma que es un pedido nuevo.'},409);
- if(current&&req.headers.get('if-match')!==current.etag)return json({error:'El pedido cambió en otro dispositivo. Actualiza antes de guardarlo.'},409);
+ if(!current&&(req.headers.get('x-order-create')||req.headers.get('if-none-match'))!=='*')return json({error:'Confirma que es un pedido nuevo.'},409);
+ if(current&&(req.headers.get('x-order-version')||req.headers.get('if-match'))!==current.etag)return json({error:'El pedido cambió en otro dispositivo. Actualiza antes de guardarlo.'},409);
  let next=current?{...current.data}:{status:'done',order:{id,folio:id.slice(-6).toUpperCase(),createdAt:new Date().toISOString(),fecha:new Date().toLocaleDateString('es-MX'),tiempo:new Date().toLocaleTimeString('es-MX'),source:'mesero'}};if(req.method==='DELETE')next.deleted=true;
  else{
  const order=await req.json();if(!['pendiente','en_preparacion','listo','cobrado'].includes(order.estado)||!Array.isArray(order.items)||order.items.length>80)return json({error:'Datos del pedido no válidos'},400);
