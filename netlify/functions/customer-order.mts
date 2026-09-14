@@ -13,9 +13,9 @@ export default async(req,context)=>{
  try{
   const settings=await store('business-settings',context).get('current',{type:'json'});
   if(settings){
-   const now=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Mexico_City'}));
-   const minutes=now.getHours()*60+now.getMinutes(),[sh,sm]=settings.schedule?.start?.split(':').map(Number)||[17,0],[eh,em]=settings.schedule?.end?.split(':').map(Number)||[24,0],start=sh*60+sm,end=eh*60+em;
-   if(!settings.isOpen||minutes<start||(end<1440&&minutes>=end))return json({error:'Dulce Bocado está cerrado por ahora. Consulta la próxima ubicación y horario.'},423);
+   // The owner's Abierto/Cerrado control is the final gate.  The displayed schedule is
+   // informative, so a feria that starts early can accept orders as soon as its owner opens it.
+   if(!settings.isOpen)return json({error:'Dulce Bocado está cerrado por ahora. Consulta la próxima ubicación y horario.'},423);
    const unavailable=order.items.find((i:any)=>settings.products?.[i.selection?.product]===false||i.selection?.ingredients?.some((x:string)=>settings.ingredients?.[x]===false));
    if(unavailable)return json({error:'Uno de los productos o ingredientes ya no está disponible. Actualiza tu pedido.'},409);
   }

@@ -2,6 +2,7 @@ let statusTimer;
 let submitting=false;
 function saved(key){try{return JSON.parse(sessionStorage.getItem(key)||'null')}catch{return null}}
 function remember(key,value){sessionStorage.setItem(key,JSON.stringify(value));}
+function orderFeedback(message,type='info'){let note=$('order-submit-status');if(!note&&document.createElement){note=document.createElement('p');note.id='order-submit-status';note.setAttribute('role','status');note.className='mt-3 rounded-xl px-4 py-3 text-sm font-bold';placeOrderButton?.insertAdjacentElement?.('beforebegin',note)}if(!note)return;note.textContent=message;note.className=`mt-3 rounded-xl px-4 py-3 text-sm font-bold ${type==='error'?'bg-red-100 text-red-800':type==='success'?'bg-green-100 text-green-800':'bg-purple-100 text-purple-800'}`;}
 function clearCustomer(){cart=[];customerName.value='';$('order-note').value='';$('cash-option').value='';$('cash-other').value='';$('cash-detail').value='';document.querySelector('input[name=payment]').checked=true;updateCart();closeCart();}
 function showConfirmed(order){
  clearInterval(statusTimer);
@@ -15,22 +16,22 @@ function showConfirmed(order){
  franSummary.textContent=`¡Listo! Pedido #${order.folio} recibido. Conserva tu comprobante. Tu carrito ya quedó limpio.`;
 }
 async function placeOrder(){
- if(submitting)return;
+ if(submitting){orderFeedback('Estamos confirmando tu pedido… espera un momento.');return;}
  let pending=saved('db-pending-order');
  if(!pending){
- const name=customerName.value.trim();if(!name)return alert('Escribe tu nombre para identificar el pedido.');if(!cart.length)return alert('Agrega al menos un producto.');
- const payment=document.querySelector('input[name=payment]:checked').value,cash=readCash();if(payment==='Efectivo contra entrega'&&(!Number.isFinite(cash)||cash<total()))return alert('Indica con cuánto pagarás. Debe cubrir el total del pedido.');
+ const name=customerName.value.trim();if(!name){orderFeedback('Escribe tu nombre para identificar el pedido.','error');return;}if(!cart.length){orderFeedback('Agrega al menos un producto antes de confirmar.','error');return;}
+ const payment=document.querySelector('input[name=payment]:checked').value,cash=readCash();if(payment==='Efectivo contra entrega'&&(!Number.isFinite(cash)||cash<total())){orderFeedback('Indica con cuánto pagarás. El efectivo debe cubrir el total del pedido.','error');return;}
  pending={id:crypto.randomUUID(),cliente:name,items:structuredClone(cart),pago:payment,nota:$('order-note').value.trim(),efectivo:payment==='Efectivo contra entrega'?cash:null,denominacion:payment==='Efectivo contra entrega'?$('cash-detail').value.trim():''};
- try{remember('db-pending-order',pending)}catch{return alert('Permite el almacenamiento del navegador para confirmar tu pedido sin duplicarlo.');}
+ try{remember('db-pending-order',pending)}catch{orderFeedback('Permite el almacenamiento del navegador para confirmar tu pedido sin duplicarlo.','error');return;}
  }
- submitting=true;placeOrderButton.disabled=true;placeOrderButton.textContent='Confirmando pedido…';
+ submitting=true;placeOrderButton.disabled=true;placeOrderButton.textContent='Confirmando pedido…';orderFeedback('Estamos enviando tu pedido a Dulce Bocado…');
  try{
  const response=await fetch('/.netlify/functions/customer-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pending)});
  const data=await response.json();if(!response.ok){if(response.status===400)sessionStorage.removeItem('db-pending-order');throw Error(data.error||'No se pudo confirmar el pedido.');}
  // Clear only after a server acknowledgement; downloading or sharing cannot resubmit the order.
  try{remember('db-last-order',data.order)}catch{}
  sessionStorage.removeItem('db-pending-order');clearCustomer();showConfirmed(data.order);
- }catch(e){alert(e.message||'No recibimos confirmación. Reintenta; conservaremos el mismo folio para evitar duplicados.');}
+ }catch(e){orderFeedback(e.message||'No recibimos confirmación. Reintenta; conservaremos el mismo folio para evitar duplicados.','error');}
  finally{submitting=false;placeOrderButton.disabled=false;placeOrderButton.textContent=saved('db-pending-order')?'Reintentar el mismo pedido':'Confirmar pedido';}
 }
 const previousOrder=saved('db-last-order');if(previousOrder)showConfirmed(previousOrder);
