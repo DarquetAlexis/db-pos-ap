@@ -342,6 +342,7 @@
                 <div class="flex space-x-1">
                     <button onclick="enviarOrdenACocina()" class="bg-[#526DB7] hover:bg-[#6C4A8D] text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">🍳 Enviar</button>
                     <button onclick="abrirModalPago()" class="bg-[#F6A9C5] hover:bg-[#D994F8] text-gray-900 font-bold px-3 py-1.5 rounded-xl text-xs shadow">Cobrar ➔</button>
+                    <button onclick="cobroLibrePoint()" class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-3 py-1.5 rounded-xl text-xs shadow">$ Libre</button>
                 </div>
             </div>
             <div id="minilist-carrito" class="max-h-28 overflow-y-auto space-y-1 text-[11px] border-t border-[#6C4A8D]/50 pt-1"></div>
@@ -870,6 +871,22 @@ async function cobrarConTarjetaPoint() {
         alert("⚠️ " + error.message);
         console.error(error);
     } finally { enviandoPoint = false; }
+}
+
+// Venta presencial sin crear una cuenta previa. It is still recorded in the shared history.
+async function cobroLibrePoint() {
+    if(enviandoPoint) return;
+    const amount=Number(prompt('Monto a cobrar en la terminal ($):',''));
+    if(!Number.isFinite(amount)||amount<=0){ alert('Escribe un monto válido.'); return; }
+    const concept=(prompt('Concepto para el ticket:','Venta directa')||'Venta directa').trim().slice(0,80);
+    const order={id:crypto.randomUUID(),cliente:'Venta presencial',color:'#F6A9C5',items:[{name:concept,precio:amount}],estado:'pendiente',fecha:new Date().toLocaleDateString(),tiempo:new Date().toLocaleTimeString()};
+    try {
+        enviandoPoint=true; cacheOrders.push(order); await guardarOrdenCloud(order);
+        const response=await fetch('/.netlify/functions/terminal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount,description:concept,orderId:order.id,idempotencyKey:'point-'+order.id+'-'+amount})});
+        const result=await response.json(); if(!response.ok) throw Error(result.error||'No se pudo enviar a la terminal.');
+        if(confirm('¿La terminal aprobó el cobro?')){order.estado='cobrado';order.pagoMetodo='Tarjeta (Point · cobro libre)';order.total=amount;await guardarOrdenCloud(order);generarEImprimirTicket(order);mostrarToast('✅ Cobro libre guardado y enviado a impresión.');}
+    } catch(e) { cacheOrders=cacheOrders.filter(o=>o.id!==order.id); alert('⚠️ '+e.message); }
+    finally { enviandoPoint=false; actualizarUIOrdenActiva(); }
 }
 
 

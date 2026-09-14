@@ -8,6 +8,18 @@ export default async(req,context)=>{
  if(!sameOrigin(req))return json({error:'Origen no permitido'},403);
  let input;try{const body=await req.text();if(body.length>50000)throw Error();input=JSON.parse(body);}catch{return json({error:'Pedido no válido.'},400);}
  let order;try{order=validateOrder(input);}catch(e){return json({error:e.message},400);}
+ // The public menu is only a convenience. The server is the final gate when a stand is closed
+ // or an ingredient has sold out, so an old browser tab cannot bypass the owner's controls.
+ try{
+  const settings=await store('business-settings',context).get('current',{type:'json'});
+  if(settings){
+   const now=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Mexico_City'}));
+   const minutes=now.getHours()*60+now.getMinutes(),[sh,sm]=settings.schedule?.start?.split(':').map(Number)||[17,0],[eh,em]=settings.schedule?.end?.split(':').map(Number)||[24,0],start=sh*60+sm,end=eh*60+em;
+   if(!settings.isOpen||minutes<start||(end<1440&&minutes>=end))return json({error:'Dulce Bocado está cerrado por ahora. Consulta la próxima ubicación y horario.'},423);
+   const unavailable=order.items.find((i:any)=>settings.products?.[i.selection?.product]===false||i.selection?.ingredients?.some((x:string)=>settings.ingredients?.[x]===false));
+   if(unavailable)return json({error:'Uno de los productos o ingredientes ya no está disponible. Actualiza tu pedido.'},409);
+  }
+ }catch(e){console.warn('Business settings check unavailable',e);}
  if(!Netlify.env.get('STAFF_PIN_HASH')||!Netlify.env.get('STAFF_SESSION_SECRET'))return json({error:'Estamos activando los pedidos en línea. Tu carrito se conserva; por favor contacta al negocio.'},503);
  const hash=createHash('sha256').update(JSON.stringify(input)).digest('hex'),orders=store('customer-orders',context),key=order.id;
  try{

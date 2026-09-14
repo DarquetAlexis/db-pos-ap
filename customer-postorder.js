@@ -1,0 +1,3 @@
+(()=>{
+ const improve=()=>{const section=document.getElementById('order-confirmation');if(!section||section.classList.contains('hidden')||section.querySelector('#whatsapp-reminder'))return;const p=document.createElement('p');p.id='whatsapp-reminder';p.className='mt-3 p-3 rounded-xl bg-green-50 text-sm';p.innerHTML='<b>📲 Para atenderte sin demoras:</b> manda tu pedido por WhatsApp. Así Dulce Bocado estará al pendiente de tu orden. ¡Muchas gracias por tu pedido!';const a=document.getElementById('share-whatsapp');a.textContent='Enviar mi pedido por WhatsApp';a.before(p);};new MutationObserver(improve).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});improve();
+})();
