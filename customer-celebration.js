@@ -4,5 +4,5 @@
  document.head.append(style);
  const original=globalThis.addItem;
  if(typeof original!=='function')return;
- globalThis.addItem=item=>{original(item);const box=document.createElement('div');box.id='fran-celebration';box.setAttribute('role','status');box.innerHTML=`<div class="fran-pop"><img src="fran.png" alt="Frappe Fran celebrando"><h2>¡Esooo! 🎉</h2><p>Fran agregó ${String(item.name||'tu antojo')} a tu pedido.</p><p class="mt-2 text-sm">¡Sigue armando algo delicioso!</p></div>`;box.onclick=()=>box.remove();document.body.append(box);setTimeout(()=>box.remove(),1850);};
+ globalThis.addItem=item=>{original(item);const box=document.createElement('div');box.id='fran-celebration';box.setAttribute('role','status');box.innerHTML=`<div class="fran-pop"><img src="fran-celebrando.png" alt="Frappe Fran celebrando"><h2>¡Esooo! 🎉</h2><p>Fran agregó ${String(item.name||'tu antojo')} a tu pedido.</p><p class="mt-2 text-sm">¡Sigue armando algo delicioso!</p></div>`;box.onclick=()=>box.remove();document.body.append(box);setTimeout(()=>box.remove(),1850);};
 })();
